@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--dimens.xml-->
+<resources>
+    <dimen name="default_elevation">8dp</dimen>
+
+    <dimen name="feed_item_parti_logo">25dp</dimen>
+    <dimen name="feed_item_user_image">40dp</dimen>
+
+</resources>
