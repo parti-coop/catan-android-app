@@ -6,31 +6,54 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.adapter.PostFeedAdapter;
+import xyz.parti.catan.sessions.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.appToolbar)
     Toolbar appToolbar;
-    @BindView(R.id.dashboard)
-    RecyclerView dashboard;
+    @BindView(R.id.dashboardView)
+    RecyclerView dashboardView;
+    @BindView(R.id.logoutButton)
+    Button logoutButton;
 
     private PostFeedAdapter feedAdapter;
+    private SessionManager session;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
+        Log.d(Constants.TAG, "session init");
+        session = new SessionManager(getApplicationContext());
+        session.checkLogin(new SessionManager.OnCheckListener() {
+            @Override
+            public void onLoggedIn() {
+                Log.d(Constants.TAG, "auth ok");
 
-        setupToolbar();
-        setupFeed();
+                ButterKnife.bind(MainActivity.this);
 
-        feedAdapter.updateItems();
+                setupToolbar();
+                setupFeed();
+                setupLogoutButton();
+
+                feedAdapter.updateItems();
+            }
+
+            @Override
+            public void onLoggedOut() {
+                finish();
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -41,8 +64,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupFeed() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        dashboard.setLayoutManager(linearLayoutManager);
+        dashboardView.setLayoutManager(linearLayoutManager);
         feedAdapter = new PostFeedAdapter(this);
-        dashboard.setAdapter(feedAdapter);
+        dashboardView.setAdapter(feedAdapter);
+    }
+
+    private void setupLogoutButton() {
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                session.logoutUser(MainActivity.this);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(Constants.TAG, "onDestroy MainActivity");
     }
 }

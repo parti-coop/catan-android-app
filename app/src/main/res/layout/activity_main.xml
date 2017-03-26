@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/dashboard"
+            android:id="@+id/dashboardView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
@@ -29,5 +29,9 @@
                 android:id="@+id/appToolbar"
                 layout="@layout/app_toolbar" />
         </android.support.design.widget.AppBarLayout>
+        <Button android:id="@+id/logoutButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout"/>
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

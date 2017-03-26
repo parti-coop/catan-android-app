@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Catan</string>
+    <string name="facebook_app_id">743728572394700</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">이메일</string>
+    <string name="prompt_password">비밀번호</string>
+    <string name="action_sign_in">로그인</string>
+    <string name="action_sign_in_short">로그인</string>
+    <string name="error_invalid_email">이메일 주소를 확인해 주세요</string>
+    <string name="error_invalid_password">비밀번호는 8자 이상입니다</string>
+    <string name="error_incorrect_password">비밀번호를 확인해 주세요</string>
+    <string name="error_field_required">값을 입력해 주세요</string>
+    <string name="permission_rationale">이메일 주소를 자동완성하기 위해 주소록에 접근할 권한이 필요합니다</string>
 </resources>
