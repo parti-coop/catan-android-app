@@ -13,4 +13,12 @@
     <string name="error_incorrect_password">비밀번호를 확인해 주세요</string>
     <string name="error_field_required">값을 입력해 주세요</string>
     <string name="permission_rationale">이메일 주소를 자동완성하기 위해 주소록에 접근할 권한이 필요합니다</string>
+
+    <string name="title_activity_login_menu">LoginMenuActivity</string>
+    <string name="login_by_email_button">{fa-envelope} 이메일로 로그인</string>
+    <string name="login_by_facebook_button">{fa-facebook} 페이스북으로 로그인</string>
+    <string name="login_by_twitter_button">{fa-twitter} 트위터로 로그인</string>
+    <string name="login_by_google_button">{fa-google} 구글로 로그인</string>
+    <string name="sign_up_link">처음 오셨나요? <u>회원가입</u></string>
+    <string name="login_menu_title">로그인</string>
 </resources>

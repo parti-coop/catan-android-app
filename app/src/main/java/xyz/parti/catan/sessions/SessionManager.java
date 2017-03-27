@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import xyz.parti.catan.ui.activity.LoginActivity;
-import xyz.parti.catan.ui.activity.MainActivity;
+import xyz.parti.catan.ui.activity.LoginMenuActivity;
 
 /**
  * Created by dalikim on 2017. 3. 26..
@@ -58,13 +57,7 @@ public class SessionManager {
     public void checkLogin(OnCheckListener callback){
         // Check login status
         if(!this.isLoggedIn()) {
-            Intent i = new Intent(this.context, LoginActivity.class);
-            // Closing all the Activities
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            // Staring Login Activity
-            context.startActivity(i);
+            startLogin();
             callback.onLoggedOut();
         } else {
             callback.onLoggedIn();
@@ -83,14 +76,7 @@ public class SessionManager {
      */
     public void logoutUser(Activity activity){
         clear();
-
-        // After logout redirect user to Loing Activity
-        Intent i = new Intent(context, LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Staring Login Activity
-        context.startActivity(i);
+        startLogin();
         activity.finish();
     }
 
@@ -98,5 +84,15 @@ public class SessionManager {
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
+    }
+
+    public void startLogin() {
+        Intent i = new Intent(this.context, LoginMenuActivity.class);
+        // Closing all the Activities
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // Add new Flag to start new Activity
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // Staring Login Activity
+        context.startActivity(i);
     }
 }

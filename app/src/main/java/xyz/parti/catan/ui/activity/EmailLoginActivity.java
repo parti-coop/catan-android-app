@@ -38,7 +38,7 @@ import xyz.parti.catan.sessions.SessionManager;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class EmailLoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
@@ -55,18 +55,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     View progressView;
     @BindView(R.id.loginForm)
     View loginFormView;
-    @BindView(R.id.emailSignInButton)
-    View emailSignInButton;
+    @BindView(R.id.emailLoginButton)
+    View emailLoginButton;
 
     private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_email_login);
 
         session = new SessionManager(getApplicationContext());
-        ButterKnife.bind(LoginActivity.this);
+        ButterKnife.bind(EmailLoginActivity.this);
 
         // Set up the login form.
         populateAutoComplete();
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        emailSignInButton.setOnClickListener(new OnClickListener() {
+        emailLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            authTask = new UserLoginTask(email, password, LoginActivity.this);
+            authTask = new UserLoginTask(email, password, EmailLoginActivity.this);
             authTask.execute((Void) null);
         }
     }
@@ -268,7 +268,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(EmailLoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         emailView.setAdapter(adapter);

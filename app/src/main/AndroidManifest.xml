@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <application
         android:name=".CatanApplication"
         android:allowBackup="false"
@@ -14,7 +13,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait">
@@ -25,8 +23,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.LoginActivity"
+            android:name=".ui.activity.LoginMenuActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_login_menu"></activity>
+        <activity
+            android:name=".ui.activity.EmailLoginActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_login"></activity>
-    </application>
+</application>
 
 </manifest>
