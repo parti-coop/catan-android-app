@@ -22,4 +22,6 @@
     <string name="login_by_google_button">{fa-google} 구글로 로그인</string>
     <string name="sign_up_link">처음 오셨나요? <u>회원가입</u></string>
     <string name="login_menu_title">로그인</string>
+
+    <string name="error_login">로그인이 취소되었습니다</string>
 </resources>

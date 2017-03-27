@@ -15,11 +15,24 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    apply plugin: "com.android.application"
     buildTypes {
+        def var_api_base_url = "API_BASE_URL"
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", var_api_base_url, "\"https://parti.xyz\""
         }
+        debug {
+            buildConfigField "String", var_api_base_url, "\"http://parti.dev\""
+        }
+    }
+    defaultConfig {
+        def PARTI_APP_ID = '"' + partiApplicationIdProp + '"' ?: '"Define Parti Api Id"'
+        def PARTI_SECRET_KEY = '"' + partiSecretKeyProp + '"' ?: '"Define Parti Secret Key"'
+
+        buildConfigField "String", "PARTI_APP_ID", PARTI_APP_ID
+        buildConfigField "String", "PARTI_SECRET_KEY", PARTI_SECRET_KEY
     }
 }
 
@@ -44,6 +57,8 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.2.2'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
 
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'

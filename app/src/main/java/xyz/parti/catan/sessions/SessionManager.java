@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import xyz.parti.catan.models.PartiAccessToken;
+import xyz.parti.catan.models.User;
 import xyz.parti.catan.ui.activity.LoginMenuActivity;
 
 /**
@@ -19,11 +21,25 @@ public class SessionManager {
     private static final String KEY_USER_NICKNAME = "user_nickname";
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
+    private static final String KEY_TOKEN_TYPE = "token_type";
     private static final String KEY_EXPIRES_IN = "expires_in";
 
     private SharedPreferences pref;
     private final SharedPreferences.Editor editor;
     private Context context;
+
+    public PartiAccessToken getPartiAccessToken() {
+        if(isLoggedIn()) {
+            PartiAccessToken result = new PartiAccessToken();
+            result.access_token = pref.getString(KEY_ACCESS_TOKEN, null);
+            result.refresh_token = pref.getString(KEY_REFRESH_TOKEN, null);
+            result.token_type = pref.getString(KEY_TOKEN_TYPE, null);
+            result.expires_in = pref.getInt(KEY_EXPIRES_IN, 0);
+
+            return result;
+        }
+        return null;
+    }
 
     public interface OnCheckListener {
         void onLoggedIn();
@@ -39,13 +55,25 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(long user_id, String user_nickname, String access_token, String refresh_token, long expires_in){
+    public void createLoginSession(User user, PartiAccessToken accessToken){
         editor.putBoolean(KEY_IS_LOGIN, true);
-        editor.putLong(KEY_USER_ID, user_id);
-        editor.putString(KEY_USER_NICKNAME, user_nickname);
-        editor.putString(KEY_ACCESS_TOKEN, access_token);
-        editor.putString(KEY_REFRESH_TOKEN, refresh_token);
-        editor.putLong(KEY_EXPIRES_IN, expires_in);
+        editor.putLong(KEY_USER_ID, user.id);
+        editor.putString(KEY_USER_NICKNAME, user.nickname);
+        editor.putString(KEY_ACCESS_TOKEN, accessToken.access_token);
+        editor.putString(KEY_REFRESH_TOKEN, accessToken.refresh_token);
+        editor.putString(KEY_TOKEN_TYPE, accessToken.token_type);
+        editor.putLong(KEY_EXPIRES_IN, accessToken.expires_in);
+        editor.commit();
+    }
+
+    /**
+     * Create login session
+     * */
+    public void updateAccessToken(PartiAccessToken accessToken){
+        editor.putString(KEY_ACCESS_TOKEN, accessToken.access_token);
+        editor.putString(KEY_REFRESH_TOKEN, accessToken.refresh_token);
+        editor.putString(KEY_TOKEN_TYPE, accessToken.token_type);
+        editor.putLong(KEY_EXPIRES_IN, accessToken.expires_in);
         editor.commit();
     }
 

@@ -338,7 +338,7 @@ public class EmailLoginActivity extends AppCompatActivity implements LoaderCallb
                 // Creating user login session
                 // For testing i am stroing name, email as follow
                 // Use user real data
-                session.createLoginSession(100, "jerry", "", "", 100);
+                // session.createLoginSession(100, "jerry", "", "", 100);
 
                 // Staring MainActivity
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);

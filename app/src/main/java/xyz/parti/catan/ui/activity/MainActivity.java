@@ -12,6 +12,7 @@ import android.widget.Button;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.adapter.PostFeedAdapter;
@@ -33,13 +34,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(Constants.TAG, "session init");
         session = new SessionManager(getApplicationContext());
         session.checkLogin(new SessionManager.OnCheckListener() {
             @Override
             public void onLoggedIn() {
-                Log.d(Constants.TAG, "auth ok");
-
+                if(BuildConfig.DEBUG) {
+                    Log.d(Constants.TAG, "이미 로그인되어 있음");
+                }
                 ButterKnife.bind(MainActivity.this);
 
                 setupToolbar();
@@ -81,6 +82,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(Constants.TAG, "onDestroy MainActivity");
     }
 }

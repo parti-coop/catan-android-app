@@ -9,57 +9,72 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <TextView
-        android:id="@+id/loginMenuTitle"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/loginProgress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/login_menu_title"
-        android:textSize="25sp"
-        android:textStyle="bold" />
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
-    <com.joanzapata.iconify.widget.IconButton
-        android:id="@+id/loginByFacebookButton"
-        style="?android:textAppearanceSmall"
+    <LinearLayout
+        android:id="@+id/controllsView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/login_by_facebook_button"
-        android:textStyle="bold" />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/loginMenuTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/login_menu_title"
+            android:textSize="25sp"
+            android:textStyle="bold" />
 
-    <com.joanzapata.iconify.widget.IconButton
-        android:id="@+id/loginByTwitterButton"
-        style="?android:textAppearanceSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/login_by_twitter_button"
-        android:textStyle="bold" />
+        <com.joanzapata.iconify.widget.IconButton
+            android:id="@+id/loginByFacebookButton"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/login_by_facebook_button"
+            android:textStyle="bold" />
 
-    <com.joanzapata.iconify.widget.IconButton
-        android:id="@+id/loginByGoogleButton"
-        style="?android:textAppearanceSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/login_by_google_button"
-        android:textStyle="bold" />
+        <com.joanzapata.iconify.widget.IconButton
+            android:id="@+id/loginByTwitterButton"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/login_by_twitter_button"
+            android:textStyle="bold" />
 
-    <com.joanzapata.iconify.widget.IconButton
-        android:id="@+id/loginByEmailButton"
-        style="?android:textAppearanceSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/login_by_email_button"
-        android:textStyle="bold" />
+        <com.joanzapata.iconify.widget.IconButton
+            android:id="@+id/loginByGoogleButton"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/login_by_google_button"
+            android:textStyle="bold" />
 
-    <com.joanzapata.iconify.widget.IconButton
-        android:id="@+id/signUpLink"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/sign_up_link"
-        android:textStyle="bold" />
+        <com.joanzapata.iconify.widget.IconButton
+            android:id="@+id/loginByEmailButton"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/login_by_email_button"
+            android:textStyle="bold" />
+
+        <com.joanzapata.iconify.widget.IconButton
+            android:id="@+id/signUpLink"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/sign_up_link"
+            android:textStyle="bold" />
+    </LinearLayout>
 </LinearLayout>
