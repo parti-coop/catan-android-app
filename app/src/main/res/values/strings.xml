@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Catan</string>
     <string name="facebook_app_id">743728572394700</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="fb_login_protocol_scheme">fb743728572394700</string>
 
     <!-- Strings related to login -->
+    <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">이메일</string>
     <string name="prompt_password">비밀번호</string>
     <string name="action_sign_in">로그인</string>
