@@ -34,7 +34,7 @@ public class SessionManager {
             result.access_token = pref.getString(KEY_ACCESS_TOKEN, null);
             result.refresh_token = pref.getString(KEY_REFRESH_TOKEN, null);
             result.token_type = pref.getString(KEY_TOKEN_TYPE, null);
-            result.expires_in = pref.getInt(KEY_EXPIRES_IN, 0);
+            result.expires_in = pref.getLong(KEY_EXPIRES_IN, 0);
 
             return result;
         }

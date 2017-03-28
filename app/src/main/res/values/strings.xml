@@ -23,5 +23,8 @@
     <string name="sign_up_link">처음 오셨나요? <u>회원가입</u></string>
     <string name="login_menu_title">로그인</string>
 
+    <string name="no_more_data">끝까지 다 읽으셨습니다</string>
+
     <string name="error_login">로그인이 취소되었습니다</string>
+    <string name="error_any">앗! 뭔가 잘못되었어요</string>
 </resources>

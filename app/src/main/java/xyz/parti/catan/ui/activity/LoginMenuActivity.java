@@ -34,7 +34,7 @@ import xyz.parti.catan.models.User;
 import xyz.parti.catan.services.AuthTokenService;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.services.UserService;
+import xyz.parti.catan.services.UsersService;
 import xyz.parti.catan.sessions.SessionManager;
 
 public class LoginMenuActivity extends AppCompatActivity {
@@ -196,7 +196,7 @@ public class LoginMenuActivity extends AppCompatActivity {
                 }
                 PartiAccessToken token = tokenResponse.body();
 
-                UserService userService = ServiceGenerator.createNoRefreshService(UserService.class, token);
+                UsersService userService = ServiceGenerator.createNoRefreshService(UsersService.class, token);
                 Call<User> userCall = userService.getCurrentUser();
                 retrofit2.Response<User> userResponse = userCall.execute();
                 if (userResponse.code() == 200) {
