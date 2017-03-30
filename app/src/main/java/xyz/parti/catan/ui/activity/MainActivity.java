@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout drawerPane;
     @BindView(R.id.drawerNavigationView)
     NavigationView drawerNavigationView;
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout swipeContainer;
 
     private PostFeedAdapter feedAdapter;
     private SessionManager session;
@@ -100,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 setUpFeed();
                 setUpCheckNewPost();
                 setUpDrawerBar();
+                setUpSwipeRefresh();
             }
 
             @Override
@@ -107,6 +111,20 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void setUpSwipeRefresh() {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadFirstPosts();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
 
     private void setUpDrawerBar() {
@@ -177,10 +195,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             int index = posts.size() - 1;
-                            loadMore(index);
+                            loadMorePosts(index);
                         }
                     });
-                    //Calling loadMore function in Runnable to fix the
+                    //Calling loadMorePosts function in Runnable to fix the
                     // java.lang.IllegalStateException: Cannot call this method while RecyclerView is computing a layout or scrolling error
                 }
             });
@@ -190,34 +208,38 @@ public class MainActivity extends AppCompatActivity {
         dashboardView.setAdapter(feedAdapter);
 
         postsService = ServiceGenerator.createService(PostsService.class, session);
-        load();
+        loadFirstPosts();
     }
 
-    private void load(){
+    private void loadFirstPosts(){
         Call<Page<Post>> call = postsService.getDashBoardLastest();
         call.enqueue(new Callback<Page<Post>>() {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
                 if(response.isSuccessful()){
+                    feedAdapter.clear();
+
                     Page<Post> page = response.body();
                     posts.addAll(InfinitableModelHolder.from(page.items));
                     feedAdapter.setMoreDataAvailable(page.has_more_item);
                     feedAdapter.notifyDataChanged();
+
+                    swipeContainer.setRefreshing(false);
                 }else{
                     Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-                    Log.e(Constants.TAG," Response Error "+String.valueOf(response.code()));
+                    Log.e(Constants.TAG," Response Error 001"+String.valueOf(response.code()));
                 }
             }
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-                Log.e(Constants.TAG," Response Error "+t.getMessage());
+                Log.e(Constants.TAG," Response Error 002"+t.getMessage());
             }
         });
     }
 
-    private void loadMore(int index){
+    private void loadMorePosts(int index){
         //add loading progress view
         InfinitableModelHolder<Post> post = posts.get(posts.size() - 1);
         posts.add(InfinitableModelHolder.<Post>forLoader());
@@ -240,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         //result size 0 means there is no more data available at server
                         feedAdapter.setMoreDataAvailable(false);
-                        //telling adapter to stop calling load more as no more server data available
+                        //telling adapter to stop calling loadFirstPosts more as no more server data available
                     }
 
                     if(!feedAdapter.getMoreDataAvailable()) {

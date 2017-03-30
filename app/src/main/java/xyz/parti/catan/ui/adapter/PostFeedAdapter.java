@@ -125,4 +125,9 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
         this.loadMoreListener = loadMoreListener;
     }
+
+    public void clear() {
+        this.posts.clear();
+        notifyDataSetChanged();
+    }
 }
