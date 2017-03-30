@@ -1,15 +1,31 @@
 package xyz.parti.catan.ui.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.androidadvance.topsnackbar.TSnackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,28 +38,49 @@ import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
+import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
+import xyz.parti.catan.ui.adapter.NavigationItem;
 import xyz.parti.catan.ui.adapter.PostFeedAdapter;
 import xyz.parti.catan.sessions.SessionManager;
 
-import static android.view.KeyCharacterMap.load;
-
 public class MainActivity extends AppCompatActivity {
+    public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
+    public static final long INTERVAL_CHECK_NEW_POSTS = 1 * 5 * 1000;
+
     @BindView(R.id.appToolbar)
     Toolbar appToolbar;
     @BindView(R.id.dashboardView)
     RecyclerView dashboardView;
-    @BindView(R.id.logoutButton)
-    Button logoutButton;
+    @BindView(R.id.rootLayout)
+    DrawerLayout rootLayout;
+    @BindView(R.id.newPostsSignLayout)
+    View newPostsSignLayout;
+    @BindView(R.id.drawerPane)
+    RelativeLayout drawerPane;
+    @BindView(R.id.drawerNavigationView)
+    NavigationView drawerNavigationView;
 
     private PostFeedAdapter feedAdapter;
     private SessionManager session;
     List<InfinitableModelHolder<Post>> posts;
     private PostsService postsService;
+
+    private AlarmManager newPostsAlarmMgr;
+    private PendingIntent newPostsAlarmIntent;
+    private BroadcastReceiver newPostsBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            checkNewPosts();
+        }
+    };
+
+    List<NavigationItem> navigationItems = new ArrayList<>();
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,9 +96,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ButterKnife.bind(MainActivity.this);
 
-                setupToolbar();
-                setupFeed();
-                setupLogoutButton();
+                setUpToolbar();
+                setUpFeed();
+                setUpCheckNewPost();
+                setUpDrawerBar();
             }
 
             @Override
@@ -71,13 +109,64 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupToolbar() {
+    private void setUpDrawerBar() {
+        navigationItems.add(new NavigationItem(this, R.string.navigation_logout));
+        drawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                rootLayout,            /* DrawerLayout object */
+                R.string.drawer_open,  /* "open drawer" description */
+                R.string.drawer_close  /* "close drawer" description */
+        );
+        drawerNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                rootLayout.closeDrawers();
+
+                switch (item.getItemId()){
+                    case R.id.logoutButton:
+                        session.logoutUser(MainActivity.this);
+                        return true;
+                    default:
+                        return true;
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void setUpCheckNewPost() {
+        newPostsAlarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, LocalBroadcastableAlarmReceiver.class);
+        intent.putExtra(LocalBroadcastableAlarmReceiver.INTENT_EXTRA_ACTION, ACTION_CHECK_NEW_POSTS);
+        newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
+    }
+
+    private void setUpToolbar() {
         setSupportActionBar(appToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appToolbar.setNavigationIcon(R.drawable.ic_menu_white);
     }
 
-    private void setupFeed() {
+    private void setUpFeed() {
         posts = new ArrayList<>();
         feedAdapter = new PostFeedAdapter(this, session, posts);
         feedAdapter.setLoadMoreListener(
@@ -173,17 +262,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupLogoutButton() {
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                session.logoutUser(MainActivity.this);
-            }
-        });
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(newPostsBroadcastReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(newPostsBroadcastReceiver, new IntentFilter(ACTION_CHECK_NEW_POSTS));
+    }
+
+    private void checkNewPosts() {
+        TSnackbar snack = TSnackbar.make(newPostsSignLayout, "Hello from TSnackBar.", TSnackbar.LENGTH_LONG);
+        snack.show();
     }
 }

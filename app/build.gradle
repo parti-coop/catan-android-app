@@ -59,6 +59,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compile 'com.androidadvance:topsnackbar:1.1.1'
 
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
