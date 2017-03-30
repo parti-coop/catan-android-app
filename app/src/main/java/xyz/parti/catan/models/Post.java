@@ -14,7 +14,7 @@ public class Post {
     public Parti parti;
     public User user;
     public String created_at;
-    public String last_touched_at;
+    public String last_stroked_at;
     public Boolean is_upvotable;
     public Long upvotes_count;
     public User[] latest_upvote_users;

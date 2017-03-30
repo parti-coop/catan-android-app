@@ -1,5 +1,7 @@
 package xyz.parti.catan.services;
 
+import com.google.gson.JsonObject;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -21,4 +23,8 @@ public interface PostsService {
     @GET("/api/v1/posts/dashboard_after")
     Call<Page<Post>> getDashboardAfter(
             @Query("last_id") long last_id);
+
+    @GET("/api/v1/posts/has_updated")
+    Call<JsonObject> hasUpdated(
+            @Query("last_stroked_at") String last_stroked_at);
 }
