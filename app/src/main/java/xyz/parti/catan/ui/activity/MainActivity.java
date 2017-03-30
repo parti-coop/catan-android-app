@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,12 +23,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.androidadvance.topsnackbar.TSnackbar;
+import com.mancj.slideup.SlideUp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,14 +65,18 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView dashboardView;
     @BindView(R.id.rootLayout)
     DrawerLayout rootLayout;
-    @BindView(R.id.newPostsSignLayout)
-    View newPostsSignLayout;
+    @BindView(R.id.appToolbarLayout)
+    AppBarLayout appToolbarLayout;
     @BindView(R.id.drawerPane)
     RelativeLayout drawerPane;
     @BindView(R.id.drawerNavigationView)
     NavigationView drawerNavigationView;
     @BindView(R.id.swipeContainer)
     SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.newPostsSignLayout)
+    FrameLayout newPostsSignLayout;
+    @BindView(R.id.newPostsSignButton)
+    Button newPostsSignButton;
 
     private PostFeedAdapter feedAdapter;
     private SessionManager session;
@@ -84,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
+    private SlideUp newPostsSignSlideUp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -176,6 +187,33 @@ public class MainActivity extends AppCompatActivity {
         newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
+
+        newPostsSignSlideUp = new SlideUp.Builder(newPostsSignLayout)
+                .withStartState(SlideUp.State.HIDDEN)
+                .withStartGravity(Gravity.TOP)
+                .build();
+        dashboardView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
+                    newPostsSignSlideUp.hide();
+                }
+            }
+        });
+
+        newPostsSignButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                swipeContainer.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeContainer.setRefreshing(true);
+                        loadFirstPosts();
+                    }
+                });
+            }
+        });
     }
 
     private void setUpToolbar() {
@@ -212,6 +250,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFirstPosts(){
+        appToolbarLayout.setExpanded(true, true);
+        dashboardView.smoothScrollToPosition(0);
+
         Call<Page<Post>> call = postsService.getDashBoardLastest();
         call.enqueue(new Callback<Page<Post>>() {
             @Override
@@ -297,7 +338,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkNewPosts() {
-        TSnackbar snack = TSnackbar.make(newPostsSignLayout, "Hello from TSnackBar.", TSnackbar.LENGTH_LONG);
-        snack.show();
+        newPostsSignSlideUp.show();
     }
 }
