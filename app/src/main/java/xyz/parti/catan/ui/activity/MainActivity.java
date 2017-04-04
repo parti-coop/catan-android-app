@@ -34,6 +34,7 @@ import com.google.gson.JsonObject;
 import com.mancj.slideup.SlideUp;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,6 +47,7 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.api.ServiceGenerator;
+import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
         dashboardView.smoothScrollToPosition(0);
 
         Call<Page<Post>> call = postsService.getDashBoardLastest();
-        call.enqueue(new Callback<Page<Post>>() {
+        APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
                 if(response.isSuccessful()){
@@ -337,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkNewPosts() {
-        String lastStrockedAt = null;
+        Date lastStrockedAt = null;
         if(!posts.isEmpty()) {
             InfinitableModelHolder<Post> firstPost = posts.get(0);
             if(!firstPost.isLoader()) {

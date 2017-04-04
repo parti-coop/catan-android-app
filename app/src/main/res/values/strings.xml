@@ -25,6 +25,7 @@
 
     <string name="no_more_data">끝까지 다 읽으셨습니다</string>
     <string name="action_refresh_posts">새소식 {fa-arrow-up}</string>
+    <string name="dashboard_post_prefix_group_title">{fa-angle-right}</string>
 
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>
@@ -32,4 +33,7 @@
     <string name="navigation_logout">로그아웃</string>
     <string name="drawer_open">메뉴를 엽니다</string>
     <string name="drawer_close">메뉴를 닫습니다</string>
+
+    <!-- com.github.curioustechizen.android-ago -->
+    <string name="just_now">방금</string>
 </resources>

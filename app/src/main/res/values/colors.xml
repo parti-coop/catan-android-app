@@ -3,4 +3,7 @@
     <color name="style_color_primary">#3F51B5</color>
     <color name="style_color_primary_dark">#303F9F</color>
     <color name="style_color_accent">#FF4081</color>
+    <color name="style_color_default_border">#EFEFEF</color>
+
+    <color name="dashboard_image_border_color">#FFF</color>
 </resources>

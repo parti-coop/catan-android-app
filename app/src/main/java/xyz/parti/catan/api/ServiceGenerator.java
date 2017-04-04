@@ -1,11 +1,6 @@
 package xyz.parti.catan.api;
 
-import android.content.Context;
-
-import com.facebook.AccessToken;
-
 import java.io.IOException;
-import java.lang.reflect.AccessibleObject;
 
 import okhttp3.Authenticator;
 import okhttp3.Interceptor;
@@ -15,8 +10,8 @@ import okhttp3.Response;
 import okhttp3.Route;
 import retrofit2.Call;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import xyz.parti.catan.BuildConfig;
+import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.services.AuthTokenService;
 import xyz.parti.catan.sessions.SessionManager;
@@ -31,9 +26,7 @@ public class ServiceGenerator {
 
     public static <S> S createUnsignedService(Class<S> serviceClass) {
         httpClient = new OkHttpClient.Builder();
-        builder = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create());
+        builder = APIHelper.createDefaultBuilder();
 
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = builder.client(client).build();
@@ -50,9 +43,7 @@ public class ServiceGenerator {
 
     private static <S> S createService(Class<S> serviceClass, final SessionManager session, final PartiAccessToken currentToken) {
         httpClient = new OkHttpClient.Builder();
-        builder = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create());
+        builder = APIHelper.createDefaultBuilder();
 
         if(currentToken != null) {
             final PartiAccessToken token = currentToken;

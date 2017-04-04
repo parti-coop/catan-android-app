@@ -10,4 +10,14 @@ public class FileSource {
     public String name;
     public String file_type;
     public String file_size;
+    public Integer seq_no;
+
+    public boolean isImage() {
+        if (file_type == null) { return false; }
+        return file_type.startsWith("image/");
+    }
+
+    public boolean isDoc() {
+        return !isImage();
+    }
 }

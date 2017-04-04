@@ -12,45 +12,55 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:background="@drawable/border_bottom_on_white_bg">
             <ImageView
                 android:id="@+id/dashboardPostPartiLogo"
                 android:layout_width="@dimen/feed_item_parti_logo"
                 android:layout_height="@dimen/feed_item_parti_logo"
                 android:layout_gravity="center"
+                android:paddingRight="5dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/img_sample_parti_logo" />
             <TextView
                 android:id="@+id/dashboardPostPartiTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-            <TextView
+                android:layout_gravity="center"
+                android:paddingRight="5dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <com.joanzapata.iconify.widget.IconTextView
                 android:id="@+id/dashboardPostPrefixGroupTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text=">" />
+                android:paddingRight="5dp"
+                android:text="@string/dashboard_post_prefix_group_title" />
             <TextView
                 android:id="@+id/dashboardPostGroupTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:paddingRight="5dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="10dp">
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/dashboardPostUserImage"
                 android:layout_width="@dimen/feed_item_user_image"
                 android:layout_height="@dimen/feed_item_user_image"
                 android:layout_gravity="center"
+                android:paddingRight="5dp"
                 android:src="@drawable/img_sample_user_image" />
 
             <LinearLayout
@@ -59,21 +69,39 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/dashboardPostUserNickname"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <TextView
+                <com.github.curioustechizen.ago.RelativeTimeTextView
                     android:id="@+id/dashboardPostCreatedAt"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
         </LinearLayout>
 
         <TextView
+            android:id="@+id/dashboardPostTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="18sp"
+            android:lineSpacingMultiplier="1.1" />
+
+        <TextView
             android:id="@+id/dashboardPostBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp" />
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:lineSpacingMultiplier="1.1" />
 
+        <LinearLayout
+            android:id="@+id/dashboardPostReferences"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </android.support.v7.widget.CardView>

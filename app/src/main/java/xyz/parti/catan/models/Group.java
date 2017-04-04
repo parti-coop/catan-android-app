@@ -5,6 +5,11 @@ package xyz.parti.catan.models;
  */
 
 public class Group {
-    public String name;
+    public static final String INDIE_SLUG = "indie";
+    public String title;
     public String slug;
+
+    public boolean isIndie() {
+        return INDIE_SLUG.equals(slug);
+    }
 }
