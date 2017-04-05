@@ -1,5 +1,7 @@
 package xyz.parti.catan.ui.adapter;
 
+import android.support.v7.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

@@ -27,6 +27,8 @@
     <string name="action_refresh_posts">새소식 {fa-arrow-up}</string>
     <string name="dashboard_post_prefix_group_title">{fa-angle-right}</string>
 
+    <string name="references_doc_file_source_icon">{fa-floppy-o}</string>
+
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>
 
