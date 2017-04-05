@@ -1,42 +1,24 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Layout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.TextHelper;
-import xyz.parti.catan.models.FileSource;
-import xyz.parti.catan.models.Group;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.services.PostsService;
 import xyz.parti.catan.sessions.SessionManager;
 
 public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -151,14 +133,23 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 dashboardPostBody.setText(TextHelper.trimTrailingWhitespace(Html.fromHtml(post.parsed_body)));
             }
 
+            dashboardPostReferences.removeAllViews();
+            dashboardPostReferences.setVisibility(ViewGroup.GONE);
+
             if(post.file_sources != null) {
                 LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
                 LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
                 new FileSourcesBinder(fileSourcesLayout).bindData(post.file_sources);
 
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
-            } else {
-                dashboardPostReferences.setVisibility(ViewGroup.GONE);
+            }
+
+            if(post.link_source != null) {
+                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
+                LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
+                new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
+
+                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
         }
     }

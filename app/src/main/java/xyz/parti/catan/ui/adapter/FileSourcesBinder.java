@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,18 +9,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
+import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.models.FileSource;
 
 /**
@@ -131,14 +125,7 @@ public class FileSourcesBinder {
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300);
         imageView.setLayoutParams(params);
-
-        Glide.with(context)
-                .load(url)
-                .listener(requestListener)
-                .centerCrop()
-                .placeholder(R.drawable.progress_animation)
-                .error(R.drawable.error)
-                .crossFade().into(imageView);
+        ImageHelper.loadInto(imageView, url);
 
         LinearLayout rowBgLayout = new LinearLayout(context);
         rowBgLayout.setBackgroundColor(context.getResources().getColor(R.color.dashboard_image_border_color));
@@ -158,21 +145,6 @@ public class FileSourcesBinder {
 
         return rowBgLayout;
     }
-
-    private RequestListener<String, GlideDrawable> requestListener = new RequestListener<String, GlideDrawable>() {
-        @Override
-        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-            Log.e(Constants.TAG, e.getMessage(), e);
-
-            // important to return false so the error placeholder can be placed
-            return false;
-        }
-
-        @Override
-        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-            return false;
-        }
-    };
 
     private void drawDocFileSources(List<FileSource> docFileSources) {
         for(FileSource docFileSource: docFileSources) {

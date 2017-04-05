@@ -23,7 +23,7 @@ public class Post {
     public Upvote[] latest_upvotes;
     public Long comments_count;
     public Comment[] latest_comments;
-    public LinkSource link_reference;
+    public LinkSource link_source;
     public Poll poll;
     public Share share;
     public FileSource[] file_sources;
