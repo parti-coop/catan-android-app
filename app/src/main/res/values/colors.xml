@@ -6,4 +6,5 @@
     <color name="style_color_default_border">#EFEFEF</color>
 
     <color name="dashboard_image_border_color">#FFF</color>
+    <color name="text_muted">#D2D2D2</color>
 </resources>

@@ -186,15 +186,16 @@ public class FileSourcesBinder {
     static public class DocFileSourceHolder {
         @BindView(R.id.referencesDocFileSourceName)
         TextView referencesDocFileSourceName;
+        @BindView(R.id.referencesDocFileSourceSize)
+        TextView referencesDocFileSourceSize;
 
         public DocFileSourceHolder(ViewGroup view) {
             ButterKnife.bind(this, view);
         }
 
         public void bindData(FileSource docFileSource) {
-            Log.v(Constants.TAG, "" + docFileSource.name);
-
             referencesDocFileSourceName.setText(docFileSource.name);
+            referencesDocFileSourceSize.setText(docFileSource.human_file_size);
         }
     }
 }

@@ -265,18 +265,18 @@ public class MainActivity extends AppCompatActivity {
                     posts.addAll(InfinitableModelHolder.from(page.items));
                     feedAdapter.setMoreDataAvailable(page.has_more_item);
                     feedAdapter.notifyDataChanged();
-
-                    swipeContainer.setRefreshing(false);
                 }else{
                     Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
                     Log.e(Constants.TAG," Response Error 001 " + String.valueOf(response.code()));
                 }
+                swipeContainer.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
                 Log.e(Constants.TAG," Response Error 002 " + t.getMessage());
+                swipeContainer.setRefreshing(false);
             }
         });
     }

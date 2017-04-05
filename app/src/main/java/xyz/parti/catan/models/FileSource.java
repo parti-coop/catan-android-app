@@ -10,6 +10,7 @@ public class FileSource {
     public String name;
     public String file_type;
     public String file_size;
+    public String human_file_size;
     public Integer seq_no;
 
     public boolean isImage() {
