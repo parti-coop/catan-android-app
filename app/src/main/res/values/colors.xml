@@ -7,4 +7,5 @@
 
     <color name="dashboard_image_border_color">#FFF</color>
     <color name="text_muted">#D2D2D2</color>
+    <color name="default_text_view_link">#303F9F</color>
 </resources>

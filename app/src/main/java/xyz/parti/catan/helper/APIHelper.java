@@ -48,9 +48,4 @@ public class APIHelper {
     public static <T> void enqueueWithRetry(Call<T> call, final Callback<T> callback) {
         enqueueWithRetry(call, DEFAULT_RETRIES, callback);
     }
-
-    public static boolean isCallSuccess(Response response) {
-        int code = response.code();
-        return (code >= 200 && code < 400);
-    }
 }

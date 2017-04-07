@@ -1,5 +1,9 @@
 package xyz.parti.catan.api;
 
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
 import java.io.IOException;
 
 import okhttp3.Authenticator;
@@ -11,6 +15,7 @@ import okhttp3.Route;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import xyz.parti.catan.BuildConfig;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.services.AuthTokenService;
@@ -37,6 +42,10 @@ public class ServiceGenerator {
         return createService(serviceClass, null, currentToken);
     }
 
+    public static <S> S createServiceNoRediretToLogIn(Class<S> serviceClass, final SessionManager session) {
+        return createService(serviceClass, session, session.getPartiAccessToken());
+    }
+
     public static <S> S createService(Class<S> serviceClass, final SessionManager session) {
         return createService(serviceClass, session, session.getPartiAccessToken());
     }
@@ -45,7 +54,7 @@ public class ServiceGenerator {
         httpClient = new OkHttpClient.Builder();
         builder = APIHelper.createDefaultBuilder();
 
-        if(currentToken != null) {
+        if (currentToken != null) {
             final PartiAccessToken token = currentToken;
             httpClient.addInterceptor(new Interceptor() {
                 @Override
@@ -64,14 +73,15 @@ public class ServiceGenerator {
                 }
             });
 
-            if(session != null) {
+            if (session != null) {
                 httpClient.authenticator(new Authenticator() {
                     @Override
                     public Request authenticate(Route route, Response response) throws IOException {
                         if (responseCount(response) >= 2) {
                             // If both the original call and the call with refreshed token failed,
                             // it will probably keep failing, so don't try again.
-                            return null;
+                            session.logoutUser();
+                            throw new AuthFailError();
                         }
 
                         // We need a new client, since we don't want to make another call using our client with access token
@@ -88,10 +98,13 @@ public class ServiceGenerator {
                                         .header("Authorization", newToken.getValidTokenType() + " " + newToken.access_token)
                                         .build();
                             } else {
-                                return null;
+                                session.logoutUser();
+                                throw new AuthFailError();
                             }
                         } catch (IOException e) {
-                            return null;
+                            Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
+                            session.logoutUser();
+                            throw new AuthFailError();
                         }
                     }
                 });
@@ -110,4 +123,6 @@ public class ServiceGenerator {
         }
         return result;
     }
+
+    static class AuthFailError extends IOException {}
 }

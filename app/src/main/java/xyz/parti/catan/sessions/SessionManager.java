@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.LocalBroadcastManager;
 
+import okhttp3.Request;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.models.User;
 import xyz.parti.catan.ui.activity.LoginMenuActivity;
@@ -15,6 +17,7 @@ import xyz.parti.catan.ui.activity.LoginMenuActivity;
 
 public class SessionManager {
     private static final String PREF_NAME = "SESSION";
+    public static final String LOGOUT_ACTION = "parti.xyz.catan.session.lotout";
 
     private static final String KEY_IS_LOGIN = "IsLoggedIn";
     private static final String KEY_USER_ID = "user_id";
@@ -102,10 +105,13 @@ public class SessionManager {
     /**
      * Clear session details
      */
-    public void logoutUser(Activity activity){
+    public void logoutUser(){
         clear();
         startLogin();
-        activity.finish();
+
+        Intent broadcast = new Intent();
+        broadcast.setAction(LOGOUT_ACTION);
+        LocalBroadcastManager.getInstance(this.context).sendBroadcast(broadcast);
     }
 
     public void clear() {

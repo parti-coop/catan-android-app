@@ -11,10 +11,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import xyz.parti.catan.helper.APIHelper;
 
-/**
- * Created by pallavahooja on 16/05/16.
- */
-
 public abstract class RetryableCallback<T> implements Callback<T> {
 
     private int totalRetries = 3;
@@ -29,7 +25,7 @@ public abstract class RetryableCallback<T> implements Callback<T> {
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
-        if (!APIHelper.isCallSuccess(response))
+        if (!response.isSuccessful())
             if (retryCount++ < totalRetries) {
                 Log.v(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");
                 retry();
@@ -41,7 +37,9 @@ public abstract class RetryableCallback<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        Log.e(TAG, t.getMessage());
+        if(t != null) {
+            Log.e(TAG, t.getMessage(), t);
+        }
         if (retryCount++ < totalRetries) {
             Log.v(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");
             retry();
@@ -50,7 +48,6 @@ public abstract class RetryableCallback<T> implements Callback<T> {
     }
 
     public void onFinalResponse(Call<T> call, Response<T> response) {
-
     }
 
     public void onFinalFailure(Call<T> call, Throwable t) {

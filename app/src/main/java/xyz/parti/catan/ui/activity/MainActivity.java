@@ -48,6 +48,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
+import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.logoutButton:
-                        session.logoutUser(MainActivity.this);
+                        session.logoutUser();
                         return true;
                     default:
                         return true;
@@ -266,16 +267,14 @@ public class MainActivity extends AppCompatActivity {
                     feedAdapter.setMoreDataAvailable(page.has_more_item);
                     feedAdapter.notifyDataChanged();
                 }else{
-                    Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-                    Log.e(Constants.TAG," Response Error 001 " + String.valueOf(response.code()));
+                    ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
                 }
                 swipeContainer.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-                Log.e(Constants.TAG," Response Error 002 " + t.getMessage());
+                ReportHelper.wtf(getApplicationContext(), t);
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -313,15 +312,19 @@ public class MainActivity extends AppCompatActivity {
                     feedAdapter.notifyDataChanged();
                     //should call the custom method adapter.notifyDataChanged here to get the correct loading status
                 }else{
-                    Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-                    Log.e(Constants.TAG," Load More Response Error "+String.valueOf(response.code()));
+                    feedAdapter.setMoreDataAvailable(false);
+                    feedAdapter.notifyDataChanged();
+
+                    ReportHelper.wtf(getApplicationContext(), "Load More Response Error " + String.valueOf(response.code()));
                 }
             }
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-                Log.e(Constants.TAG," Load More Response Error "+t.getMessage());
+                feedAdapter.setMoreDataAvailable(false);
+                feedAdapter.notifyDataChanged();
+
+                ReportHelper.wtf(getApplicationContext(), t);
             }
         });
     }
@@ -351,18 +354,22 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(newPostsSignSlideUp.isVisible()) {
-                    return;
-                }
+                if(response.isSuccessful()) {
+                    if (newPostsSignSlideUp.isVisible()) {
+                        return;
+                    }
 
-                if(response.body().get("has_updated").getAsBoolean()) {
-                    newPostsSignSlideUp.show();
+                    if (response.body().get("has_updated").getAsBoolean()) {
+                        newPostsSignSlideUp.show();
+                    }
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Check new post error : " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e(Constants.TAG, "Response Error 003 " + t.getMessage());
+                ReportHelper.wtf(getApplicationContext(), t);
             }
         });
     }

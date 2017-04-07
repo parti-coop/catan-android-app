@@ -38,7 +38,7 @@ import xyz.parti.catan.sessions.SessionManager;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-public class EmailLoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class EmailLoginActivity extends BaseActivity implements LoaderCallbacks<Cursor> {
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**

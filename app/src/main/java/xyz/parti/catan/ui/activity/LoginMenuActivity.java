@@ -37,7 +37,7 @@ import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.services.UsersService;
 import xyz.parti.catan.sessions.SessionManager;
 
-public class LoginMenuActivity extends AppCompatActivity {
+public class LoginMenuActivity extends BaseActivity {
     private UserLoginTask authTask = null;
 
     @BindView(R.id.loginByEmailButton)

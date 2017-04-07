@@ -1,6 +1,7 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,7 +129,7 @@ public class FileSourcesBinder {
         ImageHelper.loadInto(imageView, url);
 
         LinearLayout rowBgLayout = new LinearLayout(context);
-        rowBgLayout.setBackgroundColor(context.getResources().getColor(R.color.dashboard_image_border_color));
+        rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border_color));
         LinearLayout.LayoutParams bgLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
         rowBgLayout.setLayoutParams(bgLayoutParams);
 

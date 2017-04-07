@@ -4,11 +4,13 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
@@ -17,6 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
+import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
 import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
@@ -123,14 +126,14 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 dashboardPostTitle.setVisibility(View.GONE);
             } else {
                 dashboardPostTitle.setVisibility(View.VISIBLE);
-                dashboardPostTitle.setText(TextHelper.trimTrailingWhitespace(Html.fromHtml(post.parsed_title)));
+                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostTitle, post.parsed_title);
             }
 
             if(TextUtils.isEmpty(post.parsed_body)) {
                 dashboardPostBody.setVisibility(View.GONE);
             } else {
                 dashboardPostBody.setVisibility(View.VISIBLE);
-                dashboardPostBody.setText(TextHelper.trimTrailingWhitespace(Html.fromHtml(post.parsed_body)));
+                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostBody, post.parsed_body);
             }
 
             dashboardPostReferences.removeAllViews();
