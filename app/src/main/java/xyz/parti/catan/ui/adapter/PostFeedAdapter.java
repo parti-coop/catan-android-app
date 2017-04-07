@@ -1,6 +1,8 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -109,7 +111,7 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ButterKnife.bind(this, view);
         }
 
-        void bindData(Post post){
+        void bindData(final Post post){
             dashboardPostPartiTitle.setText(post.parti.title);
             if(post.parti.group.isIndie()) {
                 dashboardPostPrefixGroupTitle.setVisibility(View.GONE);
@@ -150,6 +152,12 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if(post.link_source != null) {
                 LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
                 LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
+                linkSourcesLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.link_source.url)));
+                    }
+                });
                 new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
 
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
