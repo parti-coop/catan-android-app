@@ -26,13 +26,16 @@
                 android:layout_gravity="center"
                 android:paddingRight="5dp"
                 android:scaleType="centerInside"
+                android:gravity="left"
                 android:src="@drawable/img_sample_parti_logo" />
             <TextView
                 android:id="@+id/dashboardPostPartiTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="220dp"
                 android:layout_gravity="center"
                 android:paddingRight="5dp"
+                android:gravity="left"
                 android:maxLines="1"
                 android:ellipsize="end" />
             <com.joanzapata.iconify.widget.IconTextView
@@ -47,7 +50,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:paddingRight="5dp" />
+                android:maxLines="1"
+                android:ellipsize="end" />
         </LinearLayout>
 
         <LinearLayout
