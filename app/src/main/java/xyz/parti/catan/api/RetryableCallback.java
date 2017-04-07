@@ -9,6 +9,7 @@ import android.util.Log;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.helper.APIHelper;
 
 public abstract class RetryableCallback<T> implements Callback<T> {
@@ -27,7 +28,9 @@ public abstract class RetryableCallback<T> implements Callback<T> {
     public void onResponse(Call<T> call, Response<T> response) {
         if (!response.isSuccessful())
             if (retryCount++ < totalRetries) {
-                Log.v(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");
+                if(BuildConfig.DEBUG) {
+                    Log.d(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");
+                }
                 retry();
             } else
                 onFinalResponse(call, response);
@@ -41,7 +44,9 @@ public abstract class RetryableCallback<T> implements Callback<T> {
             Log.e(TAG, t.getMessage(), t);
         }
         if (retryCount++ < totalRetries) {
-            Log.v(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");
+            if(BuildConfig.DEBUG) {
+                Log.d(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");
+            }
             retry();
         } else
             onFinalFailure(call, t);

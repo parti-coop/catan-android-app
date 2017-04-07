@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.sessions.SessionManager;
 
@@ -32,7 +33,9 @@ public class BaseActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent){
             //In my case the LoginActivity is visible after logout, so i don't finish the Login Activity
             if(BaseActivity.this instanceof LoginMenuActivity){
-                Log.d(Constants.TAG, "Skip destroying after logout");
+                if(BuildConfig.DEBUG) {
+                    Log.d(Constants.TAG, "Skip destroying after logout");
+                }
                 return;
             }else{
                 finish();

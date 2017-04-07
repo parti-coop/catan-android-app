@@ -71,7 +71,6 @@ public class SmartHtmlTextViewHelper {
                 }
             };
             makeLinkClickable(context, strBuilder, span, clickable);
-            Log.d(Constants.TAG, String.valueOf(strBuilder) + " / " + String.valueOf(span));
         }
     }
 }

@@ -16,6 +16,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 
 /**
@@ -58,7 +59,7 @@ public class UnsafeOkHttpClient {
                         }
                     }).build();
         } catch (Exception e) {
-            Log.v(Constants.TAG, e.getMessage(), e);
+            Log.e(Constants.TAG, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }

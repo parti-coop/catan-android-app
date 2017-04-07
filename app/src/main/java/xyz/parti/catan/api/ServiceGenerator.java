@@ -1,7 +1,5 @@
 package xyz.parti.catan.api;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -26,94 +24,112 @@ import xyz.parti.catan.sessions.SessionManager;
  */
 
 public class ServiceGenerator {
-    private static OkHttpClient.Builder httpClient;
-    private static Retrofit.Builder builder;
+    private static Retrofit.Builder retrofitbuilder = APIHelper.createDefaultBuilder();
 
     public static <S> S createUnsignedService(Class<S> serviceClass) {
-        httpClient = new OkHttpClient.Builder();
-        builder = APIHelper.createDefaultBuilder();
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
         OkHttpClient client = httpClient.build();
-        Retrofit retrofit = builder.client(client).build();
+        Retrofit retrofit = retrofitbuilder.client(client).build();
         return retrofit.create(serviceClass);
     }
 
-    public static <S> S createNoRefreshService(Class<S> serviceClass, final PartiAccessToken currentToken) {
-        return createService(serviceClass, null, currentToken);
-    }
+    public static <S> S createNoRefreshService(Class<S> serviceClass, PartiAccessToken token) {
+        final OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-    public static <S> S createServiceNoRediretToLogIn(Class<S> serviceClass, final SessionManager session) {
-        return createService(serviceClass, session, session.getPartiAccessToken());
+        oAuthIntercept(httpClient, token);
+
+        OkHttpClient client = httpClient.build();
+        Retrofit retrofit = retrofitbuilder.client(client).build();
+        return retrofit.create(serviceClass);
     }
 
     public static <S> S createService(Class<S> serviceClass, final SessionManager session) {
-        return createService(serviceClass, session, session.getPartiAccessToken());
-    }
+        final OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-    private static <S> S createService(Class<S> serviceClass, final SessionManager session, final PartiAccessToken currentToken) {
-        httpClient = new OkHttpClient.Builder();
-        builder = APIHelper.createDefaultBuilder();
-
-        if (currentToken != null) {
-            final PartiAccessToken token = currentToken;
-            httpClient.addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request original = chain.request();
-
-                    Request.Builder requestBuilder = original.newBuilder()
-                            .header("Accept", "application/json")
-                            .header("Content-type", "application/json")
-                            .header("Authorization",
-                                    token.getValidTokenType() + " " + token.access_token)
-                            .method(original.method(), original.body());
-
-                    Request request = requestBuilder.build();
-                    return chain.proceed(request);
-                }
-            });
-
-            if (session != null) {
-                httpClient.authenticator(new Authenticator() {
-                    @Override
-                    public Request authenticate(Route route, Response response) throws IOException {
-                        if (responseCount(response) >= 2) {
-                            // If both the original call and the call with refreshed token failed,
-                            // it will probably keep failing, so don't try again.
-                            session.logoutUser();
-                            throw new AuthFailError();
-                        }
-
-                        // We need a new client, since we don't want to make another call using our client with access token
-                        AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
-                        Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(currentToken.refresh_token,
-                                "refresh_token", BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
-
-                        try {
-                            retrofit2.Response<PartiAccessToken> tokenResponse = tokenCall.execute();
-                            if (tokenResponse.code() == 200) {
-                                PartiAccessToken newToken = tokenResponse.body();
-                                session.updateAccessToken(newToken);
-                                return response.request().newBuilder()
-                                        .header("Authorization", newToken.getValidTokenType() + " " + newToken.access_token)
-                                        .build();
-                            } else {
-                                session.logoutUser();
-                                throw new AuthFailError();
-                            }
-                        } catch (IOException e) {
-                            Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
-                            session.logoutUser();
-                            throw new AuthFailError();
-                        }
-                    }
-                });
-            }
-        }
+        oAuthIntercept(httpClient, session);
+        refreshableAuthenticate(httpClient, session);
 
         OkHttpClient client = httpClient.build();
-        Retrofit retrofit = builder.client(client).build();
+        Retrofit retrofit = retrofitbuilder.client(client).build();
         return retrofit.create(serviceClass);
+    }
+
+    private static void refreshableAuthenticate(OkHttpClient.Builder httpBuilder, final SessionManager session) {
+        final PartiAccessToken currentToken = session.getPartiAccessToken();
+        httpBuilder.authenticator(new Authenticator() {
+            @Override
+            public Request authenticate(Route route, Response response) throws IOException {
+                PartiAccessToken prefToken = session.getPartiAccessToken();
+                if (prefToken.access_token != currentToken.access_token) {
+                    return response.request().newBuilder()
+                            .header("Authorization", prefToken.getValidTokenType() + " " + prefToken.access_token)
+                            .build();
+                }
+
+                if (responseCount(response) >= 2) {
+                    // If both the original call and the call with refreshed token failed,
+                    // it will probably keep failing, so don't try again.
+                    session.logoutUser();
+                    throw new AuthFailError();
+                }
+
+                // We need a new client, since we don't want to make another call using our client with access token
+                AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
+                Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(currentToken.refresh_token,
+                        "refresh_token", BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
+
+                try {
+                    retrofit2.Response<PartiAccessToken> tokenResponse = tokenCall.execute();
+                    if (tokenResponse.code() == 200) {
+                        PartiAccessToken newToken = tokenResponse.body();
+                        session.updateAccessToken(newToken);
+                        return response.request().newBuilder()
+                                .header("Authorization", newToken.getValidTokenType() + " " + newToken.access_token)
+                                .build();
+                    } else {
+                        session.logoutUser();
+                        throw new AuthFailError();
+                    }
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
+                    session.logoutUser();
+                    throw new AuthFailError();
+                }
+            }
+        });
+    }
+
+    private static void oAuthIntercept(OkHttpClient.Builder httpBuilder, final SessionManager session) {
+        httpBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                PartiAccessToken token = session.getPartiAccessToken();
+                return getResponseWithOAuth(chain, token);
+            }
+        });
+    }
+
+    private static void oAuthIntercept(OkHttpClient.Builder httpBuilder, final PartiAccessToken token) {
+        httpBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                return getResponseWithOAuth(chain, token);
+            }
+        });
+    }
+
+    private static Response getResponseWithOAuth(Interceptor.Chain chain, PartiAccessToken token) throws IOException {
+        Request original = chain.request();
+        Request.Builder requestBuilder = original.newBuilder()
+                .header("Accept", "application/json")
+                .header("Content-type", "application/json")
+                .header("Authorization",
+                        token.getValidTokenType() + " " + token.access_token)
+                .method(original.method(), original.body());
+
+        Request request = requestBuilder.build();
+        return chain.proceed(request);
     }
 
     private static int responseCount(Response response) {
