@@ -105,11 +105,11 @@ public class FileSourcesBinder {
                 } else {
                     int previousCount = imageFileSourcesRows.get(imageFileSourcesRows.size() - 2).size();
                     if(previousCount == 3) {
-                        if(currentRow.size() >= 2) {
+                        if(currentRow.size() >= 1) {
                             nextRow = true;
                         }
                     } else {
-                        if(currentRow.size() >= 3) {
+                        if(currentRow.size() >= 2) {
                             nextRow = true;
                         }
                     }
@@ -124,8 +124,15 @@ public class FileSourcesBinder {
     private View makeImageView(Context context, String url, int col_size, int current_col) {
         final ImageView imageView = new ImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300);
+
+        int height = 300;
+        if(col_size == 1) {
+            height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         imageView.setLayoutParams(params);
+        imageView.setAdjustViewBounds(true);
         ImageHelper.loadInto(imageView, url);
 
         LinearLayout rowBgLayout = new LinearLayout(context);
