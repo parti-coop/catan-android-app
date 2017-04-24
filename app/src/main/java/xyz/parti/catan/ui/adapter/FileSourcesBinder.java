@@ -1,6 +1,7 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +21,8 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.models.FileSource;
+import xyz.parti.catan.models.Post;
+import xyz.parti.catan.ui.activity.PostImagesViewActivity;
 
 /**
  * Created by dalikim on 2017. 4. 4..
@@ -37,26 +42,14 @@ public class FileSourcesBinder {
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(FileSource[] fileSources) {
+    public void bindData(Post post) {
         referencesImagesLayout.removeAllViews();
         referencesDocsLayout.removeAllViews();
-
-        List<FileSource> imageFileSources = new ArrayList();
-        List<FileSource> docFileSources = new ArrayList();
-        for(FileSource fileSource: fileSources) {
-            if(fileSource.isImage()) {
-                imageFileSources.add(fileSource);
-            }
-            if(fileSource.isDoc()) {
-                docFileSources.add(fileSource);
-            }
-        }
-
-        drawImageFileSources(imageFileSources);
-        drawDocFileSources(docFileSources);
+        drawImageFileSources(post.getImageFileSources(), post);
+        drawDocFileSources(post.getDocFileSources());
     }
 
-    private void drawImageFileSources(List<FileSource> imageFileSources) {
+    private void drawImageFileSources(List<FileSource> imageFileSources, final Post post) {
         int row = 0;
         for(List<FileSource> imageFileSourcesRow: splitImageFileSources(imageFileSources)) {
             LinearLayout rowLayout = new LinearLayout(context);
@@ -70,12 +63,22 @@ public class FileSourcesBinder {
 
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
-                View imageView = makeImageView(context, fileSource.attachment_url, imageFileSourcesRow.size(), col);
+                View imageView = makeImageCell(context, fileSource.attachment_url, imageFileSourcesRow.size(), col);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(context, PostImagesViewActivity.class);
+                        intent.putExtra("post", Parcels.wrap(post));
+                        context.startActivity(intent);
+                    }
+                });
                 if (imageView != null) {
                     rowLayout.addView(imageView);
                 }
                 col++;
             }
+
+
 
             referencesImagesLayout.addView(rowLayout);
 
@@ -121,10 +124,9 @@ public class FileSourcesBinder {
         return imageFileSourcesRows;
     }
 
-    private View makeImageView(Context context, String url, int col_size, int current_col) {
+    private View makeImageCell(Context context, String url, int col_size, int current_col) {
         final ImageView imageView = new ImageView(context);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
+        
         int height = 300;
         if(col_size == 1) {
             height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -133,11 +135,11 @@ public class FileSourcesBinder {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         imageView.setLayoutParams(params);
         imageView.setAdjustViewBounds(true);
-        ImageHelper.loadInto(imageView, url);
+        ImageHelper.loadInto(imageView, url, (col_size <= 1 ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP));
 
         LinearLayout rowBgLayout = new LinearLayout(context);
         rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border_color));
-        LinearLayout.LayoutParams bgLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+        LinearLayout.LayoutParams bgLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
         rowBgLayout.setLayoutParams(bgLayoutParams);
 
         if(col_size > 1) {

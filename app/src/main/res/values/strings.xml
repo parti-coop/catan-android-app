@@ -29,6 +29,8 @@
 
     <string name="references_doc_file_source_icon">{fa-floppy-o}</string>
 
+    <string name="title_activity_post_images_view">사진보기</string>
+
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>
 

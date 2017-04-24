@@ -1,9 +1,12 @@
 package xyz.parti.catan.models;
 
+import org.parceler.Parcel;
+
 /**
  * Created by dalikim on 2017. 3. 28..
  */
 
+@Parcel
 public class Share {
     public String url;
     public String twitter_text;

@@ -21,7 +21,7 @@ public class TextHelper {
     public static Spanned converToHtml(String txt) {
         Spanned result;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            result = Html.fromHtml(txt,Html.FROM_HTML_MODE_LEGACY);
+            result = Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY);
         } else {
             result = Html.fromHtml(txt);
         }

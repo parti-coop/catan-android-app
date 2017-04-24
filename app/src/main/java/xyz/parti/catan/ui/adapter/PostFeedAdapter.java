@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
-import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
@@ -22,7 +19,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
-import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 
@@ -112,6 +108,45 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         void bindData(final Post post){
+            bindBasic(post);
+            bindReferences(post);
+        }
+
+        private void bindReferences(final Post post) {
+            dashboardPostReferences.removeAllViews();
+            dashboardPostReferences.setVisibility(ViewGroup.GONE);
+
+            bindFileSources(post);
+            bindLinkSources(post);
+        }
+
+        private void bindLinkSources(final Post post) {
+            if(post.link_source != null) {
+                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
+                LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
+                linkSourcesLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.link_source.url)));
+                    }
+                });
+                new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
+
+                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+            }
+        }
+
+        private void bindFileSources(Post post) {
+            if(post.file_sources != null) {
+                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
+                LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
+                new FileSourcesBinder(fileSourcesLayout).bindData(post);
+
+                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+            }
+        }
+
+        private void bindBasic(Post post) {
             dashboardPostPartiTitle.setText(post.parti.title);
             if(post.parti.group.isIndie()) {
                 dashboardPostPrefixGroupTitle.setVisibility(View.GONE);
@@ -136,31 +171,6 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 dashboardPostBody.setVisibility(View.VISIBLE);
                 SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostBody, post.parsed_body);
-            }
-
-            dashboardPostReferences.removeAllViews();
-            dashboardPostReferences.setVisibility(ViewGroup.GONE);
-
-            if(post.file_sources != null) {
-                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
-                LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
-                new FileSourcesBinder(fileSourcesLayout).bindData(post.file_sources);
-
-                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
-            }
-
-            if(post.link_source != null) {
-                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
-                LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
-                linkSourcesLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        itemView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.link_source.url)));
-                    }
-                });
-                new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
-
-                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
         }
     }
