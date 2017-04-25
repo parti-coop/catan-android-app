@@ -8,6 +8,7 @@ import org.parceler.Parcel;
 
 @Parcel
 public class FileSource {
+    public Long id;
     public String attachment_url;
     public String attachment_filename;
     public String name;

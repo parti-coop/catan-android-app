@@ -2,10 +2,13 @@ package xyz.parti.catan.ui.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -33,6 +36,8 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.mancj.slideup.SlideUp;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +54,7 @@ import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.models.Download;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
@@ -97,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
     List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
     private SlideUp newPostsSignSlideUp;
+
+    private ProgressDialog downloadProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -183,12 +191,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpCheckNewPost() {
-        newPostsAlarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, LocalBroadcastableAlarmReceiver.class);
-        intent.putExtra(LocalBroadcastableAlarmReceiver.INTENT_EXTRA_ACTION, ACTION_CHECK_NEW_POSTS);
-        newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
+        startCheckNewPostAlarm();
 
         newPostsSignSlideUp = new SlideUp.Builder(newPostsSignLayout)
                 .withStartState(SlideUp.State.HIDDEN)
@@ -218,6 +221,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void startCheckNewPostAlarm() {
+        newPostsAlarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, LocalBroadcastableAlarmReceiver.class);
+        intent.putExtra(LocalBroadcastableAlarmReceiver.INTENT_EXTRA_ACTION, ACTION_CHECK_NEW_POSTS);
+        newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
+    }
+
+    private void cancelCheckNewPostAlarm() {
+        Log.d(Constants.TAG, "cancelCheckNewPostAlarm");
+        if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
+            newPostsAlarmMgr.cancel(newPostsAlarmIntent);
+        }
+    }
+
     private void setUpToolbar() {
         setSupportActionBar(appToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -226,7 +245,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUpFeed() {
         posts = new ArrayList<>();
-        feedAdapter = new PostFeedAdapter(this, session, posts);
+        downloadProgressDialog = new ProgressDialog(this);
+        feedAdapter = new PostFeedAdapter(this, downloadProgressDialog, posts, this.session);
         feedAdapter.setLoadMoreListener(
             new PostFeedAdapter.OnLoadMoreListener() {
                 @Override
@@ -333,12 +353,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(newPostsBroadcastReceiver);
+        downloadProgressDialog.dismiss();
+    }
+
+    @Override
+    protected void onPause()  {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(newPostsBroadcastReceiver);
+        cancelCheckNewPostAlarm();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(newPostsBroadcastReceiver, new IntentFilter(ACTION_CHECK_NEW_POSTS));
+        startCheckNewPostAlarm();
     }
 
     private void checkNewPosts() {

@@ -1,5 +1,7 @@
 package xyz.parti.catan.ui.adapter;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +24,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
+import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.activity.PostImagesViewActivity;
 
 /**
@@ -29,16 +32,24 @@ import xyz.parti.catan.ui.activity.PostImagesViewActivity;
  */
 
 public class FileSourcesBinder {
+    final static String[] PERMISSIONS = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"};
+
     final static int HALF_IMAGE_SPACE = 5;
+    private final ProgressDialog downloadProgressDialog;
     private final Context context;
+    private final Activity activity;
+    private final SessionManager session;
 
     @BindView(R.id.referencesDocsLayout)
     ViewGroup referencesDocsLayout;
     @BindView(R.id.referencesImagesLayout)
     ViewGroup referencesImagesLayout;
 
-    public FileSourcesBinder(ViewGroup view) {
+    public FileSourcesBinder(Activity activity, ProgressDialog downloadProgressDialog, ViewGroup view, SessionManager session) {
+        this.downloadProgressDialog = downloadProgressDialog;
         this.context = view.getContext();
+        this.activity = activity;
+        this.session = session;
         ButterKnife.bind(this, view);
     }
 
@@ -46,7 +57,7 @@ public class FileSourcesBinder {
         referencesImagesLayout.removeAllViews();
         referencesDocsLayout.removeAllViews();
         drawImageFileSources(post.getImageFileSources(), post);
-        drawDocFileSources(post.getDocFileSources());
+        drawDocFileSources(post.getDocFileSources(), post);
     }
 
     private void drawImageFileSources(List<FileSource> imageFileSources, final Post post) {
@@ -156,12 +167,26 @@ public class FileSourcesBinder {
         return rowBgLayout;
     }
 
-    private void drawDocFileSources(List<FileSource> docFileSources) {
-        for(FileSource docFileSource: docFileSources) {
+    private void drawDocFileSources(List<FileSource> docFileSources, final Post post) {
+        for(final FileSource docFileSource: docFileSources) {
             LayoutInflater inflater = LayoutInflater.from(context);
             CardView fileSourcesLayout = (CardView) inflater.inflate(R.layout.references_doc_file_source, referencesDocsLayout, false);
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
             referencesDocsLayout.addView(fileSourcesLayout);
+
+            final ProgressDialog progressBar = new ProgressDialog(FileSourcesBinder.this.activity);
+            progressBar.setMessage("다운로드 중");
+            progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressBar.setIndeterminate(true);
+            progressBar.setCancelable(true);
+
+            fileSourcesLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final DownloadFilesTask downloadTask = new DownloadFilesTask(FileSourcesBinder.this.context, downloadProgressDialog, session.getPartiAccessToken(), post.id, docFileSource.id, docFileSource.name);
+                    downloadTask.execute();
+                }
+            });
         }
     }
 

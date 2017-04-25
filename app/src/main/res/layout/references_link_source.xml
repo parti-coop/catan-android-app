@@ -17,11 +17,17 @@
             android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
             android:visibility="gone" />
+        <View
+            android:id="@+id/referenceLinkSourceImageBorder"
+            android:layout_below="@id/referenceLinkSourceImage"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/style_color_default_border"/>
         <TextView
             android:id="@+id/referenceLinkSourceTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/referenceLinkSourceImage"
+            android:layout_below="@id/referenceLinkSourceImageBorder"
             android:maxLines="3"
             android:ellipsize="end"
             android:padding="8dp"

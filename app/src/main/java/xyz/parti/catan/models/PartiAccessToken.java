@@ -1,9 +1,12 @@
 package xyz.parti.catan.models;
 
+import org.parceler.Parcel;
+
 /**
  * Created by dalikim on 2017. 3. 27..
  */
 
+@Parcel
 public class PartiAccessToken {
     public String access_token;
     public String token_type;

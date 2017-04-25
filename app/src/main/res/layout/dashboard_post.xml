@@ -73,10 +73,12 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/dashboardPostUserNickname"
+                    android:textSize="@dimen/feed_item_user_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <com.github.curioustechizen.ago.RelativeTimeTextView
                     android:id="@+id/dashboardPostCreatedAt"
+                    android:textSize="@dimen/feed_item_post_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>

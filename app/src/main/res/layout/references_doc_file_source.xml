@@ -16,21 +16,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textSize="40dp"
             android:paddingRight="5dp"
             android:text="@string/references_doc_file_source_icon" />
-        <TextView
-            android:id="@+id/referencesDocFileSourceName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_gravity="center"
-            android:maxLines="1"
-            android:ellipsize="end" />
-        <TextView
-            android:id="@+id/referencesDocFileSourceSize"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/text_muted"
-            android:paddingLeft="5dp" />
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/referencesDocFileSourceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <TextView
+                android:id="@+id/referencesDocFileSourceSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10dp"
+                android:textColor="@color/text_muted" />
+        </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

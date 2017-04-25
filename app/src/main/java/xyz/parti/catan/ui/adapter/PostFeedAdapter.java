@@ -1,5 +1,7 @@
 package xyz.parti.catan.ui.adapter;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -30,23 +32,25 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void onLoadMore();
     }
 
-    private SessionManager session;
-    private Context context;
+    private Activity activity;
+    private ProgressDialog downloadProgressDialog;
     List<InfinitableModelHolder<Post>> posts;
+    private SessionManager session;
     OnLoadMoreListener loadMoreListener;
     boolean isLoading = false, isMoreDataAvailable = true;
 
-    public PostFeedAdapter(Context context, SessionManager session, List<InfinitableModelHolder<Post>> posts) {
-        this.context = context;
-        this.session = session;
+    public PostFeedAdapter(Activity activity, ProgressDialog downloadProgressDialog, List<InfinitableModelHolder<Post>> posts, SessionManager session) {
+        this.activity = activity;
+        this.downloadProgressDialog = downloadProgressDialog;
         this.posts = posts;
+        this.session = session;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(activity);
         if(viewType == TYPE_MODEL) {
-            return new PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false));
+            return new PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false), this.session, downloadProgressDialog);
         } else {
             return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
         }
@@ -60,7 +64,7 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         if(getItemViewType(position) == TYPE_MODEL){
-            ((PostViewHolder)viewHolder).bindData(posts.get(position).getModel());
+            ((PostViewHolder)viewHolder).bindData(this.activity, posts.get(position).getModel());
         }
     }
 
@@ -101,22 +105,26 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView dashboardPostPrefixGroupTitle;
         @BindView(R.id.dashboardPostReferences)
         LinearLayout dashboardPostReferences;
+        private SessionManager session;
+        private final ProgressDialog downloadProgressDialog;
 
-        public PostViewHolder(View view) {
+        public PostViewHolder(View view, SessionManager session, ProgressDialog downloadProgressDialog) {
             super(view);
+            this.session = session;
+            this.downloadProgressDialog = downloadProgressDialog;
             ButterKnife.bind(this, view);
         }
 
-        void bindData(final Post post){
+        void bindData(Activity activity, Post post){
             bindBasic(post);
-            bindReferences(post);
+            bindReferences(activity, post);
         }
 
-        private void bindReferences(final Post post) {
+        private void bindReferences(Activity activity, Post post) {
             dashboardPostReferences.removeAllViews();
             dashboardPostReferences.setVisibility(ViewGroup.GONE);
 
-            bindFileSources(post);
+            bindFileSources(activity, post);
             bindLinkSources(post);
         }
 
@@ -136,11 +144,11 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
         }
 
-        private void bindFileSources(Post post) {
+        private void bindFileSources(Activity activity, Post post) {
             if(post.file_sources != null) {
                 LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
                 LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
-                new FileSourcesBinder(fileSourcesLayout).bindData(post);
+                new FileSourcesBinder(activity, downloadProgressDialog, fileSourcesLayout, session).bindData(post);
 
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
