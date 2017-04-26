@@ -353,7 +353,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(newPostsBroadcastReceiver);
-        downloadProgressDialog.dismiss();
+        if(downloadProgressDialog != null) {
+            downloadProgressDialog.dismiss();
+        }
     }
 
     @Override
@@ -377,6 +379,9 @@ public class MainActivity extends AppCompatActivity {
             if(!firstPost.isLoader()) {
                 lastStrockedAt = firstPost.getModel().last_stroked_at;
             }
+        }
+        if(lastStrockedAt == null) {
+            return;
         }
 
         Call<JsonObject> call = postsService.hasUpdated(lastStrockedAt);

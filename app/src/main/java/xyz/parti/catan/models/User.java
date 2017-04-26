@@ -12,6 +12,6 @@ public class User {
     public Long id;
     public String email;
     public String nickname;
-    public String imageUrl;
+    public String image_url;
 }
 

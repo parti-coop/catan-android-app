@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/pollTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:paddingBottom="18dp"
+            android:paddingTop="18dp"
+            android:textColor="#222"
+            android:textSize="18dp" />
+
+        <LinearLayout
+            android:id="@+id/pollButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pollTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <com.joanzapata.iconify.widget.IconButton
+                android:id="@+id/pollAgreeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/button_bg_transparent"
+                android:text="@string/references_poll_agree_button"
+                android:textColor="@color/vote_agree_button" />
+
+            <com.joanzapata.iconify.widget.IconButton
+                android:id="@+id/pollDisagreeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/button_bg_transparent"
+                android:text="@string/references_poll_disagree_button"
+                android:textColor="@color/vote_disagree_button" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pollAllVotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pollButtons"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingTop="8dp">
+
+            <GridView
+                android:id="@+id/pollAgreeVotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:columnWidth="13dp"
+                android:horizontalSpacing="6dp"
+                android:numColumns="auto_fit"
+                android:rotationY="180"
+                android:verticalSpacing="10dp" />
+
+            <GridView
+                android:id="@+id/pollDisagreeVotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:columnWidth="13dp"
+                android:horizontalSpacing="6dp"
+                android:numColumns="auto_fit"
+                android:verticalSpacing="10dp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

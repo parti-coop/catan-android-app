@@ -67,7 +67,7 @@ public class FileSourcesBinder {
             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             if(row != 0) {
-                rowLayout.setBackgroundResource(R.color.dashboard_image_border_color);
+                rowLayout.setBackgroundResource(R.color.dashboard_image_border);
                 rowLayout.setPadding(0, HALF_IMAGE_SPACE * 2, 0, 0);
             }
             rowLayout.setLayoutParams(layoutParams);
@@ -149,7 +149,7 @@ public class FileSourcesBinder {
         ImageHelper.loadInto(imageView, url, (col_size <= 1 ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP));
 
         LinearLayout rowBgLayout = new LinearLayout(context);
-        rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border_color));
+        rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border));
         LinearLayout.LayoutParams bgLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
         rowBgLayout.setLayoutParams(bgLayoutParams);
 

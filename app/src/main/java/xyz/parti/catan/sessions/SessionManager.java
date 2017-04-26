@@ -7,6 +7,11 @@ import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+import org.parceler.Parcel;
+import org.parceler.Parcels;
+
 import okhttp3.Request;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
@@ -19,11 +24,14 @@ import xyz.parti.catan.ui.activity.LoginMenuActivity;
  */
 
 public class SessionManager {
+    private static final String CURRENT_SESSION_VERSION = "1";
     private static final String PREF_NAME = "SESSION";
     public static final String LOGOUT_ACTION = "parti.xyz.catan.session.lotout";
 
+    private static final String KEY_SESSION_VERSION = "session_version";
     private static final String KEY_IS_LOGIN = "IsLoggedIn";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USER = "user";
     private static final String KEY_USER_NICKNAME = "user_nickname";
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
@@ -69,8 +77,10 @@ public class SessionManager {
             Log.d(Constants.TAG, "createLoginSession");
             Log.d(Constants.TAG, accessToken.access_token);
         }
+        editor.putString(KEY_SESSION_VERSION, CURRENT_SESSION_VERSION);
         editor.putBoolean(KEY_IS_LOGIN, true);
         editor.putLong(KEY_USER_ID, user.id);
+        editor.putString(KEY_USER,  new Gson().toJson(user));
         editor.putString(KEY_USER_NICKNAME, user.nickname);
         editor.putString(KEY_ACCESS_TOKEN, accessToken.access_token);
         editor.putString(KEY_REFRESH_TOKEN, accessToken.refresh_token);
@@ -113,7 +123,7 @@ public class SessionManager {
      * Quick check for login
      * **/
     public boolean isLoggedIn(){
-        return pref.getBoolean(KEY_IS_LOGIN, false);
+        return pref.getBoolean(KEY_IS_LOGIN, false) && CURRENT_SESSION_VERSION.equals(pref.getString(KEY_SESSION_VERSION, "-"));
     }
 
     /**
@@ -142,5 +152,10 @@ public class SessionManager {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // Staring Login Activity
         context.startActivity(i);
+    }
+
+    public User getCurrentUser() {
+        String json = pref.getString(KEY_USER, null);
+        return json == null ? null : new Gson().fromJson(json, User.class);
     }
 }

@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -105,6 +106,7 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView dashboardPostPrefixGroupTitle;
         @BindView(R.id.dashboardPostReferences)
         LinearLayout dashboardPostReferences;
+
         private SessionManager session;
         private final ProgressDialog downloadProgressDialog;
 
@@ -126,6 +128,7 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             bindFileSources(activity, post);
             bindLinkSources(post);
+            bindPoll(post);
         }
 
         private void bindLinkSources(final Post post) {
@@ -150,6 +153,15 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
                 new FileSourcesBinder(activity, downloadProgressDialog, fileSourcesLayout, session).bindData(post);
 
+                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+            }
+        }
+
+        private void bindPoll(final Post post) {
+            if(post.poll != null) {
+                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
+                LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, dashboardPostReferences, true);
+                new PollBinder(pollLayout, session).bindData(post);
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
         }
