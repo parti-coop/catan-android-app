@@ -24,7 +24,7 @@
     <string name="login_menu_title">로그인</string>
 
     <string name="no_more_data">끝까지 다 읽으셨습니다</string>
-    <string name="action_refresh_posts">새소식 {fa-arrow-up}</string>
+    <string name="action_refresh_posts">새소식</string>
     <string name="dashboard_post_prefix_group_title">{fa-angle-right}</string>
 
     <string name="references_doc_file_source_icon">{fa-floppy-o}</string>

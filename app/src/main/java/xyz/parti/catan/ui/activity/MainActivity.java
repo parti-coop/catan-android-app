@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,9 +42,12 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import mehdi.sakout.fancybuttons.FancyButton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,7 +69,7 @@ import xyz.parti.catan.sessions.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
-    public static final long INTERVAL_CHECK_NEW_POSTS = 1 * 5 * 1000;
+    public static final long INTERVAL_CHECK_NEW_POSTS = 15 * 60 * 1000;
 
     @BindView(R.id.appToolbar)
     Toolbar appToolbar;
@@ -84,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.newPostsSignLayout)
     FrameLayout newPostsSignLayout;
     @BindView(R.id.newPostsSignButton)
-    Button newPostsSignButton;
+    FancyButton newPostsSignButton;
 
     private PostFeedAdapter feedAdapter;
     private SessionManager session;
@@ -197,13 +201,24 @@ public class MainActivity extends AppCompatActivity {
                 .withStartState(SlideUp.State.HIDDEN)
                 .withStartGravity(Gravity.TOP)
                 .build();
+        newPostsSignSlideUp.hide();
         dashboardView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
-                    newPostsSignSlideUp.hide();
+                if(!newPostsSignSlideUp.isVisible() || newPostsSignSlideUp.isAnimationRunning()) {
+                    return;
                 }
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
+                            newPostsSignSlideUp.hide();
+                        }
+                    }
+                }, 5000);
             }
         });
 
@@ -213,6 +228,9 @@ public class MainActivity extends AppCompatActivity {
                 swipeContainer.post(new Runnable() {
                     @Override
                     public void run() {
+                        if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
+                            newPostsSignSlideUp.hide();
+                        }
                         swipeContainer.setRefreshing(true);
                         loadFirstPosts();
                     }
@@ -281,6 +299,8 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
                 if(response.isSuccessful()){
                     feedAdapter.clear();
+                    posts.clear();
+                    dashboardView.smoothScrollToPosition(0);
 
                     Page<Post> page = response.body();
                     posts.addAll(InfinitableModelHolder.from(page.items));
