@@ -17,5 +17,5 @@ import xyz.parti.catan.models.User;
 public interface VotingsService {
     @FormUrlEncoded
     @POST("/api/v1/votings")
-    Call<JsonNull> votings(@Field("voting[poll_id]") long poll_id, @Field("voting[choice]") String choice);
+    Call<JsonNull> voting(@Field("poll_id") long poll_id, @Field("choice") String choice);
 }

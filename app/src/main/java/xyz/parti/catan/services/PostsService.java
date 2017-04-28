@@ -37,4 +37,7 @@ public interface PostsService {
     Call<ResponseBody> downloadFile(
             @Path(value = "id") Long id,
             @Path(value = "file_source_id") Long fileSourceId);
+
+    @GET("/api/v1/posts/{id}")
+    Call<Post> getPost(@Path(value = "id") Long id);
 }

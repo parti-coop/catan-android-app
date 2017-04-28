@@ -1,21 +1,14 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 import com.joanzapata.iconify.widget.IconButton;
-
-import org.w3c.dom.Text;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,18 +19,14 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.services.PostsService;
 import xyz.parti.catan.services.VotingsService;
 import xyz.parti.catan.sessions.SessionManager;
-
-import static xyz.parti.catan.R.id.referencesImagesLayout;
 
 /**
  * Created by dalikim on 2017. 4. 25..
  */
 
 class PollBinder {
-    private final VotingsService votingsService;
     @BindView(R.id.pollAgreeVotes)
     GridView pollAgreeVotes;
     @BindView(R.id.pollDisagreeVotes)
@@ -49,6 +38,7 @@ class PollBinder {
     @BindView(R.id.pollDisagreeButton)
     IconButton pollDisagreeButton;
 
+    private final VotingsService votingsService;
     private final Context context;
     private SessionManager session;
 
@@ -68,7 +58,7 @@ class PollBinder {
             @Override
             public void onClick(View view) {
                 final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
-                Call<JsonNull> call = votingsService.votings(post.poll.id, newChoice);
+                Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
                 call.enqueue(new Callback<JsonNull>() {
                     @Override
                     public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
@@ -91,7 +81,7 @@ class PollBinder {
             @Override
             public void onClick(View view) {
                 final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
-                Call<JsonNull> call = votingsService.votings(post.poll.id, newChoice);
+                Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
                 call.enqueue(new Callback<JsonNull>() {
                     @Override
                     public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {

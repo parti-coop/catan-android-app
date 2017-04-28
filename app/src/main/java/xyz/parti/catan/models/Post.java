@@ -30,6 +30,7 @@ public class Post {
     public Comment[] latest_comments;
     public LinkSource link_source;
     public Poll poll;
+    public Survey survey;
     public Share share;
     public FileSource[] file_sources;
 

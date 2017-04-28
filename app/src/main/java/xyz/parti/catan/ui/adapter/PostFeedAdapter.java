@@ -107,6 +107,8 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.dashboardPostReferences)
         LinearLayout dashboardPostReferences;
 
+        private LayoutInflater inflater;
+
         private SessionManager session;
         private final ProgressDialog downloadProgressDialog;
 
@@ -114,6 +116,7 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(view);
             this.session = session;
             this.downloadProgressDialog = downloadProgressDialog;
+            this.inflater =  LayoutInflater.from(itemView.getContext());
             ButterKnife.bind(this, view);
         }
 
@@ -129,11 +132,11 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             bindFileSources(activity, post);
             bindLinkSources(post);
             bindPoll(post);
+            bindSurvey(post);
         }
 
         private void bindLinkSources(final Post post) {
             if(post.link_source != null) {
-                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
                 LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
                 linkSourcesLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -149,7 +152,6 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private void bindFileSources(Activity activity, Post post) {
             if(post.file_sources != null) {
-                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
                 LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
                 new FileSourcesBinder(activity, downloadProgressDialog, fileSourcesLayout, session).bindData(post);
 
@@ -159,9 +161,16 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private void bindPoll(final Post post) {
             if(post.poll != null) {
-                LayoutInflater inflater = LayoutInflater.from(itemView.getContext());
                 LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, dashboardPostReferences, true);
                 new PollBinder(pollLayout, session).bindData(post);
+                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+            }
+        }
+
+        private void bindSurvey(final Post post) {
+            if(post.survey != null) {
+                LinearLayout surveyLayout = (LinearLayout) inflater.inflate(R.layout.references_survey, dashboardPostReferences, true);
+                new SurveyBinder(surveyLayout, session).bindData(post);
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
         }
