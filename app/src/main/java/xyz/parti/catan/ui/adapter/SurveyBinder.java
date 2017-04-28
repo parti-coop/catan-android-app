@@ -26,8 +26,8 @@ import xyz.parti.catan.sessions.SessionManager;
 class SurveyBinder {
     @BindView(R.id.options)
     LinearLayout optionsLayout;
-    @BindView(R.id.duration)
-    TextView durationView;
+    @BindView(R.id.footnote)
+    TextView footnoteText;
 
     private final Context context;
     private final SessionManager session;
@@ -48,7 +48,18 @@ class SurveyBinder {
         for(Option option : post.survey.options) {
             bindOption(post, option);
         }
-        durationView.setText(post.survey.remain_time_human);
+
+        String footnote = post.survey.remain_time_human;
+        if(post.survey.multiple_select) {
+            footnote += " \u2022 " + "다중선택 가능";
+        }
+        if(post.survey.feedbacks_count > 0) {
+            footnote += " \u2022 " + "총 투표 " + post.survey.feedback_users_count+ "명";
+        }
+        if(post.survey.is_open && !post.survey.is_feedbacked_by_me && post.survey.feedbacks_count > 0) {
+            footnote += "\n" + "투표 후 현황을 확인할 수 있습니다";
+        }
+        footnoteText.setText(footnote);
     }
 
     private void bindOption(Post post, Option option) {

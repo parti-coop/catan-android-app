@@ -6,7 +6,7 @@
     <color name="style_color_default_border">#EFEFEF</color>
 
     <color name="dashboard_image_border">#FFF</color>
-    <color name="text_muted">#D2D2D2</color>
+    <color name="text_muted">#ccc</color>
     <color name="default_text_view_link">#303F9F</color>
 
     <color name="vote_agree_button">#59baa3</color>

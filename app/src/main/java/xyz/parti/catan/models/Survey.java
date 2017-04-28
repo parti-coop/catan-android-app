@@ -17,5 +17,6 @@ public class Survey {
     public boolean multiple_select;
     public Option[] options;
     public boolean is_open;
+    public boolean is_feedbacked_by_me;
     public String remain_time_human;
 }

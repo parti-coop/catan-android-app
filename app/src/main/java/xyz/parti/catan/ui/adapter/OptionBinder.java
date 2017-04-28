@@ -9,8 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.JsonNull;
-
-import org.w3c.dom.Text;
+import com.joanzapata.iconify.widget.IconTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,13 +30,15 @@ import xyz.parti.catan.sessions.SessionManager;
 
 public class OptionBinder {
     @BindView(R.id.optionBody)
-    TextView optionBody;
+    TextView optionBodyText;
     @BindView(R.id.optionCheckBox)
     CheckBox optionCheckBox;
     @BindView(R.id.feedbacksCount)
     TextView feedbacksCountView;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    @BindView(R.id.optionSelected)
+    IconTextView optionSelectedText;
 
     private final Context context;
     private final FeedbacksService feedbacksService;
@@ -52,23 +53,50 @@ public class OptionBinder {
     }
 
     public void bindData(final SurveyBinder binder, final Post post, final Option option) {
-        optionBody.setText(option.body);
-        optionBody.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionCheckBox.setChecked(!optionCheckBox.isChecked());
+        optionBodyText.setText(option.body);
+        if(post.survey.is_open) {
+            optionBodyText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    optionCheckBox.setChecked(!optionCheckBox.isChecked());
+                }
+            });
+        }
+
+        if(post.survey.is_open) {
+            optionCheckBox.setVisibility(View.VISIBLE);
+            optionCheckBox.setChecked(option.is_my_select);
+            optionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    changeSelection(binder, post, option, b);
+                }
+            });
+            optionSelectedText.setVisibility(View.GONE);
+        } else {
+            optionCheckBox.setVisibility(View.GONE);
+            if(option.is_my_select) {
+                optionSelectedText.setVisibility(View.VISIBLE);
+            } else {
+                optionSelectedText.setVisibility(View.GONE);
             }
-        });
-        optionCheckBox.setChecked(option.is_my_select);
-        optionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                changeSelection(binder, post, option, b);
+        }
+
+        if(post.survey.is_feedbacked_by_me || !post.survey.is_open) {
+            if(option.is_mvp) {
+                feedbacksCountView.setText(option.feedbacks_count + "표 \u2022 최다득표");
+            } else {
+                feedbacksCountView.setText(option.feedbacks_count + "표");
             }
-        });
-        feedbacksCountView.setText(option.feedbacks_count + "표");
-        progressBar.setMax(post.survey.feedback_users_count);
-        progressBar.setProgress(option.feedbacks_count);
+            feedbacksCountView.setVisibility(View.VISIBLE);
+
+            progressBar.setMax(post.survey.feedback_users_count);
+            progressBar.setProgress(option.feedbacks_count);
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            feedbacksCountView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     private void changeSelection(final SurveyBinder binder, final Post post, Option option, boolean isChecked) {
