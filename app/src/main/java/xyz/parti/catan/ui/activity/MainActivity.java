@@ -69,7 +69,7 @@ import xyz.parti.catan.sessions.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
-    public static final long INTERVAL_CHECK_NEW_POSTS = 15 * 60 * 1000;
+    public static final long INTERVAL_CHECK_NEW_POSTS = 5 * 60 * 1000;
 
     @BindView(R.id.appToolbar)
     Toolbar appToolbar;
@@ -232,6 +232,15 @@ public class MainActivity extends AppCompatActivity {
                             newPostsSignSlideUp.hide();
                         }
                         swipeContainer.setRefreshing(true);
+                        dashboardView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            public void onScrollStateChanged(RecyclerView view, int state) {
+                                if (state == RecyclerView.SCROLL_STATE_IDLE) {
+                                    view.removeOnScrollListener(this);
+                                    appToolbarLayout.setExpanded(true, true);
+                                }
+                            }
+                        });
+                        dashboardView.smoothScrollToPosition(0);
                         loadFirstPosts();
                     }
                 });
@@ -290,8 +299,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFirstPosts(){
-        appToolbarLayout.setExpanded(true, true);
-        dashboardView.smoothScrollToPosition(0);
+        dashboardView.setVisibility(View.INVISIBLE);
 
         Call<Page<Post>> call = postsService.getDashBoardLastest();
         APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
@@ -300,7 +308,6 @@ public class MainActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     feedAdapter.clear();
                     posts.clear();
-                    dashboardView.smoothScrollToPosition(0);
 
                     Page<Post> page = response.body();
                     posts.addAll(InfinitableModelHolder.from(page.items));
@@ -310,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
                     ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
                 }
                 swipeContainer.setRefreshing(false);
+                dashboardView.setVisibility(View.VISIBLE);
             }
 
             @Override
