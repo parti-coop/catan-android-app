@@ -64,4 +64,8 @@ public class Post {
         }
         return this._docFileSources;
     }
+
+    public boolean hasMoreComments() {
+        return (this.comments_count > 0 && this.latest_comments != null && this.comments_count > this.latest_comments.length);
+    }
 }

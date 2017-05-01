@@ -5,10 +5,8 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +27,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -37,13 +34,9 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.mancj.slideup.SlideUp;
 
-import org.parceler.Parcels;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,13 +51,12 @@ import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.models.Download;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.NavigationItem;
-import xyz.parti.catan.ui.adapter.PostFeedAdapter;
+import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.sessions.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -90,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.newPostsSignButton)
     FancyButton newPostsSignButton;
 
-    private PostFeedAdapter feedAdapter;
+    private PostFeedRecyclerViewAdapter feedAdapter;
     private SessionManager session;
     List<InfinitableModelHolder<Post>> posts;
     private PostsService postsService;
@@ -273,16 +265,15 @@ public class MainActivity extends AppCompatActivity {
     private void setUpFeed() {
         posts = new ArrayList<>();
         downloadProgressDialog = new ProgressDialog(this);
-        feedAdapter = new PostFeedAdapter(this, downloadProgressDialog, posts, this.session);
+        feedAdapter = new PostFeedRecyclerViewAdapter(this, downloadProgressDialog, posts, this.session);
         feedAdapter.setLoadMoreListener(
-            new PostFeedAdapter.OnLoadMoreListener() {
+            new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
                 @Override
                 public void onLoadMore() {
                     dashboardView.post(new Runnable() {
                         @Override
                         public void run() {
-                            int index = posts.size() - 1;
-                            loadMorePosts(index);
+                            loadMorePosts();
                         }
                     });
                     //Calling loadMorePosts function in Runnable to fix the
@@ -306,13 +297,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
                 if(response.isSuccessful()){
-                    feedAdapter.clear();
+                    feedAdapter.clearData();
                     posts.clear();
 
                     Page<Post> page = response.body();
                     posts.addAll(InfinitableModelHolder.from(page.items));
                     feedAdapter.setMoreDataAvailable(page.has_more_item);
-                    feedAdapter.notifyDataChanged();
+                    feedAdapter.notifyAllDataChangedAndLoadFinished();
                 }else{
                     ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
                 }
@@ -328,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadMorePosts(int index){
+    private void loadMorePosts(){
         //add loading progress view
         InfinitableModelHolder<Post> post = posts.get(posts.size() - 1);
         posts.add(InfinitableModelHolder.<Post>forLoader());
@@ -354,14 +345,11 @@ public class MainActivity extends AppCompatActivity {
                         //telling adapter to stop calling loadFirstPosts more as no more server data available
                     }
 
-                    if(!feedAdapter.getMoreDataAvailable()) {
-                        Toast.makeText(getApplicationContext(), R.string.no_more_data, Toast.LENGTH_LONG).show();
-                    }
-                    feedAdapter.notifyDataChanged();
-                    //should call the custom method adapter.notifyDataChanged here to get the correct loading status
+                    feedAdapter.notifyAllDataChangedAndLoadFinished();
+                    //should call the custom method adapter.notifyAllDataChangedAndLoadFinished here to get the correct loading status
                 }else{
                     feedAdapter.setMoreDataAvailable(false);
-                    feedAdapter.notifyDataChanged();
+                    feedAdapter.notifyAllDataChangedAndLoadFinished();
 
                     ReportHelper.wtf(getApplicationContext(), "Load More Response Error " + String.valueOf(response.code()));
                 }
@@ -370,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
                 feedAdapter.setMoreDataAvailable(false);
-                feedAdapter.notifyDataChanged();
+                feedAdapter.notifyAllDataChangedAndLoadFinished();
 
                 ReportHelper.wtf(getApplicationContext(), t);
             }

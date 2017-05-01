@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.adapter;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -10,7 +9,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,22 +23,14 @@ import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 
-public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public final int TYPE_MODEL = 0;
-    public final int TYPE_LOAD = 1;
-
-    public interface OnLoadMoreListener{
-        void onLoadMore();
-    }
-
+public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
     private Activity activity;
     private ProgressDialog downloadProgressDialog;
     List<InfinitableModelHolder<Post>> posts;
     private SessionManager session;
-    OnLoadMoreListener loadMoreListener;
-    boolean isLoading = false, isMoreDataAvailable = true;
 
-    public PostFeedAdapter(Activity activity, ProgressDialog downloadProgressDialog, List<InfinitableModelHolder<Post>> posts, SessionManager session) {
+    public PostFeedRecyclerViewAdapter(Activity activity, ProgressDialog downloadProgressDialog, List<InfinitableModelHolder<Post>> posts, SessionManager session) {
+        super(activity, posts);
         this.activity = activity;
         this.downloadProgressDialog = downloadProgressDialog;
         this.posts = posts;
@@ -48,45 +38,19 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateModelViewHolder(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(activity);
-        if(viewType == TYPE_MODEL) {
-            return new PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false), this.session, downloadProgressDialog);
-        } else {
-            return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
-        }
+        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false), this.session, downloadProgressDialog);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if(position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null){
-            isLoading = true;
-            loadMoreListener.onLoadMore();
-        }
-
-        if(getItemViewType(position) == TYPE_MODEL){
-            ((PostViewHolder)viewHolder).bindData(this.activity, posts.get(position).getModel());
-        }
+    public boolean isLoadMorePosition(int position) {
+        return position >= getItemCount() - 1;
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if(posts.get(position).isLoader()){
-            return TYPE_LOAD;
-        }else{
-            return TYPE_MODEL;
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return posts.size();
-    }
-
-    static class LoadHolder extends RecyclerView.ViewHolder{
-        public LoadHolder(View itemView) {
-            super(itemView);
-        }
+    public void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(this.activity, posts.get(position).getModel());
     }
 
     static public class PostViewHolder extends RecyclerView.ViewHolder {
@@ -106,6 +70,8 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView dashboardPostPrefixGroupTitle;
         @BindView(R.id.dashboardPostReferences)
         LinearLayout dashboardPostReferences;
+        @BindView(R.id.dashboardPostComments)
+        LinearLayout commentsLayout;
 
         private LayoutInflater inflater;
 
@@ -122,7 +88,12 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void bindData(Activity activity, Post post){
             bindBasic(post);
+            bindComments(post);
             bindReferences(activity, post);
+        }
+
+        private void bindComments(Post post) {
+            new CommentsBinder(commentsLayout, session).bindData(post);
         }
 
         private void bindReferences(Activity activity, Post post) {
@@ -133,6 +104,7 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             bindLinkSources(post);
             bindPoll(post);
             bindSurvey(post);
+            bindComments(post);
         }
 
         private void bindLinkSources(final Post post) {
@@ -202,27 +174,5 @@ public class PostFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostBody, post.parsed_body);
             }
         }
-    }
-
-    public void setMoreDataAvailable(boolean moreDataAvailable) {
-        isMoreDataAvailable = moreDataAvailable;
-    }
-
-    public boolean getMoreDataAvailable() {
-        return isMoreDataAvailable;
-    }
-
-    public void notifyDataChanged(){
-        notifyDataSetChanged();
-        isLoading = false;
-    }
-
-    public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-        this.loadMoreListener = loadMoreListener;
-    }
-
-    public void clear() {
-        this.posts.clear();
-        notifyDataSetChanged();
     }
 }

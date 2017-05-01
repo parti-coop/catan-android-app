@@ -46,11 +46,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/newPostsSignLayout">
-                <!--<com.joanzapata.iconify.widget.IconButton-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/newPostsSignButton"-->
-                    <!--android:text="@string/action_refresh_posts" />-->
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/newPostsSignButton"
                     android:layout_width="wrap_content"

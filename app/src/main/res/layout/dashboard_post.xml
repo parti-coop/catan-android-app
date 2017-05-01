@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="10dp"
+            android:padding="@dimen/post_card_padding"
             android:background="@drawable/border_bottom_on_white_bg">
             <ImageView
                 android:id="@+id/dashboardPostPartiLogo"
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="10dp">
+            android:padding="@dimen/post_card_padding">
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/dashboardPostUserImage"
                 android:layout_width="@dimen/feed_item_user_image"
@@ -73,12 +73,10 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/dashboardPostUserNickname"
-                    android:textSize="@dimen/feed_item_user_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <com.github.curioustechizen.ago.RelativeTimeTextView
                     android:id="@+id/dashboardPostCreatedAt"
-                    android:textSize="@dimen/feed_item_post_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -90,8 +88,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="@dimen/post_card_padding"
+            android:paddingRight="@dimen/post_card_padding"
             android:textSize="18sp"
             android:lineSpacingMultiplier="1.1" />
 
@@ -100,8 +98,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="@dimen/post_card_padding"
+            android:paddingRight="@dimen/post_card_padding"
             android:lineSpacingMultiplier="1.1" />
 
         <LinearLayout
@@ -109,5 +107,51 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/comments_border"/>
+
+        <LinearLayout
+            android:id="@+id/dashboardPostComments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/comments_background"
+            android:paddingLeft="@dimen/post_card_padding"
+            android:paddingRight="@dimen/post_card_padding"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/dashboardPostCommentsLoadMore"
+                android:text="@string/load_more_comments"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/dashboardPostCommentsList"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/commentFormUserImage"
+                    android:layout_width="@dimen/comment_user_image"
+                    android:layout_height="@dimen/comment_user_image"
+                    android:layout_gravity="top"
+                    android:paddingRight="5dp" />
+                <TextView
+                    android:id="@+id/commentFormInput"
+                    android:text="@string/comment_form_placeholer"
+                    android:background="@drawable/comment_input_bg"
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

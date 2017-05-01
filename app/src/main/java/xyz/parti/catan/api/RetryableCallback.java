@@ -43,6 +43,9 @@ public abstract class RetryableCallback<T> implements Callback<T> {
         if(t != null) {
             Log.e(TAG, t.getMessage(), t);
         }
+        if(t instanceof ServiceGenerator.AuthFailError) {
+            onFinalFailure(call, t);
+        }
         if (retryCount++ < totalRetries) {
             if(BuildConfig.DEBUG) {
                 Log.d(TAG, "Retrying API Call -  (" + retryCount + " / " + totalRetries + ")");

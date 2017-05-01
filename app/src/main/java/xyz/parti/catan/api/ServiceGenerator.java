@@ -123,10 +123,12 @@ public class ServiceGenerator {
         Request original = chain.request();
         Request.Builder requestBuilder = original.newBuilder()
                 .header("Accept", "application/json")
-                .header("Content-type", "application/json")
-                .header("Authorization",
-                        token.getValidTokenType() + " " + token.access_token)
-                .method(original.method(), original.body());
+                .header("Content-type", "application/json");
+        if(token != null) {
+            requestBuilder = requestBuilder.header("Authorization",
+                    token.getValidTokenType() + " " + token.access_token);
+        }
+        requestBuilder = requestBuilder.method(original.method(), original.body());
 
         Request request = requestBuilder.build();
         return chain.proceed(request);

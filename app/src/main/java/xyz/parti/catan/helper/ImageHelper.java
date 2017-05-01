@@ -32,4 +32,14 @@ public class ImageHelper {
                 .error(R.drawable.error)
                 .into(new ScaleImageViewTarget(imageView, scaleType, ImageView.ScaleType.CENTER_INSIDE));
     }
+
+    public static Target<GlideDrawable> loadInto(ImageView imageView, String url, ImageView.ScaleType successScaleType, ImageView.ScaleType errorScaleType) {
+        Context context = imageView.getContext();
+
+        return Glide.with(context)
+                .load(url)
+                .crossFade()
+                .error(R.drawable.error)
+                .into(new ScaleImageViewTarget(imageView, successScaleType, errorScaleType));
+    }
 }
