@@ -1,0 +1,49 @@
+package xyz.parti.catan.ui.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+import xyz.parti.catan.R;
+import xyz.parti.catan.helper.ImageHelper;
+import xyz.parti.catan.models.User;
+
+/**
+ * Created by dalikim on 2017. 4. 25..
+ */
+
+public class VoteUsersBinder {
+    final Context context;
+    private final LayoutInflater inflater;
+    private ViewGroup view;
+    private boolean reverse;
+
+    public VoteUsersBinder(ViewGroup view, boolean reverse) {
+        this.context = view.getContext();
+        this.view = view;
+        this.reverse = reverse;
+        this.inflater =  LayoutInflater.from(view.getContext());
+    }
+
+    public void bindData(User[] voteUsers) {
+        if(reverse) {
+            for (int i = voteUsers.length - 1; i >= 0; i--) {
+                bindUser(voteUsers[i]);
+            }
+        } else {
+            for (User user : voteUsers) {
+                bindUser(user);
+            }
+        }
+    }
+
+    public void bindUser(User user) {
+        CircleImageView imageView = (CircleImageView) inflater.inflate(R.layout.references_poll_vote_user, view, false);
+        if(reverse) {
+            imageView.setRotationY(180);
+        }
+        ImageHelper.loadInto(imageView, user.image_url, CircleImageView.ScaleType.CENTER_CROP, CircleImageView.ScaleType.CENTER_CROP);
+        view.addView(imageView);
+    }
+}

@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.mancj.slideup.SlideUp;
@@ -54,14 +53,14 @@ import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
+import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.NavigationItem;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
-import xyz.parti.catan.sessions.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
-    public static final long INTERVAL_CHECK_NEW_POSTS = 5 * 60 * 1000;
+    public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
 
     @BindView(R.id.appToolbar)
     Toolbar appToolbar;
@@ -290,8 +289,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFirstPosts(){
-        dashboardView.setVisibility(View.INVISIBLE);
-
         Call<Page<Post>> call = postsService.getDashBoardLastest();
         APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
             @Override
@@ -308,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
                     ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
                 }
                 swipeContainer.setRefreshing(false);
-                dashboardView.setVisibility(View.VISIBLE);
             }
 
             @Override

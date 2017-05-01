@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonNull;
@@ -28,9 +28,9 @@ import xyz.parti.catan.sessions.SessionManager;
 
 class PollBinder {
     @BindView(R.id.pollAgreeVotes)
-    GridView pollAgreeVotes;
+    LinearLayout pollAgreeVotesLayout;
     @BindView(R.id.pollDisagreeVotes)
-    GridView pollDisagreeVotes;
+    LinearLayout pollDisagreeVotesLayout;
     @BindView(R.id.pollTitle)
     TextView pollTitle;
     @BindView(R.id.pollAgreeButton)
@@ -103,8 +103,10 @@ class PollBinder {
     }
 
     private void bindVotings(Post post) {
-        pollAgreeVotes.setAdapter(new VotesAdapter(context, post.poll.latest_agreed_voting_users, true));
-        pollDisagreeVotes.setAdapter(new VotesAdapter(context, post.poll.latest_disagreed_voting_users, false));
+        pollAgreeVotesLayout.removeAllViews();
+        pollDisagreeVotesLayout.removeAllViews();
+        new VoteUsersBinder(pollAgreeVotesLayout, true).bindData(post.poll.latest_agreed_voting_users);
+        new VoteUsersBinder(pollDisagreeVotesLayout, false).bindData(post.poll.latest_disagreed_voting_users);
 
         unselectedStyle(pollAgreeButton);
         unselectedStyle(pollDisagreeButton);
