@@ -10,6 +10,7 @@
     <color name="default_text_view_link">#303F9F</color>
     <color name="comments_background">#EFEFEF</color>
     <color name="comments_border">#ccc</color>
+    <color name="comment_edittext_highlight">#efefef</color>
 
     <color name="vote_agree_button">#59baa3</color>
     <color name="vote_disagree_button">#c0575d</color>

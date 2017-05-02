@@ -147,7 +147,7 @@
                 <TextView
                     android:id="@+id/commentFormInput"
                     android:text="@string/comment_form_placeholer"
-                    android:background="@drawable/comment_input_bg"
+                    android:background="@drawable/edittext_bg_comment"
                     android:padding="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,20 +14,18 @@ import org.parceler.Parcels;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.activity.AllCommentsActivity;
-import xyz.parti.catan.ui.activity.PostImagesViewActivity;
 
 /**
  * Created by dalikim on 2017. 4. 29..
  */
 
-class CommentsBinder {
+class LatestCommentsBinder {
     @BindView(R.id.dashboardPostCommentsLoadMore)
     TextView loadMoreText;
     @BindView(R.id.dashboardPostCommentsList)
@@ -39,13 +36,11 @@ class CommentsBinder {
     TextView commentFormInputText;
 
     private final Context context;
-    private ViewGroup view;
     private final SessionManager session;
     private LayoutInflater inflater;
 
-    public CommentsBinder(ViewGroup view, SessionManager session) {
+    public LatestCommentsBinder(ViewGroup view, SessionManager session) {
         this.context = view.getContext();
-        this.view = view;
         this.session = session;
         this.inflater =  LayoutInflater.from(view.getContext());
         ButterKnife.bind(this, view);
@@ -58,9 +53,7 @@ class CommentsBinder {
             loadMoreText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, AllCommentsActivity.class);
-                    intent.putExtra("post", Parcels.wrap(post));
-                    context.startActivity(intent);
+                    showAllComments(post);
                 }
             });
         } else {
@@ -74,6 +67,19 @@ class CommentsBinder {
         }
 
         ImageHelper.loadInto(commentFormUserImageView, session.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+
+        commentFormInputText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAllComments(post);
+            }
+        });
+    }
+
+    private void showAllComments(Post post) {
+        Intent intent = new Intent(context, AllCommentsActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        context.startActivity(intent);
     }
 
     private void bindComment(Comment comment) {

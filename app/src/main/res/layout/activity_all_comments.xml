@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/allCommentsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/allComments"
+    android:elevation="@dimen/default_elevation"
+    android:orientation="vertical">
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none">
-    </android.support.v7.widget.RecyclerView>
-</RelativeLayout>
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/allComments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none" />
+    </FrameLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/default_elevation"
+        android:background="@color/comments_background">
+        <EditText
+            android:id="@+id/commentFormEditText"
+            android:hint="@string/comment_form_placeholer"
+            android:background="@drawable/edittext_bg_comment"
+            android:padding="5dp"
+            android:textSize="14sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="5" />
+        <xyz.parti.catan.ui.view.SendCommentButton
+            android:id="@+id/commentFormSend"
+            android:layout_width="30dp"
+            android:layout_height="@dimen/comment_send_button"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="8dp"
+            android:elevation="4dp"
+            android:orientation="vertical" />
+    </LinearLayout>
+</LinearLayout>

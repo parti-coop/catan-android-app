@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import org.parceler.Parcels;
@@ -48,7 +50,7 @@ public class AllCommentsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_comments);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         ButterKnife.bind(AllCommentsActivity.this);
 
         session = new SessionManager(getApplicationContext());
@@ -80,6 +82,22 @@ public class AllCommentsActivity extends BaseActivity {
         layoutManager.setStackFromEnd(true);
         allCommentsView.setLayoutManager(layoutManager);
         allCommentsView.setAdapter(feedAdapter);
+        allCommentsView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight,
+                                       final int oldBottom) {
+                final int newHeight = bottom - top;
+                final int oldHeight = oldBottom - oldTop;
+                if(oldHeight != 0 && newHeight != oldHeight) {
+                    allCommentsView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            allCommentsView.scrollBy(0, oldHeight - newHeight);
+                        }
+                    });
+                }
+            }
+        });
 
         loadFirstComments();
     }

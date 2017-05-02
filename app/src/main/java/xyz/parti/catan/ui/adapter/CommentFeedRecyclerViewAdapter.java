@@ -44,23 +44,26 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
     @Override
     void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(comments.get(position).getModel());
+        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(comments.get(position).getModel(), position);
+    }
+
+    private boolean isLastPosition(int position) {
+        return (comments.size() - 1) == position;
     }
 
     private class CommentViewHolder extends RecyclerView.ViewHolder {
         private View view;
         private final SessionManager session;
-        private LayoutInflater inflater;
 
         public CommentViewHolder(View view, SessionManager session) {
             super(view);
-            this.inflater = LayoutInflater.from(view.getContext());
             this.view = view;
             this.session = session;
         }
 
-        public void bindData(Comment comment) {
-            new CommentBinder(view, session).bindData(comment);
+        public void bindData(Comment comment, int position) {
+            boolean isLineVisible = !isLastPosition(position);
+            new CommentBinder(view, session).bindData(comment, isLineVisible);
         }
     }
 }

@@ -93,7 +93,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
 
         private void bindComments(Post post) {
-            new CommentsBinder(commentsLayout, session).bindData(post);
+            new LatestCommentsBinder(commentsLayout, session).bindData(post);
         }
 
         private void bindReferences(Activity activity, Post post) {
