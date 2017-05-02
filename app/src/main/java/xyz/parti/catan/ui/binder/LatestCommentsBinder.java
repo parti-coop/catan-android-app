@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,12 +20,13 @@ import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.activity.AllCommentsActivity;
+import xyz.parti.catan.ui.binder.CommentBinder;
 
 /**
  * Created by dalikim on 2017. 4. 29..
  */
 
-class LatestCommentsBinder {
+public class LatestCommentsBinder {
     @BindView(R.id.dashboardPostCommentsLoadMore)
     TextView loadMoreText;
     @BindView(R.id.dashboardPostCommentsList)

@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,7 +23,7 @@ import xyz.parti.catan.sessions.SessionManager;
  * Created by dalikim on 2017. 4. 28..
  */
 
-class SurveyBinder {
+public class SurveyBinder {
     @BindView(R.id.options)
     LinearLayout optionsLayout;
     @BindView(R.id.footnote)

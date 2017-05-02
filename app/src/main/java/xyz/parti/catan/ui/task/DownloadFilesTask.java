@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.task;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.PowerManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -31,7 +30,7 @@ import xyz.parti.catan.services.PostsService;
  * Created by dalikim on 2017. 4. 25..
  */
 
-class DownloadFilesTask extends AsyncTask<String, String, Long> {
+public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     public final static long RESUT_CANCEL = -1L;
     public final static long RESUT_NO_DATA = -2L;
     public final static long RESUT_ERROR = -3L;

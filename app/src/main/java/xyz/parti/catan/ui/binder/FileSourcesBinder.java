@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -26,6 +26,7 @@ import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.activity.PostImagesViewActivity;
+import xyz.parti.catan.ui.task.DownloadFilesTask;
 
 /**
  * Created by dalikim on 2017. 4. 4..

@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.util.Log;
@@ -24,7 +24,7 @@ import xyz.parti.catan.sessions.SessionManager;
  * Created by dalikim on 2017. 4. 29..
  */
 
-class CommentBinder {
+public class CommentBinder {
     @BindView(R.id.commentUserImage)
     CircleImageView userImageiew;
     @BindView(R.id.commentUserNickname)

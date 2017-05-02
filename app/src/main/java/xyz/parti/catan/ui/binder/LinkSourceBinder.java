@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.view.View;

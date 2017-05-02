@@ -2,18 +2,16 @@ package xyz.parti.catan.ui.adapter;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import java.util.List;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.ui.binder.CommentBinder;
 
 /**
  * Created by dalikim on 2017. 4. 30..

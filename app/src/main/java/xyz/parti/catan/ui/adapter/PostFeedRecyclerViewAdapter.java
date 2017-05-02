@@ -22,6 +22,11 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.ui.binder.FileSourcesBinder;
+import xyz.parti.catan.ui.binder.LatestCommentsBinder;
+import xyz.parti.catan.ui.binder.LinkSourceBinder;
+import xyz.parti.catan.ui.binder.PollBinder;
+import xyz.parti.catan.ui.binder.SurveyBinder;
 
 public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
     private Activity activity;

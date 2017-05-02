@@ -55,7 +55,7 @@ import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.PostsService;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
-import xyz.parti.catan.ui.adapter.NavigationItem;
+import xyz.parti.catan.ui.view.NavigationItem;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 
 public class MainActivity extends AppCompatActivity {

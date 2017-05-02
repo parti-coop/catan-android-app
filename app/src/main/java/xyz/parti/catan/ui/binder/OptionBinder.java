@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.view.View;
@@ -23,6 +23,7 @@ import xyz.parti.catan.models.Option;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.services.FeedbacksService;
 import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.ui.binder.SurveyBinder;
 
 /**
  * Created by dalikim on 2017. 4. 28..

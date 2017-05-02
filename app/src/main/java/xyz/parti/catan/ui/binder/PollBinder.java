@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.adapter;
+package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +26,7 @@ import xyz.parti.catan.sessions.SessionManager;
  * Created by dalikim on 2017. 4. 25..
  */
 
-class PollBinder {
+public class PollBinder {
     @BindView(R.id.pollAgreeVotes)
     LinearLayout pollAgreeVotesLayout;
     @BindView(R.id.pollDisagreeVotes)
