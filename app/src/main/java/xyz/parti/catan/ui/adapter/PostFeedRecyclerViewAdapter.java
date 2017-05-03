@@ -59,6 +59,8 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
     }
 
     class PostViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.dashboardPostPartiLogo)
+        ImageView dashboardPostPartiLogo;
         @BindView(R.id.dashboardPostPartiTitle)
         TextView dashboardPostPartiTitle;
         @BindView(R.id.dashboardPostGroupTitle)
@@ -151,6 +153,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
 
         private void bindBasic(Post post) {
+            ImageHelper.loadInto(dashboardPostPartiLogo, post.parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
             dashboardPostPartiTitle.setText(post.parti.title);
             if(post.parti.group.isIndie()) {
                 dashboardPostPrefixGroupTitle.setVisibility(android.view.View.GONE);
