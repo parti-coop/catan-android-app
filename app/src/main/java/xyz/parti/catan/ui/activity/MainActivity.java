@@ -3,11 +3,14 @@ package xyz.parti.catan.ui.activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -27,12 +30,20 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.mancj.slideup.SlideUp;
 
+import org.parceler.Parcels;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,15 +61,23 @@ import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.models.FileSource;
+import xyz.parti.catan.models.Option;
 import xyz.parti.catan.models.Page;
+import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.models.Post;
+import xyz.parti.catan.models.User;
+import xyz.parti.catan.services.FeedbacksService;
 import xyz.parti.catan.services.PostsService;
+import xyz.parti.catan.services.VotingsService;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
+import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.NavigationItem;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PostFeedPresenter {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
 
@@ -84,22 +103,25 @@ public class MainActivity extends AppCompatActivity {
     private PostFeedRecyclerViewAdapter feedAdapter;
     private SessionManager session;
     List<InfinitableModelHolder<Post>> posts;
+
+    private FeedbacksService feedbacksService;
     private PostsService postsService;
 
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
+
     private BroadcastReceiver newPostsBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             checkNewPosts();
         }
     };
-
     List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
-    private SlideUp newPostsSignSlideUp;
 
+    private SlideUp newPostsSignSlideUp;
     private ProgressDialog downloadProgressDialog;
+    private VotingsService votingsService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -264,7 +286,9 @@ public class MainActivity extends AppCompatActivity {
     private void setUpFeed() {
         posts = new ArrayList<>();
         downloadProgressDialog = new ProgressDialog(this);
-        feedAdapter = new PostFeedRecyclerViewAdapter(this, downloadProgressDialog, posts, this.session);
+
+        feedAdapter = new PostFeedRecyclerViewAdapter(this, posts);
+        feedAdapter.setPresenter(this);
         feedAdapter.setLoadMoreListener(
             new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
                 @Override
@@ -285,6 +309,9 @@ public class MainActivity extends AppCompatActivity {
         dashboardView.setAdapter(feedAdapter);
 
         postsService = ServiceGenerator.createService(PostsService.class, session);
+        feedbacksService = ServiceGenerator.createService(FeedbacksService.class, session);
+        votingsService = ServiceGenerator.createService(VotingsService.class, session);
+
         loadFirstPosts();
     }
 
@@ -415,6 +442,192 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                ReportHelper.wtf(getApplicationContext(), t);
+            }
+        });
+    }
+
+    @Override
+    public void onClickLinkSource(String url) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    @Override
+    public void onClickDocFileSource(final Post post, final FileSource docFileSource) {
+        new TedPermission(this)
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        final DownloadFilesTask downloadTask = new DownloadFilesTask(MainActivity.this, MainActivity.this, post.id, docFileSource.id, docFileSource.name);
+                        downloadTask.execute();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                    }
+                })
+                .setRationaleMessage(R.string.doc_file_source_download_permission_rationale)
+                .setDeniedMessage(R.string.doc_file_source_download_permission_denied)
+                .setPermissions(new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"})
+                .check();
+    }
+
+    @Override
+    public void onClickImageFileSource(Post post) {
+        Intent intent = new Intent(this, PostImagesViewActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        startActivity(intent);
+    }
+
+    @Override
+    public void onClickMoreComments(Post post) {
+        Intent intent = new Intent(this, AllCommentsActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        startActivity(intent);
+    }
+
+    @Override
+    public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
+        Call<JsonNull> call = feedbacksService.feedback(option.id, isChecked);
+        call.enqueue(new Callback<JsonNull>() {
+            @Override
+            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
+                if(response.isSuccessful()) {
+                    reloadPost(post);
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonNull> call, Throwable t) {
+                ReportHelper.wtf(getApplicationContext(), t);
+            }
+        });
+    }
+
+    @Override
+    public void onClickPollAgree(final Post post) {
+        final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
+        Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
+        call.enqueue(new Callback<JsonNull>() {
+            @Override
+            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
+                if(response.isSuccessful()) {
+                    post.poll.updateChoice(session.getCurrentUser(), newChoice);
+                    reloadPost(post);
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonNull> call, Throwable t) {
+                ReportHelper.wtf(getApplicationContext(), t);
+            }
+        });
+    }
+
+    @Override
+    public void onClickPollDisgree(final Post post) {
+        final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
+        Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
+        call.enqueue(new Callback<JsonNull>() {
+            @Override
+            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
+                if(response.isSuccessful()) {
+                    post.poll.updateChoice(session.getCurrentUser(), newChoice);
+                    reloadPost(post);
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonNull> call, Throwable t) {
+                ReportHelper.wtf(getApplicationContext(), t);
+            }
+        });
+    }
+
+    @Override
+    public void onPreDownloadDocFileSource(final DownloadFilesTask task) {
+        downloadProgressDialog.setMessage("다운로드 중");
+        downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        downloadProgressDialog.setIndeterminate(true);
+        downloadProgressDialog.setCancelable(true);
+        downloadProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                task.cancel(true);
+            }
+        });
+        downloadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                task.cancel(true);
+            }
+        });
+
+        downloadProgressDialog.show();
+    }
+
+    @Override
+    public void onProgressUpdateDownloadDocFileSource(int percentage, String message) {
+        downloadProgressDialog.setIndeterminate(false);
+        downloadProgressDialog.setMax(100);
+        downloadProgressDialog.setProgress(percentage);
+        downloadProgressDialog.setMessage(message);
+    }
+
+    @Override
+    public void onPostDownloadDocFileSource() {
+        downloadProgressDialog.dismiss();
+    }
+
+    @Override
+    public void onSuccessDownloadDocFileSource(File outputFile, String fileName) {
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        String mimeType = myMime.getMimeTypeFromExtension(getExtension(fileName));
+        newIntent.setDataAndType(Uri.fromFile(outputFile), mimeType);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            startActivity(newIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this.getApplicationContext(), "다운로드된 파일을 열 수 있는 프로그램이 없습니다.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String getExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return session.getCurrentUser();
+    }
+
+    @Override
+    public PartiAccessToken getPartiAccessToken() {
+        return session.getPartiAccessToken();
+    }
+
+    public void reloadPost(final Post post) {
+        Call<Post> call = postsService.getPost(post.id);
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if(response.isSuccessful()) {
+                    post.survey = response.body().survey;
+                    feedAdapter.rebindData(post);
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Rebind survey error : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
                 ReportHelper.wtf(getApplicationContext(), t);
             }
         });

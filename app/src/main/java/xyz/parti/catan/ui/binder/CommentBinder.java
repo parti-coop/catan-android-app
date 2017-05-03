@@ -1,11 +1,8 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
@@ -13,12 +10,10 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
 import xyz.parti.catan.models.Comment;
-import xyz.parti.catan.sessions.SessionManager;
 
 /**
  * Created by dalikim on 2017. 4. 29..
@@ -36,15 +31,10 @@ public class CommentBinder {
     @BindView(R.id.commentLine)
     View commentLineView;
 
-    private final View view;
     private final Context context;
-    private final SessionManager session;
 
-    public CommentBinder(View view, SessionManager session) {
-        this.view = view;
+    public CommentBinder(View view) {
         this.context = view.getContext();
-        this.session = session;
-
         ButterKnife.bind(this, view);
     }
 

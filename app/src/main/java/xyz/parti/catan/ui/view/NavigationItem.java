@@ -7,7 +7,7 @@ import android.content.Context;
  */
 
 public class NavigationItem {
-    String title;
+    private String title;
 
     public NavigationItem(Context context, int titleRestId) {
         this.title = context.getString(titleRestId);

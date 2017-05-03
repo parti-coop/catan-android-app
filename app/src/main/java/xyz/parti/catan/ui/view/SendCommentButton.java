@@ -92,6 +92,6 @@ public class SendCommentButton extends ViewAnimator implements View.OnClickListe
     }
 
     public interface OnSendClickListener {
-        public void onSendClickListener(View v);
+        void onSendClickListener(View v);
     }
 }

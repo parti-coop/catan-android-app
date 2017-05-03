@@ -1,16 +1,13 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 
 /**
@@ -18,8 +15,8 @@ import xyz.parti.catan.R;
  */
 
 public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    static int TYPE_MODEL = 0;
-    static int TYPE_LOAD = 1;
+    private static int TYPE_MODEL = 0;
+    private static int TYPE_LOAD = 1;
 
     private Context context;
     private final List<InfinitableModelHolder<T>> models;
@@ -30,17 +27,13 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
     abstract boolean isLoadMorePosition(int position);
     abstract void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
 
-    public LoadMoreRecyclerViewAdapter(Context context, List<InfinitableModelHolder<T>> model) {
+    LoadMoreRecyclerViewAdapter(Context context, List<InfinitableModelHolder<T>> model) {
         this.context = context;
         this.models = model;
     }
 
     public void setMoreDataAvailable(boolean moreDataAvailable) {
         this.isMoreDataAvailable = moreDataAvailable;
-    }
-
-    public boolean getMoreDataAvailable() {
-        return isMoreDataAvailable;
     }
 
     public interface OnLoadMoreListener{
@@ -51,11 +44,11 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
         this.loadMoreListener = loadMoreListener;
     }
 
-    boolean isLoadable() {
+    private boolean isLoadable() {
         return isMoreDataAvailable && !isLoading && loadMoreListener != null;
     }
 
-    void loadMore() {
+    private void loadMore() {
         if(!isLoadable()) {
             return;
         }
@@ -63,8 +56,8 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
         loadMoreListener.onLoadMore();
     }
 
-    class LoadHolder extends RecyclerView.ViewHolder{
-        public LoadHolder(View itemView) {
+    private class LoadHolder extends RecyclerView.ViewHolder{
+        LoadHolder(View itemView) {
             super(itemView);
         }
     }

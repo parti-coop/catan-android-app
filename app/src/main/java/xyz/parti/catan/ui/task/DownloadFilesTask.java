@@ -1,15 +1,9 @@
 package xyz.parti.catan.ui.task;
 
-import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -25,31 +19,32 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.services.PostsService;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 25..
  */
 
 public class DownloadFilesTask extends AsyncTask<String, String, Long> {
-    public final static long RESUT_CANCEL = -1L;
-    public final static long RESUT_NO_DATA = -2L;
-    public final static long RESUT_ERROR = -3L;
+    private final static long RESUT_CANCEL = -1L;
+    private final static long RESUT_NO_DATA = -2L;
+    private final static long RESUT_ERROR = -3L;
 
+    private PostFeedPresenter presenter;
     private final PartiAccessToken partiAccessToken;
     private final long postId;
     private final long fileSourceId;
-    private ProgressDialog downloadProgressDialog;
     private Context context;
     private final String fileName;
     private File outputFile;
 
-    public DownloadFilesTask(Context context, ProgressDialog downloadProgressDialog, PartiAccessToken partiAccessToken, long postId, long fileSourceId, String fileName) {
-        this.partiAccessToken = partiAccessToken;
+    public DownloadFilesTask(PostFeedPresenter presenter, Context context, long postId, long fileSourceId, String fileName) {
+        this.presenter = presenter;
+        this.partiAccessToken = presenter.getPartiAccessToken();
         this.postId = postId;
         this.fileSourceId = fileSourceId;
         this.context = context;
         this.fileName = fileName;
-        this.downloadProgressDialog = downloadProgressDialog;
     }
 
 
@@ -57,25 +52,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     @Override
     protected void onPreExecute() { //2
         super.onPreExecute();
-
-        downloadProgressDialog.setMessage("다운로드 중");
-        downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        downloadProgressDialog.setIndeterminate(true);
-        downloadProgressDialog.setCancelable(true);
-        downloadProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                DownloadFilesTask.this.cancel(true);
-            }
-        });
-        downloadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                DownloadFilesTask.this.cancel(true);
-            }
-        });
-
-        downloadProgressDialog.show();
+        presenter.onPreDownloadDocFileSource(this);
     }
 
     //파일 다운로드를 진행합니다.
@@ -133,10 +110,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         super.onProgressUpdate(progress);
 
         // if we get here, length is known, now set indeterminate to false
-        downloadProgressDialog.setIndeterminate(false);
-        downloadProgressDialog.setMax(100);
-        downloadProgressDialog.setProgress(Integer.parseInt(progress[0]));
-        downloadProgressDialog.setMessage(progress[1]);
+        presenter.onProgressUpdateDownloadDocFileSource(Integer.parseInt(progress[0]), progress[1]);
     }
 
     //파일 다운로드 완료 후
@@ -144,8 +118,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     protected void onPostExecute(Long size) { //5
         super.onPostExecute(size);
 
-        downloadProgressDialog.dismiss();
-
+        presenter.onPostDownloadDocFileSource();
         if(size <= 0) {
             String message = "";
             if(size == RESUT_CANCEL) {
@@ -157,20 +130,8 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
             }
             Toast.makeText(context.getApplicationContext(), message, Toast.LENGTH_LONG).show();
         } else {
-            MimeTypeMap myMime = MimeTypeMap.getSingleton();
-            Intent newIntent = new Intent(Intent.ACTION_VIEW);
-            String mimeType = myMime.getMimeTypeFromExtension(getExtension());
-            newIntent.setDataAndType(Uri.fromFile(outputFile), mimeType);
-            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            try {
-                context.startActivity(newIntent);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(context, "다운로드된 파일을 열 수 있는 프로그램이 없습니다.", Toast.LENGTH_LONG).show();
-            }
+            presenter.onSuccessDownloadDocFileSource(outputFile, fileName);
         }
     }
 
-    private String getExtension() {
-        return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-    }
 }

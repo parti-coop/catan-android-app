@@ -11,8 +11,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- SD카드 읽기 허용하는 퍼미션, 킷캣이후로는 필요없음 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- CPU 상태 유지 및 화면 꺼짐 제어를 위한 퍼미션 -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".CatanApplication"

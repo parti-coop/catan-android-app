@@ -1,15 +1,12 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,9 +15,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.sessions.SessionManager;
-import xyz.parti.catan.ui.activity.AllCommentsActivity;
-import xyz.parti.catan.ui.binder.CommentBinder;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 29..
@@ -36,13 +31,13 @@ public class LatestCommentsBinder {
     @BindView(R.id.commentFormInput)
     TextView commentFormInputText;
 
+    private final PostFeedPresenter presenter;
     private final Context context;
-    private final SessionManager session;
     private LayoutInflater inflater;
 
-    public LatestCommentsBinder(ViewGroup view, SessionManager session) {
+    public LatestCommentsBinder(PostFeedPresenter presenter, ViewGroup view) {
+        this.presenter = presenter;
         this.context = view.getContext();
-        this.session = session;
         this.inflater =  LayoutInflater.from(view.getContext());
         ButterKnife.bind(this, view);
     }
@@ -54,7 +49,7 @@ public class LatestCommentsBinder {
             loadMoreText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showAllComments(post);
+                    presenter.onClickMoreComments(post);
                 }
             });
         } else {
@@ -67,25 +62,21 @@ public class LatestCommentsBinder {
             bindComment(comment);
         }
 
-        ImageHelper.loadInto(commentFormUserImageView, session.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        ImageHelper.loadInto(commentFormUserImageView, presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
 
         commentFormInputText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAllComments(post);
+                presenter.onClickMoreComments(post);
             }
         });
     }
 
-    private void showAllComments(Post post) {
-        Intent intent = new Intent(context, AllCommentsActivity.class);
-        intent.putExtra("post", Parcels.wrap(post));
-        context.startActivity(intent);
-    }
+
 
     private void bindComment(Comment comment) {
         LinearLayout commentLayout = (LinearLayout) inflater.inflate(R.layout.comment, listLayout, false);
-        new CommentBinder(commentLayout, session).bindData(comment);
+        new CommentBinder(commentLayout).bindData(comment);
         listLayout.addView(commentLayout);
     }
 }

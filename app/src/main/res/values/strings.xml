@@ -17,7 +17,7 @@
     <string name="error_invalid_password">비밀번호는 8자 이상입니다</string>
     <string name="error_incorrect_password">비밀번호를 확인해 주세요</string>
     <string name="error_field_required">값을 입력해 주세요</string>
-    <string name="permission_rationale">이메일 주소를 자동완성하기 위해 주소록에 접근할 권한이 필요합니다</string>
+    <string name="eamil_login_permission_rationale">이메일 주소를 자동완성하기 위해 주소록에 접근할 권한이 필요합니다</string>
 
     <string name="login_by_email_button">{fa-envelope} 이메일로 로그인</string>
     <string name="login_by_facebook_button">{fa-facebook} 페이스북으로 로그인</string>
@@ -33,6 +33,9 @@
 
     <string name="references_poll_agree_button">{fa-thumbs-up} 찬성</string>
     <string name="references_poll_disagree_button">{fa-thumbs-down} 반대</string>
+
+    <string name="doc_file_source_download_permission_rationale">다운로드 하기 위한 저장소에 접근할 수 있는 권한이 필요합니다</string>
+    <string name="doc_file_source_download_permission_denied">다운로드 하기 위한 권한이 필요합니다.\n[설정] > [권한] 에서 저장소에 접근할 수 있는 권한을 허용할 수 있습니다.</string>
 
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>

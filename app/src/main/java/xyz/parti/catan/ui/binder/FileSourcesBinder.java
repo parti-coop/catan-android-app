@@ -1,9 +1,6 @@
 package xyz.parti.catan.ui.binder;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -12,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,33 +19,25 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.sessions.SessionManager;
-import xyz.parti.catan.ui.activity.PostImagesViewActivity;
-import xyz.parti.catan.ui.task.DownloadFilesTask;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 4..
  */
 
 public class FileSourcesBinder {
-    final static String[] PERMISSIONS = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"};
-
-    final static int HALF_IMAGE_SPACE = 5;
-    private final ProgressDialog downloadProgressDialog;
+    private final static int HALF_IMAGE_SPACE = 5;
+    private final PostFeedPresenter presenter;
     private final Context context;
-    private final Activity activity;
-    private final SessionManager session;
 
     @BindView(R.id.referencesDocsLayout)
     ViewGroup referencesDocsLayout;
     @BindView(R.id.referencesImagesLayout)
     ViewGroup referencesImagesLayout;
 
-    public FileSourcesBinder(Activity activity, ProgressDialog downloadProgressDialog, ViewGroup view, SessionManager session) {
-        this.downloadProgressDialog = downloadProgressDialog;
+    public FileSourcesBinder(PostFeedPresenter presenter, ViewGroup view) {
+        this.presenter = presenter;
         this.context = view.getContext();
-        this.activity = activity;
-        this.session = session;
         ButterKnife.bind(this, view);
     }
 
@@ -79,18 +66,12 @@ public class FileSourcesBinder {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(context, PostImagesViewActivity.class);
-                        intent.putExtra("post", Parcels.wrap(post));
-                        context.startActivity(intent);
+                        presenter.onClickImageFileSource(post);
                     }
                 });
-                if (imageView != null) {
-                    rowLayout.addView(imageView);
-                }
+                rowLayout.addView(imageView);
                 col++;
             }
-
-
 
             referencesImagesLayout.addView(rowLayout);
 
@@ -108,7 +89,7 @@ public class FileSourcesBinder {
             List<FileSource> currentRow = null;
             for(FileSource fileSource: imageFileSources) {
                 if(nextRow) {
-                    currentRow = new ArrayList();
+                    currentRow = new ArrayList<>();
                     imageFileSourcesRows.add(currentRow);
                 }
                 nextRow = false;
@@ -175,17 +156,10 @@ public class FileSourcesBinder {
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
             referencesDocsLayout.addView(fileSourcesLayout);
 
-            final ProgressDialog progressBar = new ProgressDialog(FileSourcesBinder.this.activity);
-            progressBar.setMessage("다운로드 중");
-            progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressBar.setIndeterminate(true);
-            progressBar.setCancelable(true);
-
             fileSourcesLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final DownloadFilesTask downloadTask = new DownloadFilesTask(FileSourcesBinder.this.context, downloadProgressDialog, session.getPartiAccessToken(), post.id, docFileSource.id, docFileSource.name);
-                    downloadTask.execute();
+                    presenter.onClickDocFileSource(post, docFileSource);
                 }
             });
         }
@@ -197,7 +171,7 @@ public class FileSourcesBinder {
         @BindView(R.id.referencesDocFileSourceSize)
         TextView referencesDocFileSourceSize;
 
-        public DocFileSourceHolder(ViewGroup view) {
+        DocFileSourceHolder(ViewGroup view) {
             ButterKnife.bind(this, view);
         }
 

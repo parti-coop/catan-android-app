@@ -3,11 +3,8 @@ package xyz.parti.catan.ui.activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import org.parceler.Parcels;
 
@@ -19,7 +16,6 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.ReportHelper;
@@ -63,7 +59,7 @@ public class AllCommentsActivity extends BaseActivity {
 
     private void setUpComments() {
         comments = new ArrayList<>();
-        feedAdapter = new CommentFeedRecyclerViewAdapter(this, comments, session);
+        feedAdapter = new CommentFeedRecyclerViewAdapter(this, comments);
         feedAdapter.setLoadMoreListener(
                 new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
                     @Override

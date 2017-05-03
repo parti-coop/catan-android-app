@@ -1,25 +1,20 @@
 package xyz.parti.catan.ui.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -94,7 +89,7 @@ public class PostImagesViewActivity extends BaseActivity {
             ButterKnife.bind(SwipeFragment.this, swipeView);
 
             Bundle bundle = getArguments();
-            String url = bundle.getString("url");
+            String url = bundle.getString("attachment_url");
             ImageHelper.loadInto(imageView, url, ImageView.ScaleType.CENTER_INSIDE);
             return swipeView;
         }
@@ -102,7 +97,7 @@ public class PostImagesViewActivity extends BaseActivity {
         static SwipeFragment newInstance(String url) {
             SwipeFragment swipeFragment = new SwipeFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("url", url);
+            bundle.putString("attachment_url", url);
             swipeFragment.setArguments(bundle);
             return swipeFragment;
         }

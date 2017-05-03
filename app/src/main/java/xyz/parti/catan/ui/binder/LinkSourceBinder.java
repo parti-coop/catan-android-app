@@ -1,6 +1,5 @@
 package xyz.parti.catan.ui.binder;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,10 +25,7 @@ public class LinkSourceBinder {
     @BindView(R.id.referenceLinkSourceImage)
     ImageView referenceLinkSourceImage;
 
-    private final Context context;
-
     public LinkSourceBinder(ViewGroup view) {
-        this.context = view.getContext();
         ButterKnife.bind(this, view);
     }
 

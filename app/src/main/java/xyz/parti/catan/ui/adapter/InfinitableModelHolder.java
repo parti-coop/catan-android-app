@@ -1,7 +1,5 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.support.v7.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,11 +18,11 @@ public class InfinitableModelHolder<T> {
     }
 
     public static <T> InfinitableModelHolder<T> forModel(T model) {
-        return new InfinitableModelHolder(model, false);
+        return new InfinitableModelHolder<>(model, false);
     }
 
     public static <T> InfinitableModelHolder<T> forLoader() {
-        return new InfinitableModelHolder(null, true);
+        return new InfinitableModelHolder<>(null, true);
     }
 
     public boolean isLoader() {

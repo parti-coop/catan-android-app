@@ -1,9 +1,6 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,31 +18,32 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.binder.FileSourcesBinder;
 import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.LinkSourceBinder;
 import xyz.parti.catan.ui.binder.PollBinder;
 import xyz.parti.catan.ui.binder.SurveyBinder;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
+
+/**
+ * Created by dalikim on 2017. 4. 30..
+ */
 
 public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
-    private Activity activity;
-    private ProgressDialog downloadProgressDialog;
-    List<InfinitableModelHolder<Post>> posts;
-    private SessionManager session;
+    private final Context context;
+    private List<InfinitableModelHolder<Post>> posts;
+    private PostFeedPresenter presenter;
 
-    public PostFeedRecyclerViewAdapter(Activity activity, ProgressDialog downloadProgressDialog, List<InfinitableModelHolder<Post>> posts, SessionManager session) {
-        super(activity, posts);
-        this.activity = activity;
-        this.downloadProgressDialog = downloadProgressDialog;
+    public PostFeedRecyclerViewAdapter(Context context, List<InfinitableModelHolder<Post>> posts) {
+        super(context, posts);
+        this.context = context;
         this.posts = posts;
-        this.session = session;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateModelViewHolder(ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false), this.session, downloadProgressDialog);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false));
     }
 
     @Override
@@ -55,10 +53,23 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
     @Override
     public void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(this.activity, posts.get(position).getModel());
+        ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(posts.get(position).getModel());
     }
 
-    static public class PostViewHolder extends RecyclerView.ViewHolder {
+    public void setPresenter(PostFeedPresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    public void rebindData(Post newPost) {
+        for (int i = 0; i < posts.size(); i++) {
+            Post post = posts.get(i).getModel();
+            if (post.id != null && post.id.equals(newPost.id)) {
+                notifyItemChanged(i);
+            }
+        }
+    }
+
+    class PostViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.dashboardPostPartiTitle)
         TextView dashboardPostPartiTitle;
         @BindView(R.id.dashboardPostGroupTitle)
@@ -80,32 +91,27 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
         private LayoutInflater inflater;
 
-        private SessionManager session;
-        private final ProgressDialog downloadProgressDialog;
-
-        public PostViewHolder(View view, SessionManager session, ProgressDialog downloadProgressDialog) {
+        PostViewHolder(View view) {
             super(view);
-            this.session = session;
-            this.downloadProgressDialog = downloadProgressDialog;
             this.inflater =  LayoutInflater.from(itemView.getContext());
             ButterKnife.bind(this, view);
         }
 
-        void bindData(Activity activity, Post post){
+        void bindData(Post post){
             bindBasic(post);
             bindComments(post);
-            bindReferences(activity, post);
+            bindReferences(post);
         }
 
         private void bindComments(Post post) {
-            new LatestCommentsBinder(commentsLayout, session).bindData(post);
+            new LatestCommentsBinder(presenter, commentsLayout).bindData(post);
         }
 
-        private void bindReferences(Activity activity, Post post) {
+        private void bindReferences(Post post) {
             dashboardPostReferences.removeAllViews();
             dashboardPostReferences.setVisibility(ViewGroup.GONE);
 
-            bindFileSources(activity, post);
+            bindFileSources(post);
             bindLinkSources(post);
             bindPoll(post);
             bindSurvey(post);
@@ -118,8 +124,10 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                 linkSourcesLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        itemView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.link_source.url)));
+//                        itemView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.link_source.attachment_url)));
+                        presenter.onClickLinkSource(post.link_source.url);
                     }
+
                 });
                 new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
 
@@ -127,10 +135,10 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             }
         }
 
-        private void bindFileSources(Activity activity, Post post) {
+        private void bindFileSources(Post post) {
             if(post.file_sources != null) {
                 LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
-                new FileSourcesBinder(activity, downloadProgressDialog, fileSourcesLayout, session).bindData(post);
+                new FileSourcesBinder(presenter, fileSourcesLayout).bindData(post);
 
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
@@ -139,7 +147,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         private void bindPoll(final Post post) {
             if(post.poll != null) {
                 LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, dashboardPostReferences, true);
-                new PollBinder(pollLayout, session).bindData(post);
+                new PollBinder(presenter, pollLayout).bindData(post);
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
         }
@@ -147,7 +155,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         private void bindSurvey(final Post post) {
             if(post.survey != null) {
                 LinearLayout surveyLayout = (LinearLayout) inflater.inflate(R.layout.references_survey, dashboardPostReferences, true);
-                new SurveyBinder(surveyLayout, session).bindData(post);
+                new SurveyBinder(presenter, surveyLayout).bindData(post);
                 dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
             }
         }

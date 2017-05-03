@@ -10,7 +10,6 @@ import java.util.List;
 
 import xyz.parti.catan.R;
 import xyz.parti.catan.models.Comment;
-import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.binder.CommentBinder;
 
 /**
@@ -20,19 +19,17 @@ import xyz.parti.catan.ui.binder.CommentBinder;
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
     private Activity activity;
     private final List<InfinitableModelHolder<Comment>> comments;
-    private final SessionManager session;
 
-    public CommentFeedRecyclerViewAdapter(Activity activity, List<InfinitableModelHolder<Comment>> comments, SessionManager session) {
+    public CommentFeedRecyclerViewAdapter(Activity activity, List<InfinitableModelHolder<Comment>> comments) {
         super(activity, comments);
         this.activity = activity;
         this.comments = comments;
-        this.session = session;
     }
 
     @Override
     RecyclerView.ViewHolder onCreateModelViewHolder(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(activity);
-        return new CommentFeedRecyclerViewAdapter.CommentViewHolder(inflater.inflate(R.layout.comment, parent, false), this.session);
+        return new CommentFeedRecyclerViewAdapter.CommentViewHolder(inflater.inflate(R.layout.comment, parent, false));
     }
 
     @Override
@@ -51,17 +48,15 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
     private class CommentViewHolder extends RecyclerView.ViewHolder {
         private View view;
-        private final SessionManager session;
 
-        public CommentViewHolder(View view, SessionManager session) {
+        CommentViewHolder(View view) {
             super(view);
             this.view = view;
-            this.session = session;
         }
 
         public void bindData(Comment comment, int position) {
             boolean isLineVisible = !isLastPosition(position);
-            new CommentBinder(view, session).bindData(comment, isLineVisible);
+            new CommentBinder(view).bindData(comment, isLineVisible);
         }
     }
 }

@@ -7,20 +7,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.JsonNull;
 import com.joanzapata.iconify.widget.IconButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import xyz.parti.catan.R;
-import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.services.VotingsService;
-import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 25..
@@ -38,16 +31,13 @@ public class PollBinder {
     @BindView(R.id.pollDisagreeButton)
     IconButton pollDisagreeButton;
 
-    private final VotingsService votingsService;
+    private final PostFeedPresenter presenter;
     private final Context context;
-    private SessionManager session;
 
-    public PollBinder(ViewGroup view, SessionManager session) {
+    public PollBinder(PostFeedPresenter presenter, ViewGroup view) {
+        this.presenter = presenter;
         this.context = view.getContext();
-        this.session = session;
         ButterKnife.bind(this, view);
-
-        votingsService = ServiceGenerator.createService(VotingsService.class, session);
     }
 
     public void bindData(final Post post) {
@@ -57,47 +47,13 @@ public class PollBinder {
         pollAgreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
-                Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
-                call.enqueue(new Callback<JsonNull>() {
-                    @Override
-                    public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                        if(response.isSuccessful()) {
-                            post.poll.updateChoice(PollBinder.this.session.getCurrentUser(), newChoice);
-                            bindVotings(post);
-                        } else {
-                            ReportHelper.wtf(context.getApplicationContext(), "Agree error : " + response.code());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<JsonNull> call, Throwable t) {
-                        ReportHelper.wtf(context.getApplicationContext(), t);
-                    }
-                });
+                presenter.onClickPollAgree(post);
             }
         });
         pollDisagreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
-                Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
-                call.enqueue(new Callback<JsonNull>() {
-                    @Override
-                    public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                        if(response.isSuccessful()) {
-                            post.poll.updateChoice(PollBinder.this.session.getCurrentUser(), newChoice);
-                            bindVotings(post);
-                        } else {
-                            ReportHelper.wtf(context.getApplicationContext(), "Disagree error : " + response.code());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<JsonNull> call, Throwable t) {
-                        ReportHelper.wtf(context.getApplicationContext(), t);
-                    }
-                });
+                presenter.onClickPollDisgree(post);
             }
         });
     }

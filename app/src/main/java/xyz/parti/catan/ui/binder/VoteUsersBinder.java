@@ -1,6 +1,5 @@
 package xyz.parti.catan.ui.binder;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -13,14 +12,12 @@ import xyz.parti.catan.models.User;
  * Created by dalikim on 2017. 4. 25..
  */
 
-public class VoteUsersBinder {
-    final Context context;
+class VoteUsersBinder {
     private final LayoutInflater inflater;
     private ViewGroup view;
     private boolean reverse;
 
-    public VoteUsersBinder(ViewGroup view, boolean reverse) {
-        this.context = view.getContext();
+    VoteUsersBinder(ViewGroup view, boolean reverse) {
         this.view = view;
         this.reverse = reverse;
         this.inflater =  LayoutInflater.from(view.getContext());
@@ -38,7 +35,7 @@ public class VoteUsersBinder {
         }
     }
 
-    public void bindUser(User user) {
+    private void bindUser(User user) {
         CircleImageView imageView = (CircleImageView) inflater.inflate(R.layout.references_poll_vote_user, view, false);
         if(reverse) {
             imageView.setRotationY(180);
