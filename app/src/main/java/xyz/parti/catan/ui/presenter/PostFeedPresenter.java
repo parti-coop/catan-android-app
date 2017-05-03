@@ -17,6 +17,7 @@ public interface PostFeedPresenter {
     void onClickDocFileSource(Post post, FileSource fileSource);
     void onClickImageFileSource(Post post);
     void onClickMoreComments(Post post);
+    void onClickNewComment(Post post);
     void onClickSurveyOption(Post post, Option option, boolean isChecked);
     void onClickPollAgree(Post post);
     void onClickPollDisgree(Post post);

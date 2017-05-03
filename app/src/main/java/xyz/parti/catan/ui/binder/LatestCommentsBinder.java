@@ -67,7 +67,7 @@ public class LatestCommentsBinder {
         commentFormInputText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onClickMoreComments(post);
+                presenter.onClickNewComment(post);
             }
         });
     }

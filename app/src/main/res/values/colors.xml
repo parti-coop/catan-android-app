@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="brand_gray">#ccc</color>
+    <color name="brand_gray_light">#efefef</color>
+
     <color name="style_color_primary">#3F51B5</color>
     <color name="style_color_primary_dark">#303F9F</color>
     <color name="style_color_accent">#FF4081</color>
-    <color name="style_color_default_border">#EFEFEF</color>
+    <color name="style_color_default_border">@color/brand_gray_light</color>
 
     <color name="dashboard_image_border">#FFF</color>
-    <color name="text_muted">#ccc</color>
+    <color name="text_muted">@color/brand_gray</color>
     <color name="default_text_view_link">#303F9F</color>
-    <color name="comments_background">#EFEFEF</color>
-    <color name="comments_border">#ccc</color>
-    <color name="comment_edittext_highlight">#efefef</color>
+    <color name="comments_background">@color/brand_gray_light</color>
+    <color name="comments_border">@color/brand_gray</color>
+    <color name="comment_edittext_highlight">@color/brand_gray_light</color>
 
     <color name="vote_agree_button">#59baa3</color>
     <color name="vote_disagree_button">#c0575d</color>

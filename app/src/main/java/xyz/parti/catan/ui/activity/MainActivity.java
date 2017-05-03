@@ -487,6 +487,14 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
+    public void onClickNewComment(Post post) {
+        Intent intent = new Intent(this, AllCommentsActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        intent.putExtra("focusInput", true);
+        startActivity(intent);
+    }
+
+    @Override
     public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
         Call<JsonNull> call = feedbacksService.feedback(option.id, isChecked);
         call.enqueue(new Callback<JsonNull>() {

@@ -6,6 +6,7 @@
     android:elevation="@dimen/default_elevation"
     android:orientation="vertical">
     <FrameLayout
+        android:id="@+id/allCommentsWrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="10dp"
@@ -17,6 +18,25 @@
             android:layout_height="wrap_content"
             android:scrollbars="none" />
     </FrameLayout>
+    <LinearLayout
+        android:id="@+id/noCommentsSign"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_weight="1"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_empty_box_brand_gray" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_comments"
+            android:textColor="@color/text_muted" />
+    </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
         android:padding="10dp"

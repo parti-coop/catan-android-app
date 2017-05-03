@@ -3,8 +3,11 @@ package xyz.parti.catan.ui.activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import org.parceler.Parcels;
 
@@ -16,6 +19,7 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.ReportHelper;
@@ -41,6 +45,12 @@ public class AllCommentsActivity extends BaseActivity {
 
     @BindView(R.id.allComments)
     RecyclerView allCommentsView;
+    @BindView(R.id.allCommentsWrapper)
+    ViewGroup allCommentsWrapperView;
+    @BindView(R.id.noCommentsSign)
+    ViewGroup noCommentsSignView;
+    @BindView(R.id.commentFormEditText)
+    EditText commentFormEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +61,23 @@ public class AllCommentsActivity extends BaseActivity {
 
         session = new SessionManager(getApplicationContext());
         post = Parcels.unwrap(getIntent().getParcelableExtra("post"));
-        
+        boolean focusInput = getIntent().getBooleanExtra("focusInput", false);
+
         commentsService = ServiceGenerator.createService(CommentsService.class, session);
 
-        setUpComments();
+        if(post.comments_count > 0) {
+            setUpComments(focusInput);
+        } else {
+            setUpNoComments();
+        }
     }
 
-    private void setUpComments() {
+    private void setUpComments(boolean focusInput) {
+        noCommentsSignView.setVisibility(View.GONE);
+        allCommentsWrapperView.setVisibility(View.VISIBLE);
+
         comments = new ArrayList<>();
+
         feedAdapter = new CommentFeedRecyclerViewAdapter(this, comments);
         feedAdapter.setLoadMoreListener(
                 new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
@@ -96,6 +115,20 @@ public class AllCommentsActivity extends BaseActivity {
         });
 
         loadFirstComments();
+
+        if(focusInput) {
+            commentFormEditText.post(new Runnable() {
+                public void run() {
+                    commentFormEditText.setFocusableInTouchMode(true);
+                    commentFormEditText.requestFocus();
+                }
+            });
+        }
+    }
+
+    private void setUpNoComments() {
+        noCommentsSignView.setVisibility(View.VISIBLE);
+        allCommentsWrapperView.setVisibility(View.GONE);
     }
 
     private void loadFirstComments() {

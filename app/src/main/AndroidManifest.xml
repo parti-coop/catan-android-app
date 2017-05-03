@@ -55,7 +55,8 @@
             android:name=".ui.activity.AllCommentsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_all_comments"
-            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge" />
+            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver android:name=".alarms.LocalBroadcastableAlarmReceiver" />
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
