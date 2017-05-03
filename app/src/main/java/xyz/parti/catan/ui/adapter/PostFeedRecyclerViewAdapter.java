@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,7 +13,9 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
+import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.ui.binder.FileSourcesBinder;
@@ -62,6 +65,8 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         TextView dashboardPostGroupTitle;
         @BindView(R.id.dashboardPostUserNickname)
         TextView dashboardPostUserNickname;
+        @BindView(R.id.dashboardPostUserImage)
+        CircleImageView dashboardPostUserImage;
         @BindView(R.id.dashboardPostCreatedAt)
         RelativeTimeTextView dashboardPostCreatedAt;
         @BindView(R.id.dashboardPostBody)
@@ -155,6 +160,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                 dashboardPostGroupTitle.setVisibility(android.view.View.VISIBLE);
                 dashboardPostGroupTitle.setText(post.parti.group.title);
             }
+            ImageHelper.loadInto(dashboardPostUserImage, post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
             dashboardPostUserNickname.setText(post.user.nickname);
             dashboardPostCreatedAt.setReferenceTime(post.created_at.getTime());
 
