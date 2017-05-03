@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.presenter;
 
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -53,7 +52,6 @@ public class PostFeedPresenter {
         votingsService = ServiceGenerator.createService(VotingsService.class, session);
     }
 
-
     public void detachView() {
         view = null;
     }
@@ -80,25 +78,31 @@ public class PostFeedPresenter {
                 }else{
                     ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
                 }
+                feedAdapter.setLoadFinished();
                 view.setSwipeRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
                 ReportHelper.wtf(getApplicationContext(), t);
+                feedAdapter.setLoadFinished();
                 view.setSwipeRefreshing(false);
             }
         });
+
     }
 
     public void loadMorePosts() {
         if(feedAdapter == null) {
             return;
         }
-
         //add loading progress view
-        feedAdapter.appendLoader();
         Post post = feedAdapter.getLastModel();
+        if(post == null) {
+            return;
+        }
+
+        feedAdapter.appendLoader();
 
         Call<Page<Post>> call = postsService.getDashboardAfter(post.id);
         call.enqueue(new Callback<Page<Post>>() {
@@ -117,12 +121,14 @@ public class PostFeedPresenter {
                     }else{
                         //result size 0 means there is no more data available at server
                         feedAdapter.setMoreDataAvailable(false);
-                        feedAdapter.notifyAllDataChangedAndLoadFinished();
+                        feedAdapter.notifyDataSetChanged();
                         //telling adapter to stop calling loadFirstPosts more as no more server data available
                     }
+                    feedAdapter.setLoadFinished();
                 }else{
                     feedAdapter.setMoreDataAvailable(false);
-                    feedAdapter.notifyAllDataChangedAndLoadFinished();
+                    feedAdapter.notifyDataSetChanged();
+                    feedAdapter.setLoadFinished();
 
                     ReportHelper.wtf(getApplicationContext(), "Load More Response Error " + String.valueOf(response.code()));
                 }
@@ -131,7 +137,8 @@ public class PostFeedPresenter {
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
                 feedAdapter.setMoreDataAvailable(false);
-                feedAdapter.notifyAllDataChangedAndLoadFinished();
+                feedAdapter.notifyDataSetChanged();
+                feedAdapter.setLoadFinished();
 
                 ReportHelper.wtf(getApplicationContext(), t);
             }
@@ -139,6 +146,10 @@ public class PostFeedPresenter {
     }
 
     public void checkNewPosts() {
+        if(feedAdapter == null) {
+            return;
+        }
+
         Date lastStrockedAt = null;
         if(!feedAdapter.isEmpty()) {
             InfinitableModelHolder<Post> firstPostHolder = feedAdapter.getFirstHolder();
@@ -174,7 +185,11 @@ public class PostFeedPresenter {
         });
     }
 
-    private void reloadPost(final Post post) {
+    public void changePost(final Post post) {
+        feedAdapter.changeModel(post);
+    }
+
+    public void reloadPost(final Post post) {
         Call<Post> call = postsService.getPost(post.id);
         call.enqueue(new Callback<Post>() {
             @Override
@@ -242,7 +257,7 @@ public class PostFeedPresenter {
             public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
                 if(response.isSuccessful()) {
                     post.poll.updateChoice(getCurrentUser(), newChoice);
-                    reloadPost(post);
+                    changePost(post);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
                 }
@@ -263,7 +278,7 @@ public class PostFeedPresenter {
             public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
                 if(response.isSuccessful()) {
                     post.poll.updateChoice(getCurrentUser(), newChoice);
-                    reloadPost(post);
+                    changePost(post);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
                 }

@@ -23,6 +23,6 @@ public class Comment implements RecyclableModel<Comment>  {
 
     @Override
     public boolean isSame(Comment other) {
-        return other != null && id == other.id;
+        return other != null && id != null && id.equals(other.id);
     }
 }

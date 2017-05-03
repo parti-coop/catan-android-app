@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import xyz.parti.catan.R;
 import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.ui.binder.CommentBinder;
@@ -18,12 +16,10 @@ import xyz.parti.catan.ui.binder.CommentBinder;
 
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
     private Context activity;
-    private final List<InfinitableModelHolder<Comment>> comments;
 
-    public CommentFeedRecyclerViewAdapter(Context context, List<InfinitableModelHolder<Comment>> comments) {
+    public CommentFeedRecyclerViewAdapter(Context context) {
         super(context);
         this.activity = context;
-        this.comments = comments;
     }
 
     @Override
@@ -39,11 +35,11 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
     @Override
     void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(comments.get(position).getModel(), position);
+        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(getModel(position), position);
     }
 
     private boolean isLastPosition(int position) {
-        return (comments.size() - 1) == position;
+        return getLastPosition() == position;
     }
 
     private class CommentViewHolder extends RecyclerView.ViewHolder {

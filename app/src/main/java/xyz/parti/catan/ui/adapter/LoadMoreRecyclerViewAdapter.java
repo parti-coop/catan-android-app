@@ -2,6 +2,7 @@ package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,9 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
+import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.models.RecyclableModel;
 
@@ -41,12 +44,32 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
 
     public void appendModels(List<T> items) {
         this.holders.addAll(InfinitableModelHolder.from(items));
-        notifyAllDataChangedAndLoadFinished();
+        notifyDataSetChanged();
+    }
+
+    public void appendModel(T item) {
+        this.holders.add(InfinitableModelHolder.forModel(item));
+        notifyItemInserted(holders.size() - 1);
+    }
+
+    public void prependModels(List<T> items) {
+        this.holders.addAll(0, InfinitableModelHolder.from(items));
+        notifyDataPrepended(items.size() + 1);
     }
 
     public void appendLoader() {
         holders.add(InfinitableModelHolder.<T>forLoader());
         notifyItemInserted(holders.size() - 1);
+    }
+
+    public void prependLoader() {
+        holders.add(0, InfinitableModelHolder.<T>forLoader());
+        notifyItemInserted(0);
+    }
+
+    public void removeFirstMoldelHolder() {
+        holders.remove(0);
+        notifyItemRemoved(0);
     }
 
     public void removeLastMoldelHolder() {
@@ -119,18 +142,17 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         return holders.size();
     }
 
-    public void notifyAllDataChangedAndLoadFinished(){
-        notifyDataSetChanged();
-        isLoading = false;
-    }
 
-    public void notifyDataPrependedAndLoadFinished(int count) {
+    public void notifyDataPrepended(int count) {
         notifyItemRangeInserted(0, count - 1);
+    }
+
+    public void setLoadFinished() {
         isLoading = false;
     }
 
-    public void notifyLoadFinished() {
-        isLoading = false;
+    public void setLoadStarted() {
+        isLoading = true;
     }
 
     public void clearData() {
@@ -146,6 +168,9 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         }
     }
 
+    public T getFirstModel() {
+        return getModel(0);
+    }
     public T getLastModel() {
         return getModel(holders.size() - 1);
     }
@@ -158,13 +183,21 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         return holders.get(posistion);
     }
 
-    public void changeModel(T newPost) {
+    public void changeModel(T model) {
         for (int i = 0; i < holders.size(); i++) {
-            if (newPost != null && newPost.isSame(getModel(i))) {
-                holders.set(i, InfinitableModelHolder.forModel(newPost));
+            if(model instanceof Post) {
+                Post item = (Post) getModel(i);
+            }
+
+            if (model != null && model.isSame(getModel(i))) {
+                holders.set(i, InfinitableModelHolder.forModel(model));
                 notifyItemChanged(i);
             }
         }
+    }
+
+    public int getLastPosition() {
+        return holders.size() - 1;
     }
 
 }

@@ -3,6 +3,7 @@ package xyz.parti.catan.models;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -71,6 +72,13 @@ public class Post implements RecyclableModel<Post> {
 
     @Override
     public boolean isSame(Post other) {
-        return other != null && id == other.id;
+        return other != null && id != null && id.equals(other.id);
+    }
+
+    public void addComment(Comment comment) {
+        this.comments_count++;
+        List<Comment> temp = new ArrayList<>(Arrays.asList(this.latest_comments));
+        temp.add(comment);
+        latest_comments = temp.toArray(new Comment[temp.size()]);
     }
 }

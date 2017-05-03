@@ -61,6 +61,7 @@ import xyz.parti.catan.ui.view.NavigationItem;
 public class MainActivity extends AppCompatActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
+    public static final int REQUEST_NEW_COMMENT = 1;
 
     @BindView(R.id.appToolbar)
     Toolbar appToolbar;
@@ -320,10 +321,21 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_NEW_COMMENT){
+            Post post = Parcels.unwrap(data.getParcelableExtra("post"));
+            if(this.presenter != null) {
+                presenter.changePost(post);
+            }
+        }
+    }
+
+    @Override
     public void showAllComments(Post post) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_NEW_COMMENT);
     }
 
     @Override
@@ -331,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
         intent.putExtra("focusInput", true);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_NEW_COMMENT);
     }
 
     @Override
@@ -400,6 +412,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             Toast.makeText(this.getApplicationContext(), "다운로드된 파일을 열 수 있는 프로그램이 없습니다.", Toast.LENGTH_LONG).show();
         }
     }
+
 
     @Override
     public void showSimpleMessage(String message) {
