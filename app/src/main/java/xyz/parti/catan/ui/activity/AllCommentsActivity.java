@@ -3,6 +3,7 @@ package xyz.parti.catan.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -67,6 +68,9 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         }
         setUpComments(focusInput);
         setUpCommentForm();
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void setUpComments(boolean focusInput) {
@@ -190,10 +194,20 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     @Override
     public void onBackPressed() {
+        setUpNewCommentsResult();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        setUpNewCommentsResult();
+        finish();
+        return super.onSupportNavigateUp();
+    }
+
+    private void setUpNewCommentsResult() {
         Intent intent = new Intent();
         intent.putExtra("post", Parcels.wrap(presenter.getPost()));
         setResult(MainActivity.REQUEST_NEW_COMMENT, intent);
-
-        super.onBackPressed();
     }
 }
