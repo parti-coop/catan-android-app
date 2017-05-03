@@ -1,6 +1,5 @@
 package xyz.parti.catan.ui.binder;
 
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -20,7 +19,7 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
  * Created by dalikim on 2017. 4. 28..
  */
 
-public class OptionBinder {
+class OptionBinder {
     @BindView(R.id.optionBody)
     TextView optionBodyText;
     @BindView(R.id.optionCheckBox)
@@ -42,16 +41,16 @@ public class OptionBinder {
     public void bindData(final Post post, final Option option) {
         optionBodyText.setText(option.body);
         if(post.survey.is_open) {
-            optionBodyText.setOnClickListener(new View.OnClickListener() {
+            optionBodyText.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(android.view.View view) {
                     optionCheckBox.setChecked(!optionCheckBox.isChecked());
                 }
             });
         }
 
         if(post.survey.is_open) {
-            optionCheckBox.setVisibility(View.VISIBLE);
+            optionCheckBox.setVisibility(android.view.View.VISIBLE);
             optionCheckBox.setChecked(option.is_my_select);
             optionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -59,13 +58,13 @@ public class OptionBinder {
                     presenter.onClickSurveyOption(post, option, b);
                 }
             });
-            optionSelectedText.setVisibility(View.GONE);
+            optionSelectedText.setVisibility(android.view.View.GONE);
         } else {
-            optionCheckBox.setVisibility(View.GONE);
+            optionCheckBox.setVisibility(android.view.View.GONE);
             if(option.is_my_select) {
-                optionSelectedText.setVisibility(View.VISIBLE);
+                optionSelectedText.setVisibility(android.view.View.VISIBLE);
             } else {
-                optionSelectedText.setVisibility(View.GONE);
+                optionSelectedText.setVisibility(android.view.View.GONE);
             }
         }
 
@@ -75,14 +74,14 @@ public class OptionBinder {
             } else {
                 feedbacksCountView.setText("" + option.feedbacks_count + "표");
             }
-            feedbacksCountView.setVisibility(View.VISIBLE);
+            feedbacksCountView.setVisibility(android.view.View.VISIBLE);
 
             progressBar.setMax(post.survey.feedback_users_count);
             progressBar.setProgress(option.feedbacks_count);
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(android.view.View.VISIBLE);
         } else {
-            feedbacksCountView.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
+            feedbacksCountView.setVisibility(android.view.View.GONE);
+            progressBar.setVisibility(android.view.View.GONE);
         }
     }
 }

@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,16 +43,16 @@ public class LatestCommentsBinder {
 
     public void bindData(final Post post) {
         if(post.hasMoreComments()) {
-            loadMoreText.setVisibility(View.VISIBLE);
+            loadMoreText.setVisibility(android.view.View.VISIBLE);
             loadMoreText.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
-            loadMoreText.setOnClickListener(new View.OnClickListener() {
+            loadMoreText.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(android.view.View view) {
                     presenter.onClickMoreComments(post);
                 }
             });
         } else {
-            loadMoreText.setVisibility(View.GONE);
+            loadMoreText.setVisibility(android.view.View.GONE);
             loadMoreText.setOnClickListener(null);
         }
 
@@ -64,9 +63,9 @@ public class LatestCommentsBinder {
 
         ImageHelper.loadInto(commentFormUserImageView, presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
 
-        commentFormInputText.setOnClickListener(new View.OnClickListener() {
+        commentFormInputText.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(android.view.View view) {
                 presenter.onClickNewComment(post);
             }
         });

@@ -4,14 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,13 +28,11 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
     private final Context context;
-    private List<InfinitableModelHolder<Post>> posts;
     private PostFeedPresenter presenter;
 
-    public PostFeedRecyclerViewAdapter(Context context, List<InfinitableModelHolder<Post>> posts) {
-        super(context, posts);
+    public PostFeedRecyclerViewAdapter(Context context) {
+        super(context);
         this.context = context;
-        this.posts = posts;
     }
 
     @Override
@@ -53,20 +48,11 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
     @Override
     public void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(posts.get(position).getModel());
+        ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(getModel(position));
     }
 
     public void setPresenter(PostFeedPresenter presenter) {
         this.presenter = presenter;
-    }
-
-    public void rebindData(Post newPost) {
-        for (int i = 0; i < posts.size(); i++) {
-            Post post = posts.get(i).getModel();
-            if (post.id != null && post.id.equals(newPost.id)) {
-                notifyItemChanged(i);
-            }
-        }
     }
 
     class PostViewHolder extends RecyclerView.ViewHolder {
@@ -91,7 +77,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
         private LayoutInflater inflater;
 
-        PostViewHolder(View view) {
+        PostViewHolder(android.view.View view) {
             super(view);
             this.inflater =  LayoutInflater.from(itemView.getContext());
             ButterKnife.bind(this, view);
@@ -121,10 +107,9 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         private void bindLinkSources(final Post post) {
             if(post.link_source != null) {
                 LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
-                linkSourcesLayout.setOnClickListener(new View.OnClickListener() {
+                linkSourcesLayout.setOnClickListener(new android.view.View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-//                        itemView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(post.link_source.attachment_url)));
+                    public void onClick(android.view.View view) {
                         presenter.onClickLinkSource(post.link_source.url);
                     }
 
@@ -163,27 +148,27 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         private void bindBasic(Post post) {
             dashboardPostPartiTitle.setText(post.parti.title);
             if(post.parti.group.isIndie()) {
-                dashboardPostPrefixGroupTitle.setVisibility(View.GONE);
-                dashboardPostGroupTitle.setVisibility(View.GONE);
+                dashboardPostPrefixGroupTitle.setVisibility(android.view.View.GONE);
+                dashboardPostGroupTitle.setVisibility(android.view.View.GONE);
             } else {
-                dashboardPostPrefixGroupTitle.setVisibility(View.VISIBLE);
-                dashboardPostGroupTitle.setVisibility(View.VISIBLE);
+                dashboardPostPrefixGroupTitle.setVisibility(android.view.View.VISIBLE);
+                dashboardPostGroupTitle.setVisibility(android.view.View.VISIBLE);
                 dashboardPostGroupTitle.setText(post.parti.group.title);
             }
             dashboardPostUserNickname.setText(post.user.nickname);
             dashboardPostCreatedAt.setReferenceTime(post.created_at.getTime());
 
             if(TextUtils.isEmpty(post.parsed_title)) {
-                dashboardPostTitle.setVisibility(View.GONE);
+                dashboardPostTitle.setVisibility(android.view.View.GONE);
             } else {
-                dashboardPostTitle.setVisibility(View.VISIBLE);
+                dashboardPostTitle.setVisibility(android.view.View.VISIBLE);
                 SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostTitle, post.parsed_title);
             }
 
             if(TextUtils.isEmpty(post.parsed_body)) {
-                dashboardPostBody.setVisibility(View.GONE);
+                dashboardPostBody.setVisibility(android.view.View.GONE);
             } else {
-                dashboardPostBody.setVisibility(View.VISIBLE);
+                dashboardPostBody.setVisibility(android.view.View.VISIBLE);
                 SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostBody, post.parsed_body);
             }
         }

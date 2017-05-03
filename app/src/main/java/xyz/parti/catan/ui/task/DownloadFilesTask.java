@@ -17,6 +17,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.api.ServiceGenerator;
+import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.services.PostsService;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
@@ -128,7 +129,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
             } else if(size == RESUT_NO_DATA) {
                 message = "해당 파일이 없습니다";
             }
-            Toast.makeText(context.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+            presenter.onFailDownloadDocFileSource(message);
         } else {
             presenter.onSuccessDownloadDocFileSource(outputFile, fileName);
         }

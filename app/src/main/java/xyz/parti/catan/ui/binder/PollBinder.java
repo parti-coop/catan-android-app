@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,15 +43,15 @@ public class PollBinder {
         pollTitle.setText(post.poll.title);
         bindVotings(post);
 
-        pollAgreeButton.setOnClickListener(new View.OnClickListener() {
+        pollAgreeButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(android.view.View view) {
                 presenter.onClickPollAgree(post);
             }
         });
-        pollDisagreeButton.setOnClickListener(new View.OnClickListener() {
+        pollDisagreeButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(android.view.View view) {
                 presenter.onClickPollDisgree(post);
             }
         });

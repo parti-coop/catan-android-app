@@ -41,4 +41,13 @@ public class InfinitableModelHolder<T> {
 
         return result;
     }
+
+    public static <T> List<T> asModels(Collection<InfinitableModelHolder<T>> c) {
+        List<T> result = new ArrayList<>();
+        for (InfinitableModelHolder<T> item : c) {
+            result.add(item.getModel());
+        }
+
+        return result;
+    }
 }

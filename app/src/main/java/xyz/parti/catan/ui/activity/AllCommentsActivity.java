@@ -1,13 +1,17 @@
 package xyz.parti.catan.ui.activity;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+
+import com.joanzapata.iconify.widget.IconButton;
 
 import org.parceler.Parcels;
 
@@ -19,7 +23,6 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.ReportHelper;
@@ -51,6 +54,8 @@ public class AllCommentsActivity extends BaseActivity {
     ViewGroup noCommentsSignView;
     @BindView(R.id.commentFormEditText)
     EditText commentFormEditText;
+    @BindView(R.id.commentFormSend)
+    IconButton commentSendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,16 +71,18 @@ public class AllCommentsActivity extends BaseActivity {
         commentsService = ServiceGenerator.createService(CommentsService.class, session);
 
         if(post.comments_count > 0) {
+            noCommentsSignView.setVisibility(View.GONE);
+            allCommentsWrapperView.setVisibility(View.VISIBLE);
+
             setUpComments(focusInput);
         } else {
-            setUpNoComments();
+            noCommentsSignView.setVisibility(View.VISIBLE);
+            allCommentsWrapperView.setVisibility(View.GONE);
         }
+        setUpCommentForm();
     }
 
     private void setUpComments(boolean focusInput) {
-        noCommentsSignView.setVisibility(View.GONE);
-        allCommentsWrapperView.setVisibility(View.VISIBLE);
-
         comments = new ArrayList<>();
 
         feedAdapter = new CommentFeedRecyclerViewAdapter(this, comments);
@@ -113,7 +120,6 @@ public class AllCommentsActivity extends BaseActivity {
                 }
             }
         });
-
         loadFirstComments();
 
         if(focusInput) {
@@ -124,11 +130,6 @@ public class AllCommentsActivity extends BaseActivity {
                 }
             });
         }
-    }
-
-    private void setUpNoComments() {
-        noCommentsSignView.setVisibility(View.VISIBLE);
-        allCommentsWrapperView.setVisibility(View.GONE);
     }
 
     private void loadFirstComments() {
@@ -199,5 +200,61 @@ public class AllCommentsActivity extends BaseActivity {
                 ReportHelper.wtf(getApplicationContext(), t);
             }
         });
+    }
+
+    private void setUpCommentForm() {
+        disableCommentSendButton();
+        commentSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickSendComment(post);
+            }
+        });
+
+        commentFormEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(TextUtils.isEmpty(charSequence)) {
+                    disableCommentSendButton();
+                } else {
+                    enableCommentSendButton();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    public void onClickSendComment(Post post) {
+        disableCommentSendButton();
+        commentFormEditText.setEnabled(false);
+        commentSendButton.setText("{fa-circle-o-notch spin}");
+
+
+        allCommentsView.smoothScrollToPosition(comments.size() - 1);
+
+        commentFormEditText.setText(null);
+        commentFormEditText.setEnabled(true);
+
+        commentSendButton.setText("{fa-send}");
+        enableCommentSendButton();
+    }
+
+    void enableCommentSendButton() {
+        commentSendButton.setEnabled(true);
+        commentSendButton.setTextColor(ContextCompat.getColor(this, R.color.style_color_primary));
+    }
+
+    void disableCommentSendButton() {
+        commentSendButton.setEnabled(false);
+        commentSendButton.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
     }
 }

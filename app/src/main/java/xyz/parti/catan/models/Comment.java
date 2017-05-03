@@ -9,7 +9,7 @@ import java.util.Date;
  */
 
 @Parcel
-public class Comment {
+public class Comment implements RecyclableModel<Comment>  {
     public Long id;
     public String body;
     public String truncated_body;
@@ -20,4 +20,9 @@ public class Comment {
     public Boolean is_upvotable;
     public Boolean is_blinded;
     public String choice;
+
+    @Override
+    public boolean isSame(Comment other) {
+        return other != null && id == other.id;
+    }
 }

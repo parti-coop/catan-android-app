@@ -1,6 +1,6 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +17,12 @@ import xyz.parti.catan.ui.binder.CommentBinder;
  */
 
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
-    private Activity activity;
+    private Context activity;
     private final List<InfinitableModelHolder<Comment>> comments;
 
-    public CommentFeedRecyclerViewAdapter(Activity activity, List<InfinitableModelHolder<Comment>> comments) {
-        super(activity, comments);
-        this.activity = activity;
+    public CommentFeedRecyclerViewAdapter(Context context, List<InfinitableModelHolder<Comment>> comments) {
+        super(context);
+        this.activity = context;
         this.comments = comments;
     }
 

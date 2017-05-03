@@ -6,20 +6,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import xyz.parti.catan.R;
+import xyz.parti.catan.models.Post;
+import xyz.parti.catan.models.RecyclableModel;
 
 /**
  * Created by dalikim on 2017. 4. 30..
  */
 
-public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static int TYPE_MODEL = 0;
     private static int TYPE_LOAD = 1;
 
     private Context context;
-    private final List<InfinitableModelHolder<T>> models;
+    private final List<InfinitableModelHolder<T>> holders;
     private OnLoadMoreListener loadMoreListener;
     private boolean isLoading = false, isMoreDataAvailable = true;
 
@@ -27,13 +30,32 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
     abstract boolean isLoadMorePosition(int position);
     abstract void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
 
-    LoadMoreRecyclerViewAdapter(Context context, List<InfinitableModelHolder<T>> model) {
+    LoadMoreRecyclerViewAdapter(Context context) {
         this.context = context;
-        this.models = model;
+        holders = new ArrayList<>();
     }
 
     public void setMoreDataAvailable(boolean moreDataAvailable) {
         this.isMoreDataAvailable = moreDataAvailable;
+    }
+
+    public void appendModels(List<T> items) {
+        this.holders.addAll(InfinitableModelHolder.from(items));
+        notifyAllDataChangedAndLoadFinished();
+    }
+
+    public void appendLoader() {
+        holders.add(InfinitableModelHolder.<T>forLoader());
+        notifyItemInserted(holders.size() - 1);
+    }
+
+    public void removeLastMoldelHolder() {
+        holders.remove(holders.size() - 1);
+        notifyItemRemoved(holders.size() - 1);
+    }
+
+    public boolean isEmpty() {
+        return holders.isEmpty();
     }
 
     public interface OnLoadMoreListener{
@@ -64,7 +86,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
 
     @Override
     final public int getItemViewType(int position) {
-        if(models.get(position).isLoader()){
+        if(holders.get(position).isLoader()){
             return TYPE_LOAD;
         }else{
             return TYPE_MODEL;
@@ -94,7 +116,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
 
     @Override
     final public int getItemCount() {
-        return models.size();
+        return holders.size();
     }
 
     public void notifyAllDataChangedAndLoadFinished(){
@@ -112,6 +134,37 @@ public abstract class LoadMoreRecyclerViewAdapter<T> extends RecyclerView.Adapte
     }
 
     public void clearData() {
-        this.models.clear();
+        this.holders.clear();
     }
+
+    public T getModel(int position) {
+        InfinitableModelHolder<T> result = getHolder(position);
+        if(result == null) {
+            return null;
+        } else {
+            return result.getModel();
+        }
+    }
+
+    public T getLastModel() {
+        return getModel(holders.size() - 1);
+    }
+
+    public InfinitableModelHolder<T> getFirstHolder() {
+        return getHolder(0);
+    }
+
+    public InfinitableModelHolder<T> getHolder(int posistion) {
+        return holders.get(posistion);
+    }
+
+    public void changeModel(T newPost) {
+        for (int i = 0; i < holders.size(); i++) {
+            if (newPost != null && newPost.isSame(getModel(i))) {
+                holders.set(i, InfinitableModelHolder.forModel(newPost));
+                notifyItemChanged(i);
+            }
+        }
+    }
+
 }

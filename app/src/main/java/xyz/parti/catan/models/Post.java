@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 @Parcel
-public class Post {
+public class Post implements RecyclableModel<Post> {
     public Long id;
     public Boolean full;
     public String parsed_title;
@@ -67,5 +67,10 @@ public class Post {
 
     public boolean hasMoreComments() {
         return (this.comments_count > 0 && this.latest_comments != null && this.comments_count > this.latest_comments.length);
+    }
+
+    @Override
+    public boolean isSame(Post other) {
+        return other != null && id == other.id;
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -62,10 +61,10 @@ public class FileSourcesBinder {
 
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
-                View imageView = makeImageCell(context, fileSource.attachment_url, imageFileSourcesRow.size(), col);
-                imageView.setOnClickListener(new View.OnClickListener() {
+                android.view.View imageView = makeImageCell(context, fileSource.attachment_url, imageFileSourcesRow.size(), col);
+                imageView.setOnClickListener(new android.view.View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(android.view.View view) {
                         presenter.onClickImageFileSource(post);
                     }
                 });
@@ -117,7 +116,7 @@ public class FileSourcesBinder {
         return imageFileSourcesRows;
     }
 
-    private View makeImageCell(Context context, String url, int col_size, int current_col) {
+    private android.view.View makeImageCell(Context context, String url, int col_size, int current_col) {
         final ImageView imageView = new ImageView(context);
         
         int height = 300;
@@ -156,16 +155,16 @@ public class FileSourcesBinder {
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
             referencesDocsLayout.addView(fileSourcesLayout);
 
-            fileSourcesLayout.setOnClickListener(new View.OnClickListener() {
+            fileSourcesLayout.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(android.view.View view) {
                     presenter.onClickDocFileSource(post, docFileSource);
                 }
             });
         }
     }
 
-    static public class DocFileSourceHolder {
+    static class DocFileSourceHolder {
         @BindView(R.id.referencesDocFileSourceName)
         TextView referencesDocFileSourceName;
         @BindView(R.id.referencesDocFileSourceSize)

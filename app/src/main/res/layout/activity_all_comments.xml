@@ -54,13 +54,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:maxLines="5" />
-        <xyz.parti.catan.ui.view.SendCommentButton
+        <com.joanzapata.iconify.widget.IconButton
             android:id="@+id/commentFormSend"
             android:layout_width="30dp"
-            android:layout_height="@dimen/comment_send_button"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="{fa-send}"
+            android:textColor="@color/text_muted"
+            android:textSize="@dimen/comment_send_button"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="8dp"
             android:elevation="4dp"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:background="@android:color/transparent" />
     </LinearLayout>
 </LinearLayout>

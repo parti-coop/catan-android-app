@@ -29,14 +29,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.mancj.slideup.SlideUp;
@@ -45,39 +41,24 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import mehdi.sakout.fancybuttons.FancyButton;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
-import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.helper.APIHelper;
-import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.FileSource;
-import xyz.parti.catan.models.Option;
-import xyz.parti.catan.models.Page;
-import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.models.Post;
-import xyz.parti.catan.models.User;
-import xyz.parti.catan.services.FeedbacksService;
-import xyz.parti.catan.services.PostsService;
-import xyz.parti.catan.services.VotingsService;
 import xyz.parti.catan.sessions.SessionManager;
-import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
+import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.NavigationItem;
-import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 
-public class MainActivity extends AppCompatActivity implements PostFeedPresenter {
+public class MainActivity extends AppCompatActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
 
@@ -102,10 +83,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private PostFeedRecyclerViewAdapter feedAdapter;
     private SessionManager session;
-    List<InfinitableModelHolder<Post>> posts;
-
-    private FeedbacksService feedbacksService;
-    private PostsService postsService;
 
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
@@ -113,15 +90,17 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     private BroadcastReceiver newPostsBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            checkNewPosts();
+            if(presenter == null) {
+                return;
+            }
+            presenter.checkNewPosts();
         }
     };
     List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
-
     private SlideUp newPostsSignSlideUp;
     private ProgressDialog downloadProgressDialog;
-    private VotingsService votingsService;
+    private PostFeedPresenter presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 }
                 ButterKnife.bind(MainActivity.this);
 
+                presenter = new PostFeedPresenter(MainActivity.this, session);
                 setUpToolbar();
                 setUpFeed();
                 setUpCheckNewPost();
@@ -155,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadFirstPosts();
+                presenter.loadFirstPosts();
             }
         });
         // Configure the refreshing colors
@@ -235,9 +215,9 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             }
         });
 
-        newPostsSignButton.setOnClickListener(new View.OnClickListener() {
+        newPostsSignButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(android.view.View view) {
                 swipeContainer.post(new Runnable() {
                     @Override
                     public void run() {
@@ -254,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                             }
                         });
                         dashboardView.smoothScrollToPosition(0);
-                        loadFirstPosts();
+                        presenter.loadFirstPosts();
                     }
                 });
             }
@@ -262,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void startCheckNewPostAlarm() {
+        Log.d(Constants.TAG, "startCheckNewPostAlarm");
         newPostsAlarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, LocalBroadcastableAlarmReceiver.class);
         intent.putExtra(LocalBroadcastableAlarmReceiver.INTENT_EXTRA_ACTION, ACTION_CHECK_NEW_POSTS);
@@ -279,16 +260,17 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private void setUpToolbar() {
         setSupportActionBar(appToolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
         appToolbar.setNavigationIcon(R.drawable.ic_menu_white);
     }
 
     private void setUpFeed() {
-        posts = new ArrayList<>();
         downloadProgressDialog = new ProgressDialog(this);
 
-        feedAdapter = new PostFeedRecyclerViewAdapter(this, posts);
-        feedAdapter.setPresenter(this);
+        feedAdapter = new PostFeedRecyclerViewAdapter(this);
+        feedAdapter.setPresenter(presenter);
         feedAdapter.setLoadMoreListener(
             new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
                 @Override
@@ -296,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                     dashboardView.post(new Runnable() {
                         @Override
                         public void run() {
-                            loadMorePosts();
+                            presenter.loadMorePosts();
                         }
                     });
                     //Calling loadMorePosts function in Runnable to fix the
@@ -308,84 +290,9 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         dashboardView.setLayoutManager(new LinearLayoutManager(this));
         dashboardView.setAdapter(feedAdapter);
 
-        postsService = ServiceGenerator.createService(PostsService.class, session);
-        feedbacksService = ServiceGenerator.createService(FeedbacksService.class, session);
-        votingsService = ServiceGenerator.createService(VotingsService.class, session);
-
-        loadFirstPosts();
-    }
-
-    private void loadFirstPosts(){
-        Call<Page<Post>> call = postsService.getDashBoardLastest();
-        APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
-            @Override
-            public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
-                if(response.isSuccessful()){
-                    feedAdapter.clearData();
-                    posts.clear();
-
-                    Page<Post> page = response.body();
-                    posts.addAll(InfinitableModelHolder.from(page.items));
-                    feedAdapter.setMoreDataAvailable(page.has_more_item);
-                    feedAdapter.notifyAllDataChangedAndLoadFinished();
-                }else{
-                    ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
-                }
-                swipeContainer.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(Call<Page<Post>> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-                swipeContainer.setRefreshing(false);
-            }
-        });
-    }
-
-    private void loadMorePosts(){
-        //add loading progress view
-        InfinitableModelHolder<Post> post = posts.get(posts.size() - 1);
-        posts.add(InfinitableModelHolder.<Post>forLoader());
-        feedAdapter.notifyItemInserted(posts.size() - 1);
-
-        Call<Page<Post>> call = postsService.getDashboardAfter(post.getModel().id);
-        call.enqueue(new Callback<Page<Post>>() {
-            @Override
-            public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
-                if(response.isSuccessful()){
-                    //remove loading view
-                    posts.remove(posts.size() - 1);
-
-                    Page<Post> page = response.body();
-                    List<Post> result = page.items;
-                    if(result.size() > 0){
-                        //add loaded data
-                        posts.addAll(InfinitableModelHolder.from(result));
-                        feedAdapter.setMoreDataAvailable(page.has_more_item);
-                    }else{
-                        //result size 0 means there is no more data available at server
-                        feedAdapter.setMoreDataAvailable(false);
-                        //telling adapter to stop calling loadFirstPosts more as no more server data available
-                    }
-
-                    feedAdapter.notifyAllDataChangedAndLoadFinished();
-                    //should call the custom method adapter.notifyAllDataChangedAndLoadFinished here to get the correct loading status
-                }else{
-                    feedAdapter.setMoreDataAvailable(false);
-                    feedAdapter.notifyAllDataChangedAndLoadFinished();
-
-                    ReportHelper.wtf(getApplicationContext(), "Load More Response Error " + String.valueOf(response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Page<Post>> call, Throwable t) {
-                feedAdapter.setMoreDataAvailable(false);
-                feedAdapter.notifyAllDataChangedAndLoadFinished();
-
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+//        loadFirstPosts();
+        this.presenter.setPostFeedRecyclerViewAdapter(feedAdapter);
+        this.presenter.loadFirstPosts();
     }
 
     @Override
@@ -395,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         if(downloadProgressDialog != null) {
             downloadProgressDialog.dismiss();
         }
+        presenter.detachView();
     }
 
     @Override
@@ -411,83 +319,15 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         startCheckNewPostAlarm();
     }
 
-    private void checkNewPosts() {
-        Date lastStrockedAt = null;
-        if(!posts.isEmpty()) {
-            InfinitableModelHolder<Post> firstPost = posts.get(0);
-            if(!firstPost.isLoader()) {
-                lastStrockedAt = firstPost.getModel().last_stroked_at;
-            }
-        }
-        if(lastStrockedAt == null) {
-            return;
-        }
-
-        Call<JsonObject> call = postsService.hasUpdated(lastStrockedAt);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(response.isSuccessful()) {
-                    if (newPostsSignSlideUp.isVisible()) {
-                        return;
-                    }
-
-                    if (response.body().get("has_updated").getAsBoolean()) {
-                        newPostsSignSlideUp.show();
-                    }
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Check new post error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
-    }
-
     @Override
-    public void onClickLinkSource(String url) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-    }
-
-    @Override
-    public void onClickDocFileSource(final Post post, final FileSource docFileSource) {
-        new TedPermission(this)
-                .setPermissionListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted() {
-                        final DownloadFilesTask downloadTask = new DownloadFilesTask(MainActivity.this, MainActivity.this, post.id, docFileSource.id, docFileSource.name);
-                        downloadTask.execute();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-                    }
-                })
-                .setRationaleMessage(R.string.doc_file_source_download_permission_rationale)
-                .setDeniedMessage(R.string.doc_file_source_download_permission_denied)
-                .setPermissions(new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"})
-                .check();
-    }
-
-    @Override
-    public void onClickImageFileSource(Post post) {
-        Intent intent = new Intent(this, PostImagesViewActivity.class);
-        intent.putExtra("post", Parcels.wrap(post));
-        startActivity(intent);
-    }
-
-    @Override
-    public void onClickMoreComments(Post post) {
+    public void showAllComments(Post post) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
         startActivity(intent);
     }
 
     @Override
-    public void onClickNewComment(Post post) {
+    public void showNewCommentForm(Post post) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
         intent.putExtra("focusInput", true);
@@ -495,71 +335,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
-    public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
-        Call<JsonNull> call = feedbacksService.feedback(option.id, isChecked);
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    reloadPost(post);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
-    }
-
-    @Override
-    public void onClickPollAgree(final Post post) {
-        final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
-        Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    post.poll.updateChoice(session.getCurrentUser(), newChoice);
-                    reloadPost(post);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
-    }
-
-    @Override
-    public void onClickPollDisgree(final Post post) {
-        final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
-        Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    post.poll.updateChoice(session.getCurrentUser(), newChoice);
-                    reloadPost(post);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
-    }
-
-    @Override
-    public void onPreDownloadDocFileSource(final DownloadFilesTask task) {
+    public void showDownloadDocFileSourceProgress(final DownloadFilesTask task) {
         downloadProgressDialog.setMessage("다운로드 중");
         downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         downloadProgressDialog.setIndeterminate(true);
@@ -581,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
-    public void onProgressUpdateDownloadDocFileSource(int percentage, String message) {
+    public void updateDownloadDocFileSourceProgress(int percentage, String message) {
         downloadProgressDialog.setIndeterminate(false);
         downloadProgressDialog.setMax(100);
         downloadProgressDialog.setProgress(percentage);
@@ -589,16 +365,34 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
-    public void onPostDownloadDocFileSource() {
+    public void hideDownloadDocFileSourceProgress() {
         downloadProgressDialog.dismiss();
     }
 
     @Override
-    public void onSuccessDownloadDocFileSource(File outputFile, String fileName) {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+    public void downloadFile(final Post post, final FileSource docFileSource) {
+        new TedPermission(this)
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        final DownloadFilesTask downloadTask = new DownloadFilesTask(presenter, MainActivity.this, post.id, docFileSource.id, docFileSource.name);
+                        downloadTask.execute();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                    }
+                })
+                .setRationaleMessage(R.string.doc_file_source_download_permission_rationale)
+                .setDeniedMessage(R.string.doc_file_source_download_permission_denied)
+                .setPermissions(new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"})
+                .check();
+    }
+
+    @Override
+    public void showDownloadedFile(File file, String mimeType) {
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        String mimeType = myMime.getMimeTypeFromExtension(getExtension(fileName));
-        newIntent.setDataAndType(Uri.fromFile(outputFile), mimeType);
+        newIntent.setDataAndType(Uri.fromFile(file), mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             startActivity(newIntent);
@@ -607,37 +401,35 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         }
     }
 
-    private String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+    @Override
+    public void showSimpleMessage(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public User getCurrentUser() {
-        return session.getCurrentUser();
+    public void showImageFileSource(Post post) {
+        Intent intent = new Intent(this, PostImagesViewActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        startActivity(intent);
     }
 
     @Override
-    public PartiAccessToken getPartiAccessToken() {
-        return session.getPartiAccessToken();
+    public void setSwipeRefreshing(boolean b) {
+        swipeContainer.setRefreshing(false);
     }
 
-    public void reloadPost(final Post post) {
-        Call<Post> call = postsService.getPost(post.id);
-        call.enqueue(new Callback<Post>() {
-            @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
-                if(response.isSuccessful()) {
-                    post.survey = response.body().survey;
-                    feedAdapter.rebindData(post);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Rebind survey error : " + response.code());
-                }
-            }
+    @Override
+    public boolean isVisibleNewPostsSignSlideUp() {
+        return newPostsSignSlideUp.isVisible();
+    }
 
-            @Override
-            public void onFailure(Call<Post> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+    @Override
+    public void showNewPostsSignSlideUp() {
+        newPostsSignSlideUp.show();
+    }
+
+    @Override
+    public void showUrl(Uri url) {
+        startActivity(new Intent(Intent.ACTION_VIEW, url));
     }
 }
