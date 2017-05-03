@@ -29,7 +29,7 @@ public class ImageHelper {
         return Glide.with(context)
                 .load(url)
                 .crossFade()
-                .error(R.drawable.error)
+                .error(R.drawable.ic_image_brand_gray)
                 .into(new ScaleImageViewTarget(imageView, scaleType, ImageView.ScaleType.CENTER_INSIDE));
     }
 
