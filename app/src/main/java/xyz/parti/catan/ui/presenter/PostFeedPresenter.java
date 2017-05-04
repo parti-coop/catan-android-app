@@ -79,7 +79,7 @@ public class PostFeedPresenter {
                     feedAdapter.appendModels(page.items);
                     feedAdapter.setMoreDataAvailable(page.has_more_item);
                 }else{
-                    ReportHelper.wtf(getApplicationContext(), "Losd first post error : " + response.code());
+                    ReportHelper.wtf(getApplicationContext(), "Load first post error : " + response.code());
                 }
                 feedAdapter.setLoadFinished();
                 view.setSwipeRefreshing(false);

@@ -39,6 +39,7 @@
                     android:layout_alignParentRight="true"
                     android:background="@drawable/button_bg_transparent"
                     android:text="@string/references_poll_agree_button"
+                    android:textSize="14dp"
                     android:textColor="@color/vote_agree_button" />
                 <LinearLayout
                     android:id="@+id/layout_agree_votes"
@@ -61,7 +62,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_bg_transparent"
-                    android:text="@string/references_poll_agree_button"
+                    android:text="@string/references_poll_disagree_button"
+                    android:textSize="14dp"
                     android:textColor="@color/vote_agree_button" />
                 <LinearLayout
                     android:id="@+id/layout_disagree_votes"

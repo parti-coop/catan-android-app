@@ -29,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -290,8 +291,10 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         listRecyclerView.setHasFixedSize(true);
         listRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         listRecyclerView.setAdapter(feedAdapter);
+        listRecyclerView.setItemViewCacheSize(50);
+        listRecyclerView.setDrawingCacheEnabled(true);
+        listRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-//        loadFirstPosts();
         this.presenter.setPostFeedRecyclerViewAdapter(feedAdapter);
         this.presenter.loadFirstPosts();
     }

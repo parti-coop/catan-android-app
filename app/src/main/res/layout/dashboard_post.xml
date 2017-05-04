@@ -131,6 +131,7 @@
                 android:minWidth="0dp"
                 android:textColor="@color/post_button_text"
                 android:background="@android:color/transparent"
+                android:textSize="14dp"
                 android:text="@string/like" />
             <Button
                 android:id="@+id/button_new_comment"
@@ -141,6 +142,7 @@
                 android:minWidth="0dp"
                 android:textColor="@color/post_button_text"
                 android:background="@android:color/transparent"
+                android:textSize="14dp"
                 android:text="@string/new_comment" />
             <com.joanzapata.iconify.widget.IconButton
                 android:id="@+id/button_show_likes"
@@ -150,6 +152,7 @@
                 android:paddingRight="10dp"
                 android:minWidth="0dp"
                 android:textColor="@color/style_color_accent"
+                android:textSize="14dp"
                 android:background="@android:color/transparent" />
         </LinearLayout>
 
