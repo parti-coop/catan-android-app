@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         if(requestCode == REQUEST_NEW_COMMENT){
             Post post = Parcels.unwrap(data.getParcelableExtra("post"));
             if(this.presenter != null) {
-                presenter.changePost(post);
+                presenter.changePost(post, Post.PLAYLOAD_LATEST_COMMENT);
             }
         }
     }

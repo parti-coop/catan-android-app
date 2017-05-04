@@ -13,6 +13,9 @@ import java.util.List;
 
 @Parcel
 public class Post implements RecyclableModel<Post> {
+    public static final String IS_UPVOTED_BY_ME = "is_upvoted_by_me";
+    public static final String PLAYLOAD_LATEST_COMMENT = "latest_comment";
+
     public Long id;
     public Boolean full;
     public String parsed_title;
@@ -70,8 +73,8 @@ public class Post implements RecyclableModel<Post> {
     }
 
     @Override
-    public boolean isSame(Post other) {
-        return other != null && id != null && id.equals(other.id);
+    public boolean isSame(Object other) {
+        return other != null && other instanceof Post && id != null && id.equals(((Post)other).id);
     }
 
     public void addComment(Comment comment) {

@@ -2,10 +2,10 @@ package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.icu.text.CompactDecimalFormat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +16,19 @@ import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
+import xyz.parti.catan.models.Comment;
+import xyz.parti.catan.models.Poll;
 import xyz.parti.catan.models.Post;
+import xyz.parti.catan.models.Survey;
 import xyz.parti.catan.ui.binder.FileSourcesBinder;
 import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.LinkSourceBinder;
@@ -35,18 +41,21 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
  */
 
 public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
-    private final Context context;
+    private final LayoutInflater inflater;
     private PostFeedPresenter presenter;
 
     public PostFeedRecyclerViewAdapter(Context context) {
-        super(context);
-        this.context = context;
+        inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateModelViewHolder(ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false));
+    public PostFeedRecyclerViewAdapter.BaseViewHolder onCreateModelViewHolder(ViewGroup parent) {
+        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false), presenter);
+    }
+
+    @Override
+    public PostFeedRecyclerViewAdapter.BaseViewHolder onCreateLoaderHolder(ViewGroup parent) {
+        return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
     }
 
     @Override
@@ -59,11 +68,36 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(getModel(position));
     }
 
+    @Override
+    public void onBindViewHolder(PostFeedRecyclerViewAdapter.BaseViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            if(holder.isLoader()) {
+                return;
+            }
+            for (Object payload : payloads) {
+                PostViewHolder postViewHolder = (PostViewHolder) holder;
+                if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
+                    postViewHolder.bindComments(getModel(position));
+                } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
+                    postViewHolder.bindLike(getModel(position));
+                } else if(payload instanceof Survey) {
+                    postViewHolder.bindReferences(getModel(position));
+                } else if(payload instanceof Poll) {
+                    postViewHolder.bindReferences(getModel(position));
+                } else {
+                    Log.d(Constants.TAG, "PostFeedRecyclerView bind : invalid playload");
+                }
+            }
+        }
+    }
+
     public void setPresenter(PostFeedPresenter presenter) {
         this.presenter = presenter;
     }
 
-    class PostViewHolder extends RecyclerView.ViewHolder {
+    static class PostViewHolder extends ModelViewHolder {
         @BindView(R.id.dashboardPostPartiLogo)
         ImageView dashboardPostPartiLogo;
         @BindView(R.id.dashboardPostPartiTitle)
@@ -93,16 +127,21 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         @BindView(R.id.dashboardPostComments)
         LinearLayout commentsLayout;
 
+        private final PostFeedPresenter presenter;
+        private final Context context;
         private LayoutInflater inflater;
 
-        PostViewHolder(android.view.View view) {
+        PostViewHolder(android.view.View view, PostFeedPresenter presenter) {
             super(view);
+            this.context = view.getContext();
+            this.presenter = presenter;
             this.inflater =  LayoutInflater.from(itemView.getContext());
             ButterKnife.bind(this, view);
         }
 
         void bindData(Post post){
             bindBasic(post);
+            bindLike(post);
             bindComments(post);
             bindReferences(post);
         }
@@ -112,14 +151,18 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
 
         private void bindReferences(Post post) {
-            dashboardPostReferences.removeAllViews();
-            dashboardPostReferences.setVisibility(ViewGroup.GONE);
+            resetReferences();
 
             bindFileSources(post);
             bindLinkSources(post);
             bindPoll(post);
             bindSurvey(post);
             bindComments(post);
+        }
+
+        private void resetReferences() {
+            dashboardPostReferences.removeAllViews();
+            dashboardPostReferences.setVisibility(ViewGroup.GONE);
         }
 
         private void bindLinkSources(final Post post) {
@@ -163,6 +206,29 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             }
         }
 
+        private void bindLike(final Post post) {
+            if(post.is_upvoted_by_me) {
+                dashbardPostLikeButton.setTypeface(null, Typeface.BOLD);
+                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
+            } else {
+                dashbardPostLikeButton.setTypeface(null, Typeface.NORMAL);
+                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.post_button_text));
+            }
+            dashbardPostLikeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickLike(post);
+                }
+            });
+
+            if(post.upvotes_count > 0) {
+                dashbardPostShowLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
+                dashbardPostShowLikesButton.setVisibility(View.VISIBLE);
+            } else {
+                dashbardPostShowLikesButton.setVisibility(View.GONE);
+            }
+        }
+
         private void bindBasic(final Post post) {
             ImageHelper.loadInto(dashboardPostPartiLogo, post.parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
             dashboardPostPartiTitle.setText(post.parti.title);
@@ -198,27 +264,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                     presenter.onClickNewComment(post);
                 }
             });
-
-            if(post.is_upvoted_by_me) {
-                dashbardPostLikeButton.setTypeface(null, Typeface.BOLD);
-                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
-            } else {
-                dashbardPostLikeButton.setTypeface(null, Typeface.NORMAL);
-                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.post_button_text));
-            }
-            dashbardPostLikeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.onClickLike(post);
-                }
-            });
-
-            if(post.upvotes_count > 0) {
-                dashbardPostShowLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
-                dashbardPostShowLikesButton.setVisibility(View.VISIBLE);
-            } else {
-                dashbardPostShowLikesButton.setVisibility(View.GONE);
-            }
         }
     }
+
 }

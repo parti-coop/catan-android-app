@@ -5,5 +5,5 @@ package xyz.parti.catan.models;
  */
 
 public interface RecyclableModel<T> {
-    boolean isSame(T other);
+    boolean isSame(Object other);
 }

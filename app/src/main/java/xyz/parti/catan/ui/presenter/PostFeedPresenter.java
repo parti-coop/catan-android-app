@@ -188,8 +188,8 @@ public class PostFeedPresenter {
         });
     }
 
-    public void changePost(final Post post) {
-        feedAdapter.changeModel(post);
+    public void changePost(final Post post, Object playload) {
+        feedAdapter.changeModel(post, playload);
     }
 
     public void reloadPost(final Post post) {
@@ -199,7 +199,7 @@ public class PostFeedPresenter {
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if(response.isSuccessful()) {
                     post.survey = response.body().survey;
-                    feedAdapter.changeModel(post);
+                    feedAdapter.changeModel(post, post.survey);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Rebind survey error : " + response.code());
                 }
@@ -233,7 +233,7 @@ public class PostFeedPresenter {
             public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
                 if(response.isSuccessful()) {
                     post.toggleUpvoting();
-                    changePost(post);
+                    changePost(post, Post.IS_UPVOTED_BY_ME);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
                 }
@@ -282,7 +282,7 @@ public class PostFeedPresenter {
             public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
                 if(response.isSuccessful()) {
                     post.poll.updateChoice(getCurrentUser(), newChoice);
-                    changePost(post);
+                    changePost(post, post.poll);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
                 }
@@ -303,7 +303,7 @@ public class PostFeedPresenter {
             public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
                 if(response.isSuccessful()) {
                     post.poll.updateChoice(getCurrentUser(), newChoice);
-                    changePost(post);
+                    changePost(post, post.poll);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
                 }

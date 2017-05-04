@@ -15,17 +15,20 @@ import xyz.parti.catan.ui.binder.CommentBinder;
  */
 
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
-    private Context activity;
+    private final LayoutInflater inflater;
 
     public CommentFeedRecyclerViewAdapter(Context context) {
-        super(context);
-        this.activity = context;
+        inflater = LayoutInflater.from(context);
     }
 
     @Override
-    RecyclerView.ViewHolder onCreateModelViewHolder(ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        return new CommentFeedRecyclerViewAdapter.CommentViewHolder(inflater.inflate(R.layout.comment, parent, false));
+    LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateModelViewHolder(ViewGroup parent) {
+        return new CommentFeedRecyclerViewAdapter.CommentViewHolder(inflater.inflate(R.layout.comment, parent, false), this);
+    }
+
+    @Override
+    BaseViewHolder onCreateLoaderHolder(ViewGroup parent) {
+        return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
     }
 
     @Override
@@ -42,16 +45,23 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
         return getLastPosition() == position;
     }
 
-    private class CommentViewHolder extends RecyclerView.ViewHolder {
+    private static class CommentViewHolder extends ModelViewHolder {
         private View view;
+        private CommentFeedRecyclerViewAdapter adapter;
 
-        CommentViewHolder(View view) {
+        CommentViewHolder(View view, CommentFeedRecyclerViewAdapter adapter) {
             super(view);
             this.view = view;
+            this.adapter = adapter;
+        }
+
+        @Override
+        boolean isLoader() {
+            return false;
         }
 
         public void bindData(Comment comment, int position) {
-            boolean isLineVisible = !isLastPosition(position);
+            boolean isLineVisible = !adapter.isLastPosition(position);
             new CommentBinder(view).bindData(comment, isLineVisible);
         }
     }

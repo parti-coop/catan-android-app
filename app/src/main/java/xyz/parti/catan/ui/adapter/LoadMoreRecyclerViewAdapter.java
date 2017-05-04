@@ -2,7 +2,6 @@ package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +9,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.models.RecyclableModel;
 
@@ -20,21 +17,20 @@ import xyz.parti.catan.models.RecyclableModel;
  * Created by dalikim on 2017. 4. 30..
  */
 
-public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
     private static int TYPE_MODEL = 0;
     private static int TYPE_LOAD = 1;
 
-    private Context context;
     private final List<InfinitableModelHolder<T>> holders;
     private OnLoadMoreListener loadMoreListener;
     private boolean isLoading = false, isMoreDataAvailable = true;
 
-    abstract RecyclerView.ViewHolder onCreateModelViewHolder(ViewGroup parent);
+    abstract LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateModelViewHolder(ViewGroup parent);
     abstract boolean isLoadMorePosition(int position);
     abstract void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
+    abstract LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateLoaderHolder(ViewGroup parent);
 
-    LoadMoreRecyclerViewAdapter(Context context) {
-        this.context = context;
+    LoadMoreRecyclerViewAdapter() {
         holders = new ArrayList<>();
     }
 
@@ -101,12 +97,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         loadMoreListener.onLoadMore();
     }
 
-    private class LoadHolder extends RecyclerView.ViewHolder{
-        LoadHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
     @Override
     final public int getItemViewType(int position) {
         if(holders.get(position).isLoader()){
@@ -117,17 +107,18 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     @Override
-    final public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+    final public LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == TYPE_MODEL) {
             return onCreateModelViewHolder(parent);
         } else {
-            return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
+            return onCreateLoaderHolder(parent);
+//        LayoutInflater inflater = LayoutInflater.from(context);
+//            return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
         }
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(LoadMoreRecyclerViewAdapter.BaseViewHolder viewHolder, int position) {
         if(getItemViewType(position) == TYPE_MODEL){
             onBildModelViewHolder(viewHolder, position);
         }
@@ -141,7 +132,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     final public int getItemCount() {
         return holders.size();
     }
-
 
     public void notifyDataPrepended(int count) {
         notifyItemRangeInserted(0, count - 1);
@@ -184,6 +174,10 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public void changeModel(T model) {
+        changeModel(model, null);
+    }
+
+    public void changeModel(T model, Object payload) {
         for (int i = 0; i < holders.size(); i++) {
             if(model instanceof Post) {
                 Post item = (Post) getModel(i);
@@ -191,7 +185,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
 
             if (model != null && model.isSame(getModel(i))) {
                 holders.set(i, InfinitableModelHolder.forModel(model));
-                notifyItemChanged(i);
+                notifyItemChanged(i, payload);
             }
         }
     }
@@ -200,4 +194,33 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         return holders.size() - 1;
     }
 
+    static abstract class BaseViewHolder extends RecyclerView.ViewHolder {
+        BaseViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        abstract boolean isLoader();
+    }
+
+    static abstract class ModelViewHolder extends BaseViewHolder {
+        ModelViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        boolean isLoader() {
+            return false;
+        }
+    }
+
+    static class LoadHolder extends BaseViewHolder {
+        LoadHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        boolean isLoader() {
+            return true;
+        }
+    }
 }

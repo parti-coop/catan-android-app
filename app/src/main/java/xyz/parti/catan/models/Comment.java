@@ -22,7 +22,7 @@ public class Comment implements RecyclableModel<Comment>  {
     public String choice;
 
     @Override
-    public boolean isSame(Comment other) {
-        return other != null && id != null && id.equals(other.id);
+    public boolean isSame(Object other) {
+        return other != null && other instanceof Comment && id != null && id.equals(((Comment)other).id);
     }
 }
