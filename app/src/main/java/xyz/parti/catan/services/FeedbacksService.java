@@ -14,5 +14,5 @@ import retrofit2.http.POST;
 public interface FeedbacksService {
     @FormUrlEncoded
     @POST("/api/v1/feedbacks")
-    Call<JsonNull> feedback(@Field("option_id") long option_id, @Field("selected") boolean selected);
+    Call<JsonNull> feedback(@Field("option_id") long optionId, @Field("selected") boolean selected);
 }

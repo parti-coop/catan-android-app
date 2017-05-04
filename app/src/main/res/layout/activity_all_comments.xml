@@ -6,20 +6,20 @@
     android:elevation="@dimen/default_elevation"
     android:orientation="vertical">
     <FrameLayout
-        android:id="@+id/allCommentsWrapper"
+        android:id="@+id/layout_list_wrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_weight="1">
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/allComments"
+            android:id="@+id/recyclerview_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none" />
     </FrameLayout>
     <LinearLayout
-        android:id="@+id/noCommentsSign"
+        android:id="@+id/layout_no_comments_sign"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -46,7 +46,7 @@
         android:elevation="@dimen/comment_elevation"
         android:background="#fff">
         <EditText
-            android:id="@+id/commentFormEditText"
+            android:id="@+id/edittext_new_comment_input"
             android:hint="@string/comment_form_placeholer"
             android:background="@drawable/edittext_bg_comment"
             android:paddingBottom="20dp"
@@ -56,7 +56,7 @@
             android:layout_weight="1"
             android:maxLines="5" />
         <com.joanzapata.iconify.widget.IconButton
-            android:id="@+id/commentFormSend"
+            android:id="@+id/button_new_comment_create"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:gravity="center"

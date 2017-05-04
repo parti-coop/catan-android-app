@@ -11,30 +11,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <CheckBox
-            android:id="@+id/optionCheckBox"
+            android:id="@+id/checkbox"
             android:layout_marginLeft="-5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <com.joanzapata.iconify.widget.IconTextView
-            android:id="@+id/optionSelected"
+            android:id="@+id/textview_selected_sign"
             android:text="{fa-check}"
             android:layout_marginRight="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
-            android:id="@+id/optionBody"
+            android:id="@+id/textview_body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/feedbacksCount"
+        android:id="@+id/textview_feedbacks_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text_muted"/>
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressbar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

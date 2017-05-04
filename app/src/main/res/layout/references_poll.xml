@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:padding="18dp">
         <TextView
-            android:id="@+id/pollTitle"
+            android:id="@+id/textview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -24,7 +24,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/pollTitle"
+            android:layout_below="@id/textview_title"
             android:orientation="horizontal">
             <RelativeLayout
                 android:layout_width="0dp"
@@ -33,7 +33,7 @@
                 android:orientation="vertical"
                 android:layout_marginRight="5dp">
                 <com.joanzapata.iconify.widget.IconButton
-                    android:id="@+id/pollAgreeButton"
+                    android:id="@+id/button_agree"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -41,13 +41,13 @@
                     android:text="@string/references_poll_agree_button"
                     android:textColor="@color/vote_agree_button" />
                 <LinearLayout
-                    android:id="@+id/pollAgreeVotes"
+                    android:id="@+id/layout_agree_votes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:layout_below="@id/pollAgreeButton" />
+                    android:layout_below="@id/button_agree" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -57,19 +57,19 @@
                 android:orientation="vertical"
                 android:layout_marginLeft="5dp">
                 <com.joanzapata.iconify.widget.IconButton
-                    android:id="@+id/pollDisagreeButton"
+                    android:id="@+id/button_disagree"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_bg_transparent"
                     android:text="@string/references_poll_agree_button"
                     android:textColor="@color/vote_agree_button" />
                 <LinearLayout
-                    android:id="@+id/pollDisagreeVotes"
+                    android:id="@+id/layout_disagree_votes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:layout_below="@id/pollDisagreeButton" />
+                    android:layout_below="@id/button_disagree" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>

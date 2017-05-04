@@ -32,14 +32,14 @@ import xyz.parti.catan.models.Post;
 public class PostImagesViewActivity extends BaseActivity {
     Post post;
     private ImageFragmentPagerAdapter imageFragmentPagerAdapter;
-    @BindView(R.id.imagesViewPager)
-    ViewPager imagesViewPager;
-    @BindView(R.id.postImagesViewPostCreatedAt)
-    RelativeTimeTextView postImagesViewPostCreatedAt;
-    @BindView(R.id.postImagesViewPostDesc)
-    TextView postImagesViewPostDesc;
-    @BindView(R.id.postImagesViewPostUserNickname)
-    TextView postImagesViewPostUserNickname;
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
+    @BindView(R.id.textview_post_created_at)
+    RelativeTimeTextView postCreatedAtTextView;
+    @BindView(R.id.textview_post_desc)
+    TextView postDescTextView;
+    @BindView(R.id.textview_user_nickname)
+    TextView userNicknameTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +50,11 @@ public class PostImagesViewActivity extends BaseActivity {
         this.post = Parcels.unwrap(getIntent().getParcelableExtra("post"));
 
         imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager(), post.getImageFileSources());
-        imagesViewPager.setAdapter(imageFragmentPagerAdapter);
+        viewPager.setAdapter(imageFragmentPagerAdapter);
 
-        this.postImagesViewPostDesc.setText(TextHelper.converToHtml("<strong>" + this.post.specific_desc_striped_tags + "</strong>"));
-        this.postImagesViewPostCreatedAt.setReferenceTime(this.post.created_at.getTime());
-        this.postImagesViewPostUserNickname.setText(this.post.user.nickname);
+        this.postDescTextView.setText(TextHelper.converToHtml("<strong>" + this.post.specific_desc_striped_tags + "</strong>"));
+        this.postCreatedAtTextView.setReferenceTime(this.post.created_at.getTime());
+        this.userNicknameTextView.setText(this.post.user.nickname);
     }
 
     public static class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -79,7 +79,7 @@ public class PostImagesViewActivity extends BaseActivity {
     }
 
     public static class SwipeFragment extends Fragment {
-        @BindView(R.id.imageView)
+        @BindView(R.id.imageview)
         ImageView imageView;
 
         @Override

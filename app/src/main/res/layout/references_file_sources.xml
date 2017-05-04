@@ -6,13 +6,13 @@
     android:gravity="bottom"
     android:orientation="vertical">
     <LinearLayout
-        android:id="@+id/referencesImagesLayout"
+        android:id="@+id/layout_images"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/referencesDocsLayout"
+        android:id="@+id/layout_docs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

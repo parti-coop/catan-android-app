@@ -20,7 +20,7 @@
             android:padding="@dimen/post_card_padding"
             android:background="@drawable/border_bottom_on_white_bg">
             <ImageView
-                android:id="@+id/dashboardPostPartiLogo"
+                android:id="@+id/imageview_parti_logo"
                 android:layout_width="@dimen/feed_item_parti_logo"
                 android:layout_height="@dimen/feed_item_parti_logo"
                 android:layout_gravity="center"
@@ -29,7 +29,7 @@
                 android:gravity="left"
                 android:src="@drawable/img_sample_parti_logo" />
             <TextView
-                android:id="@+id/dashboardPostPartiTitle"
+                android:id="@+id/textview_parti_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="220dp"
@@ -39,14 +39,14 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
             <com.joanzapata.iconify.widget.IconTextView
-                android:id="@+id/dashboardPostPrefixGroupTitle"
+                android:id="@+id/textview_prefix_group_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginRight="5dp"
                 android:text="@string/dashboard_post_prefix_group_title" />
             <TextView
-                android:id="@+id/dashboardPostGroupTitle"
+                android:id="@+id/textview_group_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -60,7 +60,7 @@
             android:orientation="horizontal"
             android:padding="@dimen/post_card_padding">
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/dashboardPostUserImage"
+                android:id="@+id/imageview_user_image"
                 android:layout_width="@dimen/feed_item_user_image"
                 android:layout_height="@dimen/feed_item_user_image"
                 android:layout_gravity="center"
@@ -72,11 +72,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/dashboardPostUserNickname"
+                    android:id="@+id/textview_user_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <com.github.curioustechizen.ago.RelativeTimeTextView
-                    android:id="@+id/dashboardPostCreatedAt"
+                    android:id="@+id/textview_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -84,7 +84,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/dashboardPostTitle"
+            android:id="@+id/textview_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
@@ -94,7 +94,7 @@
             android:lineSpacingMultiplier="1.1" />
 
         <TextView
-            android:id="@+id/dashboardPostBody"
+            android:id="@+id/textview_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
@@ -103,7 +103,7 @@
             android:lineSpacingMultiplier="1.1" />
 
         <LinearLayout
-            android:id="@+id/dashboardPostReferences"
+            android:id="@+id/layout_references"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
             android:layout_marginLeft="@dimen/post_card_padding"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/dashbardPostLikeButton"
+                android:id="@+id/button_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -133,7 +133,7 @@
                 android:background="@android:color/transparent"
                 android:text="@string/like" />
             <Button
-                android:id="@+id/dashbardPostNewCommentButton"
+                android:id="@+id/button_new_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -143,7 +143,7 @@
                 android:background="@android:color/transparent"
                 android:text="@string/new_comment" />
             <com.joanzapata.iconify.widget.IconButton
-                android:id="@+id/dashbardPostShowLikesButton"
+                android:id="@+id/button_show_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -159,7 +159,7 @@
             android:background="@color/comments_border"/>
 
         <LinearLayout
-            android:id="@+id/dashboardPostComments"
+            android:id="@+id/layout_comments_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/comments_background"
@@ -167,13 +167,13 @@
             android:paddingRight="@dimen/post_card_padding"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/dashboardPostCommentsLoadMore"
+                android:id="@+id/textview_comments_load_more"
                 android:text="@string/load_more_comments"
                 android:layout_marginTop="6dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <LinearLayout
-                android:id="@+id/dashboardPostCommentsList"
+                android:id="@+id/layout_comments_list"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -184,13 +184,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/commentFormUserImage"
+                    android:id="@+id/imageview_new_comment_user_image"
                     android:layout_width="@dimen/comment_user_image"
                     android:layout_height="@dimen/comment_user_image"
                     android:layout_gravity="top"
                     android:paddingRight="5dp" />
                 <TextView
-                    android:id="@+id/commentFormInput"
+                    android:id="@+id/textview_new_comment_input"
                     android:text="@string/comment_form_placeholer"
                     android:background="@drawable/edittext_bg_comment"
                     android:padding="5dp"

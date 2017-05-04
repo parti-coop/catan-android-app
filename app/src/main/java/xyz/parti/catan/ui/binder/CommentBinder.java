@@ -20,16 +20,16 @@ import xyz.parti.catan.models.Comment;
  */
 
 public class CommentBinder {
-    @BindView(R.id.commentUserImage)
-    CircleImageView userImageiew;
-    @BindView(R.id.commentUserNickname)
-    TextView userNicknameText;
-    @BindView(R.id.commentBody)
-    TextView bodyText;
-    @BindView(R.id.commentCreatedAt)
-    RelativeTimeTextView createdAtText;
-    @BindView(R.id.commentLine)
-    View commentLineView;
+    @BindView(R.id.imageview_user_image)
+    CircleImageView userImageImageView;
+    @BindView(R.id.textview_user_nickname)
+    TextView userNicknameTextView;
+    @BindView(R.id.textview_body)
+    TextView bodyTextView;
+    @BindView(R.id.textview_created_at)
+    RelativeTimeTextView createdAtTextView;
+    @BindView(R.id.view_divider)
+    View dividerView;
 
     private final Context context;
 
@@ -42,15 +42,15 @@ public class CommentBinder {
         bindData(comment, true);
     }
     public void bindData(Comment comment, boolean isLineVisible) {
-        ImageHelper.loadInto(userImageiew, comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
-        userNicknameText.setText(comment.user.nickname);
-        SmartHtmlTextViewHelper.setTextViewHTML(context, bodyText, comment.body);
-        createdAtText.setReferenceTime(comment.created_at.getTime());
+        ImageHelper.loadInto(userImageImageView, comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        userNicknameTextView.setText(comment.user.nickname);
+        SmartHtmlTextViewHelper.setTextViewHTML(context, bodyTextView, comment.body);
+        createdAtTextView.setReferenceTime(comment.created_at.getTime());
 
         if(isLineVisible) {
-            commentLineView.setVisibility(View.VISIBLE);
+            dividerView.setVisibility(View.VISIBLE);
         } else {
-            commentLineView.setVisibility(View.GONE);
+            dividerView.setVisibility(View.GONE);
         }
     }
 }

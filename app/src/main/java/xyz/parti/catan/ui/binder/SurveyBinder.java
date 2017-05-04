@@ -17,10 +17,10 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
  */
 
 public class SurveyBinder {
-    @BindView(R.id.options)
+    @BindView(R.id.layout_options)
     LinearLayout optionsLayout;
-    @BindView(R.id.footnote)
-    TextView footnoteText;
+    @BindView(R.id.textview_footnote)
+    TextView footnoteTextView;
 
     private PostFeedPresenter presenter;
     private LayoutInflater inflater;
@@ -46,7 +46,7 @@ public class SurveyBinder {
         if(post.survey.is_open && !post.survey.is_feedbacked_by_me && post.survey.feedbacks_count > 0) {
             footnote += "\n" + "투표 후 현황을 확인할 수 있습니다";
         }
-        footnoteText.setText(footnote);
+        footnoteTextView.setText(footnote);
     }
 
     private void bindOption(Post post, Option option) {

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,16 +39,16 @@ import xyz.parti.catan.sessions.SessionManager;
 public class LoginMenuActivity extends BaseActivity {
     private UserLoginTask authTask = null;
 
-    @BindView(R.id.loginByEmailButton)
+    @BindView(R.id.button_login_by_email)
     View loginByEmailButton;
-    @BindView(R.id.loginByFacebookButton)
+    @BindView(R.id.button_login_by_facebook)
     View loginByFacebookButton;
-    @BindView(R.id.signUpLink)
-    View signUpLink;
-    @BindView(R.id.loginProgress)
-    View progressView;
-    @BindView(R.id.controllsView)
-    View controllsView;
+    @BindView(R.id.button_sign_up)
+    View signUpButton;
+    @BindView(R.id.progressbar_status)
+    View statusProgressBar;
+    @BindView(R.id.layout_panel)
+    View panelLayout;
 
     private CallbackManager callbackManager;
     private SessionManager session;
@@ -78,7 +77,7 @@ public class LoginMenuActivity extends BaseActivity {
             }
         });
 
-        signUpLink.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
@@ -139,28 +138,28 @@ public class LoginMenuActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            controllsView.setVisibility(show ? View.GONE : View.VISIBLE);
-            controllsView.animate().setDuration(shortAnimTime).alpha(
+            panelLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+            panelLayout.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    controllsView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    panelLayout.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
-            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressView.animate().setDuration(shortAnimTime).alpha(
+            statusProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            statusProgressBar.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    statusProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
-            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            controllsView.setVisibility(show ? View.GONE : View.VISIBLE);
+            statusProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            panelLayout.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

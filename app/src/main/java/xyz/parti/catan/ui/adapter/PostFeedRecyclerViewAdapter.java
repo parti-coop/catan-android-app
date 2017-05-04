@@ -25,7 +25,6 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
-import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Poll;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.models.Survey;
@@ -98,34 +97,34 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
     }
 
     static class PostViewHolder extends ModelViewHolder {
-        @BindView(R.id.dashboardPostPartiLogo)
-        ImageView dashboardPostPartiLogo;
-        @BindView(R.id.dashboardPostPartiTitle)
-        TextView dashboardPostPartiTitle;
-        @BindView(R.id.dashboardPostGroupTitle)
-        TextView dashboardPostGroupTitle;
-        @BindView(R.id.dashboardPostUserNickname)
-        TextView dashboardPostUserNickname;
-        @BindView(R.id.dashboardPostUserImage)
-        CircleImageView dashboardPostUserImage;
-        @BindView(R.id.dashboardPostCreatedAt)
-        RelativeTimeTextView dashboardPostCreatedAt;
-        @BindView(R.id.dashboardPostBody)
-        TextView dashboardPostBody;
-        @BindView(R.id.dashboardPostTitle)
-        TextView dashboardPostTitle;
-        @BindView(R.id.dashboardPostPrefixGroupTitle)
-        TextView dashboardPostPrefixGroupTitle;
-        @BindView(R.id.dashboardPostReferences)
-        LinearLayout dashboardPostReferences;
-        @BindView(R.id.dashbardPostLikeButton)
-        Button dashbardPostLikeButton;
-        @BindView(R.id.dashbardPostNewCommentButton)
-        Button dashbardPostNewCommentButton;
-        @BindView(R.id.dashbardPostShowLikesButton)
-        Button dashbardPostShowLikesButton;
-        @BindView(R.id.dashboardPostComments)
-        LinearLayout commentsLayout;
+        @BindView(R.id.imageview_parti_logo)
+        ImageView partiLogoImageView;
+        @BindView(R.id.textview_parti_title)
+        TextView partiTitleTextView;
+        @BindView(R.id.textview_group_title)
+        TextView groupTitleTextView;
+        @BindView(R.id.textview_user_nickname)
+        TextView userNicknameTextView;
+        @BindView(R.id.imageview_user_image)
+        CircleImageView userImageImageView;
+        @BindView(R.id.textview_created_at)
+        RelativeTimeTextView createdAtTextView;
+        @BindView(R.id.textview_body)
+        TextView bodyTextView;
+        @BindView(R.id.textview_title)
+        TextView titleTextView;
+        @BindView(R.id.textview_prefix_group_title)
+        TextView prefixGroupTitleTextView;
+        @BindView(R.id.layout_references)
+        LinearLayout referencesLayout;
+        @BindView(R.id.button_like)
+        Button likeButton;
+        @BindView(R.id.button_new_comment)
+        Button newCommentButton;
+        @BindView(R.id.button_show_likes)
+        Button showLikesButton;
+        @BindView(R.id.layout_comments_section)
+        LinearLayout commentsSectionLayout;
 
         private final PostFeedPresenter presenter;
         private final Context context;
@@ -147,7 +146,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
 
         private void bindComments(Post post) {
-            new LatestCommentsBinder(presenter, commentsLayout).bindData(post);
+            new LatestCommentsBinder(presenter, commentsSectionLayout).bindData(post);
         }
 
         private void bindReferences(Post post) {
@@ -161,13 +160,13 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
 
         private void resetReferences() {
-            dashboardPostReferences.removeAllViews();
-            dashboardPostReferences.setVisibility(ViewGroup.GONE);
+            referencesLayout.removeAllViews();
+            referencesLayout.setVisibility(ViewGroup.GONE);
         }
 
         private void bindLinkSources(final Post post) {
             if(post.link_source != null) {
-                LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, dashboardPostReferences, true);
+                LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, referencesLayout, true);
                 linkSourcesLayout.setOnClickListener(new android.view.View.OnClickListener() {
                     @Override
                     public void onClick(android.view.View view) {
@@ -177,44 +176,44 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                 });
                 new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
 
-                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+                referencesLayout.setVisibility(ViewGroup.VISIBLE);
             }
         }
 
         private void bindFileSources(Post post) {
             if(post.file_sources != null) {
-                LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, dashboardPostReferences, true);
+                LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, referencesLayout, true);
                 new FileSourcesBinder(presenter, fileSourcesLayout).bindData(post);
 
-                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+                referencesLayout.setVisibility(ViewGroup.VISIBLE);
             }
         }
 
         private void bindPoll(final Post post) {
             if(post.poll != null) {
-                LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, dashboardPostReferences, true);
+                LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, referencesLayout, true);
                 new PollBinder(presenter, pollLayout).bindData(post);
-                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+                referencesLayout.setVisibility(ViewGroup.VISIBLE);
             }
         }
 
         private void bindSurvey(final Post post) {
             if(post.survey != null) {
-                LinearLayout surveyLayout = (LinearLayout) inflater.inflate(R.layout.references_survey, dashboardPostReferences, true);
+                LinearLayout surveyLayout = (LinearLayout) inflater.inflate(R.layout.references_survey, referencesLayout, true);
                 new SurveyBinder(presenter, surveyLayout).bindData(post);
-                dashboardPostReferences.setVisibility(ViewGroup.VISIBLE);
+                referencesLayout.setVisibility(ViewGroup.VISIBLE);
             }
         }
 
         private void bindLike(final Post post) {
             if(post.is_upvoted_by_me) {
-                dashbardPostLikeButton.setTypeface(null, Typeface.BOLD);
-                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
+                likeButton.setTypeface(null, Typeface.BOLD);
+                likeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
             } else {
-                dashbardPostLikeButton.setTypeface(null, Typeface.NORMAL);
-                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.post_button_text));
+                likeButton.setTypeface(null, Typeface.NORMAL);
+                likeButton.setTextColor(ContextCompat.getColor(context, R.color.post_button_text));
             }
-            dashbardPostLikeButton.setOnClickListener(new View.OnClickListener() {
+            likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     presenter.onClickLike(post);
@@ -222,43 +221,43 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             });
 
             if(post.upvotes_count > 0) {
-                dashbardPostShowLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
-                dashbardPostShowLikesButton.setVisibility(View.VISIBLE);
+                showLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
+                showLikesButton.setVisibility(View.VISIBLE);
             } else {
-                dashbardPostShowLikesButton.setVisibility(View.GONE);
+                showLikesButton.setVisibility(View.GONE);
             }
         }
 
         private void bindBasic(final Post post) {
-            ImageHelper.loadInto(dashboardPostPartiLogo, post.parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
-            dashboardPostPartiTitle.setText(post.parti.title);
+            ImageHelper.loadInto(partiLogoImageView, post.parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+            partiTitleTextView.setText(post.parti.title);
             if(post.parti.group.isIndie()) {
-                dashboardPostPrefixGroupTitle.setVisibility(android.view.View.GONE);
-                dashboardPostGroupTitle.setVisibility(android.view.View.GONE);
+                prefixGroupTitleTextView.setVisibility(android.view.View.GONE);
+                groupTitleTextView.setVisibility(android.view.View.GONE);
             } else {
-                dashboardPostPrefixGroupTitle.setVisibility(android.view.View.VISIBLE);
-                dashboardPostGroupTitle.setVisibility(android.view.View.VISIBLE);
-                dashboardPostGroupTitle.setText(post.parti.group.title);
+                prefixGroupTitleTextView.setVisibility(android.view.View.VISIBLE);
+                groupTitleTextView.setVisibility(android.view.View.VISIBLE);
+                groupTitleTextView.setText(post.parti.group.title);
             }
-            ImageHelper.loadInto(dashboardPostUserImage, post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
-            dashboardPostUserNickname.setText(post.user.nickname);
-            dashboardPostCreatedAt.setReferenceTime(post.created_at.getTime());
+            ImageHelper.loadInto(userImageImageView, post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+            userNicknameTextView.setText(post.user.nickname);
+            createdAtTextView.setReferenceTime(post.created_at.getTime());
 
             if(TextUtils.isEmpty(post.parsed_title)) {
-                dashboardPostTitle.setVisibility(android.view.View.GONE);
+                titleTextView.setVisibility(android.view.View.GONE);
             } else {
-                dashboardPostTitle.setVisibility(android.view.View.VISIBLE);
-                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostTitle, post.parsed_title);
+                titleTextView.setVisibility(android.view.View.VISIBLE);
+                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), titleTextView, post.parsed_title);
             }
 
             if(TextUtils.isEmpty(post.parsed_body)) {
-                dashboardPostBody.setVisibility(android.view.View.GONE);
+                bodyTextView.setVisibility(android.view.View.GONE);
             } else {
-                dashboardPostBody.setVisibility(android.view.View.VISIBLE);
-                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostBody, post.parsed_body);
+                bodyTextView.setVisibility(android.view.View.VISIBLE);
+                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), bodyTextView, post.parsed_body);
             }
 
-            dashbardPostNewCommentButton.setOnClickListener(new android.view.View.OnClickListener() {
+            newCommentButton.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
                 public void onClick(android.view.View view) {
                     presenter.onClickNewComment(post);

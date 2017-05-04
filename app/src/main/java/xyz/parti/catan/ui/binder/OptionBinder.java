@@ -20,16 +20,16 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
  */
 
 class OptionBinder {
-    @BindView(R.id.optionBody)
-    TextView optionBodyText;
-    @BindView(R.id.optionCheckBox)
-    CheckBox optionCheckBox;
-    @BindView(R.id.feedbacksCount)
-    TextView feedbacksCountView;
-    @BindView(R.id.progressBar)
+    @BindView(R.id.textview_body)
+    TextView bodyTextView;
+    @BindView(R.id.checkbox)
+    CheckBox checkBox;
+    @BindView(R.id.textview_feedbacks_count)
+    TextView feedbacksCountTextView;
+    @BindView(R.id.progressbar)
     ProgressBar progressBar;
-    @BindView(R.id.optionSelected)
-    IconTextView optionSelectedText;
+    @BindView(R.id.textview_selected_sign)
+    IconTextView selectedSignTextView;
 
     private final PostFeedPresenter presenter;
 
@@ -39,48 +39,48 @@ class OptionBinder {
     }
 
     public void bindData(final Post post, final Option option) {
-        optionBodyText.setText(option.body);
+        bodyTextView.setText(option.body);
         if(post.survey.is_open) {
-            optionBodyText.setOnClickListener(new android.view.View.OnClickListener() {
+            bodyTextView.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
                 public void onClick(android.view.View view) {
-                    optionCheckBox.setChecked(!optionCheckBox.isChecked());
+                    checkBox.setChecked(!checkBox.isChecked());
                 }
             });
         }
 
         if(post.survey.is_open) {
-            optionCheckBox.setVisibility(android.view.View.VISIBLE);
-            optionCheckBox.setChecked(option.is_my_select);
-            optionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            checkBox.setVisibility(android.view.View.VISIBLE);
+            checkBox.setChecked(option.is_my_select);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     presenter.onClickSurveyOption(post, option, b);
                 }
             });
-            optionSelectedText.setVisibility(android.view.View.GONE);
+            selectedSignTextView.setVisibility(android.view.View.GONE);
         } else {
-            optionCheckBox.setVisibility(android.view.View.GONE);
+            checkBox.setVisibility(android.view.View.GONE);
             if(option.is_my_select) {
-                optionSelectedText.setVisibility(android.view.View.VISIBLE);
+                selectedSignTextView.setVisibility(android.view.View.VISIBLE);
             } else {
-                optionSelectedText.setVisibility(android.view.View.GONE);
+                selectedSignTextView.setVisibility(android.view.View.GONE);
             }
         }
 
         if(post.survey.is_feedbacked_by_me || !post.survey.is_open) {
             if(option.is_mvp) {
-                feedbacksCountView.setText("" + option.feedbacks_count + "표 \u2022 최다득표");
+                feedbacksCountTextView.setText("" + option.feedbacks_count + "표 \u2022 최다득표");
             } else {
-                feedbacksCountView.setText("" + option.feedbacks_count + "표");
+                feedbacksCountTextView.setText("" + option.feedbacks_count + "표");
             }
-            feedbacksCountView.setVisibility(android.view.View.VISIBLE);
+            feedbacksCountTextView.setVisibility(android.view.View.VISIBLE);
 
             progressBar.setMax(post.survey.feedback_users_count);
             progressBar.setProgress(option.feedbacks_count);
             progressBar.setVisibility(android.view.View.VISIBLE);
         } else {
-            feedbacksCountView.setVisibility(android.view.View.GONE);
+            feedbacksCountTextView.setVisibility(android.view.View.GONE);
             progressBar.setVisibility(android.view.View.GONE);
         }
     }

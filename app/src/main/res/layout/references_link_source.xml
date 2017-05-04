@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ImageView
-            android:id="@+id/referenceLinkSourceImage"
+            android:id="@+id/imageview_image"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_alignParentTop="true"
@@ -19,12 +19,12 @@
             android:visibility="gone" />
         <View
             android:id="@+id/referenceLinkSourceImageBorder"
-            android:layout_below="@id/referenceLinkSourceImage"
+            android:layout_below="@id/imageview_image"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/style_color_default_border"/>
         <TextView
-            android:id="@+id/referenceLinkSourceTitle"
+            android:id="@+id/textview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/referenceLinkSourceImageBorder"
@@ -36,20 +36,20 @@
             android:textSize="18dp"
             android:visibility="gone" />
         <TextView
-            android:id="@+id/referenceLinkSourceBody"
+            android:id="@+id/textview_body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/referenceLinkSourceTitle"
+            android:layout_below="@+id/textview_title"
             android:maxLines="3"
             android:ellipsize="end"
             android:padding="8dp"
             android:textColor="#666"
             android:visibility="gone" />
         <TextView
-            android:id="@+id/referenceLinkSourceSiteName"
+            android:id="@+id/textview_site_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/referenceLinkSourceBody"
+            android:layout_below="@+id/textview_body"
             android:maxLines="1"
             android:ellipsize="end"
             android:padding="8dp"

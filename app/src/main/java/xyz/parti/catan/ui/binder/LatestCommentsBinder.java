@@ -21,14 +21,14 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
  */
 
 public class LatestCommentsBinder {
-    @BindView(R.id.dashboardPostCommentsLoadMore)
-    TextView loadMoreText;
-    @BindView(R.id.dashboardPostCommentsList)
+    @BindView(R.id.textview_comments_load_more)
+    TextView loadMoreTextView;
+    @BindView(R.id.layout_comments_list)
     LinearLayout listLayout;
-    @BindView(R.id.commentFormUserImage)
-    CircleImageView commentFormUserImageView;
-    @BindView(R.id.commentFormInput)
-    TextView commentFormInputText;
+    @BindView(R.id.imageview_new_comment_user_image)
+    CircleImageView newCommentUserImageView;
+    @BindView(R.id.textview_new_comment_input)
+    TextView newCommentInputTextView;
 
     private final PostFeedPresenter presenter;
     private final Context context;
@@ -43,17 +43,17 @@ public class LatestCommentsBinder {
 
     public void bindData(final Post post) {
         if(post.hasMoreComments()) {
-            loadMoreText.setVisibility(android.view.View.VISIBLE);
-            loadMoreText.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
-            loadMoreText.setOnClickListener(new android.view.View.OnClickListener() {
+            loadMoreTextView.setVisibility(android.view.View.VISIBLE);
+            loadMoreTextView.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
+            loadMoreTextView.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
                 public void onClick(android.view.View view) {
                     presenter.onClickMoreComments(post);
                 }
             });
         } else {
-            loadMoreText.setVisibility(android.view.View.GONE);
-            loadMoreText.setOnClickListener(null);
+            loadMoreTextView.setVisibility(android.view.View.GONE);
+            loadMoreTextView.setOnClickListener(null);
         }
 
         listLayout.removeAllViews();
@@ -61,9 +61,9 @@ public class LatestCommentsBinder {
             bindComment(comment);
         }
 
-        ImageHelper.loadInto(commentFormUserImageView, presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        ImageHelper.loadInto(newCommentUserImageView, presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
 
-        commentFormInputText.setOnClickListener(new android.view.View.OnClickListener() {
+        newCommentInputTextView.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
                 presenter.onClickNewComment(post);

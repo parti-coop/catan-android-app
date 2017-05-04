@@ -29,10 +29,10 @@ public class FileSourcesBinder {
     private final PostFeedPresenter presenter;
     private final Context context;
 
-    @BindView(R.id.referencesDocsLayout)
-    ViewGroup referencesDocsLayout;
-    @BindView(R.id.referencesImagesLayout)
-    ViewGroup referencesImagesLayout;
+    @BindView(R.id.layout_docs)
+    ViewGroup docsLayout;
+    @BindView(R.id.layout_images)
+    ViewGroup imagesLayout;
 
     public FileSourcesBinder(PostFeedPresenter presenter, ViewGroup view) {
         this.presenter = presenter;
@@ -41,8 +41,8 @@ public class FileSourcesBinder {
     }
 
     public void bindData(Post post) {
-        referencesImagesLayout.removeAllViews();
-        referencesDocsLayout.removeAllViews();
+        imagesLayout.removeAllViews();
+        docsLayout.removeAllViews();
         drawImageFileSources(post.getImageFileSources(), post);
         drawDocFileSources(post.getDocFileSources(), post);
     }
@@ -72,7 +72,7 @@ public class FileSourcesBinder {
                 col++;
             }
 
-            referencesImagesLayout.addView(rowLayout);
+            imagesLayout.addView(rowLayout);
 
             row++;
         }
@@ -151,9 +151,9 @@ public class FileSourcesBinder {
     private void drawDocFileSources(List<FileSource> docFileSources, final Post post) {
         for(final FileSource docFileSource: docFileSources) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            CardView fileSourcesLayout = (CardView) inflater.inflate(R.layout.references_doc_file_source, referencesDocsLayout, false);
+            CardView fileSourcesLayout = (CardView) inflater.inflate(R.layout.references_doc_file_source, docsLayout, false);
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
-            referencesDocsLayout.addView(fileSourcesLayout);
+            docsLayout.addView(fileSourcesLayout);
 
             fileSourcesLayout.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
@@ -165,18 +165,18 @@ public class FileSourcesBinder {
     }
 
     static class DocFileSourceHolder {
-        @BindView(R.id.referencesDocFileSourceName)
-        TextView referencesDocFileSourceName;
-        @BindView(R.id.referencesDocFileSourceSize)
-        TextView referencesDocFileSourceSize;
+        @BindView(R.id.textview_name)
+        TextView nameTextView;
+        @BindView(R.id.textview_size)
+        TextView sizeTextView;
 
         DocFileSourceHolder(ViewGroup view) {
             ButterKnife.bind(this, view);
         }
 
         public void bindData(FileSource docFileSource) {
-            referencesDocFileSourceName.setText(docFileSource.name);
-            referencesDocFileSourceSize.setText(docFileSource.human_file_size);
+            nameTextView.setText(docFileSource.name);
+            sizeTextView.setText(docFileSource.human_file_size);
         }
     }
 }

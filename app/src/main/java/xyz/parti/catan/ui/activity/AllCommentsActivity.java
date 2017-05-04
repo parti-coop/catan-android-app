@@ -15,13 +15,11 @@ import android.widget.EditText;
 
 import com.joanzapata.iconify.widget.IconButton;
 
-import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.models.Comment;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
@@ -36,16 +34,16 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     private CommentFeedRecyclerViewAdapter feedAdapter;
     private CommentFeedPresenter presenter;
 
-    @BindView(R.id.allComments)
-    RecyclerView allCommentsView;
-    @BindView(R.id.allCommentsWrapper)
-    ViewGroup allCommentsWrapperView;
-    @BindView(R.id.noCommentsSign)
+    @BindView(R.id.recyclerview_list)
+    RecyclerView listRecyclerView;
+    @BindView(R.id.layout_list_wrapper)
+    ViewGroup listWrapperView;
+    @BindView(R.id.layout_no_comments_sign)
     ViewGroup noCommentsSignView;
-    @BindView(R.id.commentFormEditText)
-    EditText commentFormEditText;
-    @BindView(R.id.commentFormSend)
-    IconButton commentCreateButton;
+    @BindView(R.id.edittext_new_comment_input)
+    EditText newCommentInputEditText;
+    @BindView(R.id.button_new_comment_create)
+    IconButton newCommentCreateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +62,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
             showCommentList();
         } else {
             noCommentsSignView.setVisibility(View.VISIBLE);
-            allCommentsWrapperView.setVisibility(View.GONE);
+            listWrapperView.setVisibility(View.GONE);
         }
         setUpComments(focusInput);
         setUpCommentForm();
@@ -79,7 +77,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
                 new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
                     @Override
                     public void onLoadMore() {
-                        allCommentsView.post(new Runnable() {
+                        listRecyclerView.post(new Runnable() {
                             @Override
                             public void run() {
                                 presenter.loadMoreComments();
@@ -89,22 +87,22 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
                 });
         presenter.setCommentFeedRecyclerViewAdapter(feedAdapter);
 
-        allCommentsView.setHasFixedSize(true);
+        listRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
-        allCommentsView.setLayoutManager(layoutManager);
-        allCommentsView.setAdapter(this.feedAdapter);
-        allCommentsView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        listRecyclerView.setLayoutManager(layoutManager);
+        listRecyclerView.setAdapter(this.feedAdapter);
+        listRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight,
                                        final int oldBottom) {
                 final int newHeight = bottom - top;
                 final int oldHeight = oldBottom - oldTop;
                 if(oldHeight != 0 && newHeight != oldHeight) {
-                    allCommentsView.post(new Runnable() {
+                    listRecyclerView.post(new Runnable() {
                         @Override
                         public void run() {
-                            allCommentsView.scrollBy(0, oldHeight - newHeight);
+                            listRecyclerView.scrollBy(0, oldHeight - newHeight);
                         }
                     });
                 }
@@ -113,10 +111,10 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         presenter.loadFirstComments();
 
         if(focusInput) {
-            commentFormEditText.post(new Runnable() {
+            newCommentInputEditText.post(new Runnable() {
                 public void run() {
-                    commentFormEditText.setFocusableInTouchMode(true);
-                    commentFormEditText.requestFocus();
+                    newCommentInputEditText.setFocusableInTouchMode(true);
+                    newCommentInputEditText.requestFocus();
                 }
             });
         }
@@ -124,14 +122,14 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     private void setUpCommentForm() {
         disableCommentCreateButton();
-        commentCreateButton.setOnClickListener(new View.OnClickListener() {
+        newCommentCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onClickCommentCreateButton(commentFormEditText.getText().toString());
+                presenter.onClickCommentCreateButton(newCommentInputEditText.getText().toString());
             }
         });
 
-        commentFormEditText.addTextChangedListener(new TextWatcher() {
+        newCommentInputEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -154,13 +152,13 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     }
 
     void enableCommentCreateButton() {
-        commentCreateButton.setEnabled(true);
-        commentCreateButton.setTextColor(ContextCompat.getColor(this, R.color.style_color_primary));
+        newCommentCreateButton.setEnabled(true);
+        newCommentCreateButton.setTextColor(ContextCompat.getColor(this, R.color.style_color_primary));
     }
 
     void disableCommentCreateButton() {
-        commentCreateButton.setEnabled(false);
-        commentCreateButton.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
+        newCommentCreateButton.setEnabled(false);
+        newCommentCreateButton.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
     }
 
     @Override
@@ -172,24 +170,24 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     @Override
     public void setSendingCommentForm() {
         disableCommentCreateButton();
-        commentFormEditText.setEnabled(false);
-        commentCreateButton.setText("{fa-circle-o-notch spin}");
+        newCommentInputEditText.setEnabled(false);
+        newCommentCreateButton.setText("{fa-circle-o-notch spin}");
     }
 
     @Override
     public void setCompletedCommentForm() {
-        allCommentsView.smoothScrollToPosition(feedAdapter.getLastPosition());
+        listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
 
-        commentFormEditText.setText(null);
-        commentFormEditText.setEnabled(true);
-        commentCreateButton.setText("{fa-send}");
+        newCommentInputEditText.setText(null);
+        newCommentInputEditText.setEnabled(true);
+        newCommentCreateButton.setText("{fa-send}");
         enableCommentCreateButton();
     }
 
     @Override
     public void showCommentList() {
         noCommentsSignView.setVisibility(View.GONE);
-        allCommentsWrapperView.setVisibility(View.VISIBLE);
+        listWrapperView.setVisibility(View.VISIBLE);
     }
 
     @Override

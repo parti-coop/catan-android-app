@@ -12,20 +12,20 @@
         android:layout_height="match_parent"
         android:padding="18dp">
         <LinearLayout
-            android:id="@+id/options"
+            android:id="@+id/layout_options"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
         <View
             android:id="@+id/bar"
-            android:layout_below="@id/options"
+            android:layout_below="@id/layout_options"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@color/style_color_default_border"/>
         <TextView
-            android:id="@+id/footnote"
+            android:id="@+id/textview_footnote"
             android:layout_below="@id/bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

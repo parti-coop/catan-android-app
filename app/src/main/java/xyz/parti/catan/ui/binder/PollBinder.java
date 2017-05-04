@@ -19,16 +19,16 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
  */
 
 public class PollBinder {
-    @BindView(R.id.pollAgreeVotes)
-    LinearLayout pollAgreeVotesLayout;
-    @BindView(R.id.pollDisagreeVotes)
-    LinearLayout pollDisagreeVotesLayout;
-    @BindView(R.id.pollTitle)
-    TextView pollTitle;
-    @BindView(R.id.pollAgreeButton)
-    IconButton pollAgreeButton;
-    @BindView(R.id.pollDisagreeButton)
-    IconButton pollDisagreeButton;
+    @BindView(R.id.layout_agree_votes)
+    LinearLayout agreeVotesLayout;
+    @BindView(R.id.layout_disagree_votes)
+    LinearLayout disagreeVotesLayout;
+    @BindView(R.id.textview_title)
+    TextView titleTextView;
+    @BindView(R.id.button_agree)
+    IconButton agreeButton;
+    @BindView(R.id.button_disagree)
+    IconButton disagreeButton;
 
     private final PostFeedPresenter presenter;
     private final Context context;
@@ -40,16 +40,16 @@ public class PollBinder {
     }
 
     public void bindData(final Post post) {
-        pollTitle.setText(post.poll.title);
+        titleTextView.setText(post.poll.title);
         bindVotings(post);
 
-        pollAgreeButton.setOnClickListener(new android.view.View.OnClickListener() {
+        agreeButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
                 presenter.onClickPollAgree(post);
             }
         });
-        pollDisagreeButton.setOnClickListener(new android.view.View.OnClickListener() {
+        disagreeButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
                 presenter.onClickPollDisgree(post);
@@ -58,35 +58,35 @@ public class PollBinder {
     }
 
     private void bindVotings(Post post) {
-        pollAgreeVotesLayout.removeAllViews();
-        pollDisagreeVotesLayout.removeAllViews();
-        new VoteUsersBinder(pollAgreeVotesLayout, true).bindData(post.poll.latest_agreed_voting_users);
-        new VoteUsersBinder(pollDisagreeVotesLayout, false).bindData(post.poll.latest_disagreed_voting_users);
+        agreeVotesLayout.removeAllViews();
+        disagreeVotesLayout.removeAllViews();
+        new VoteUsersBinder(agreeVotesLayout, true).bindData(post.poll.latest_agreed_voting_users);
+        new VoteUsersBinder(disagreeVotesLayout, false).bindData(post.poll.latest_disagreed_voting_users);
 
-        unselectedStyle(pollAgreeButton);
-        unselectedStyle(pollDisagreeButton);
+        unselectedStyle(agreeButton);
+        unselectedStyle(disagreeButton);
 
         if(post.poll.isVoted()) {
             if(post.poll.isAgreed()) {
-                selectedStyle(pollAgreeButton);
+                selectedStyle(agreeButton);
             } else if(post.poll.isDisagreed()) {
-                selectedStyle(pollDisagreeButton);
+                selectedStyle(disagreeButton);
             }
-            pollAgreeButton.setText(context.getText(R.string.references_poll_agree_button) + "\n" + post.poll.agreed_votings_count);
-            pollDisagreeButton.setText(context.getText(R.string.references_poll_disagree_button) + "\n" + post.poll.disagreed_votings_count);
+            agreeButton.setText(context.getText(R.string.references_poll_agree_button) + "\n" + post.poll.agreed_votings_count);
+            disagreeButton.setText(context.getText(R.string.references_poll_disagree_button) + "\n" + post.poll.disagreed_votings_count);
         } else {
-            pollAgreeButton.setText(R.string.references_poll_agree_button);
-            pollDisagreeButton.setText(R.string.references_poll_disagree_button);
+            agreeButton.setText(R.string.references_poll_agree_button);
+            disagreeButton.setText(R.string.references_poll_disagree_button);
         }
     }
 
     private void selectedStyle(IconButton button) {
         switch(button.getId()) {
-            case R.id.pollAgreeButton:
+            case R.id.button_agree:
                 button.setTextColor(ContextCompat.getColor(context, R.color.selected_vote_button));
                 button.setBackground(ContextCompat.getDrawable(context, R.drawable.button_bg_agree));
                 break;
-            case R.id.pollDisagreeButton:
+            case R.id.button_disagree:
                 button.setTextColor(ContextCompat.getColor(context, R.color.selected_vote_button));
                 button.setBackground(ContextCompat.getDrawable(context, R.drawable.button_bg_disagree));
                 break;
@@ -95,11 +95,11 @@ public class PollBinder {
 
     private void unselectedStyle(IconButton button) {
         switch(button.getId()) {
-            case R.id.pollAgreeButton:
+            case R.id.button_agree:
                 button.setTextColor(ContextCompat.getColor(context, R.color.vote_agree_button));
                 button.setBackground(ContextCompat.getDrawable(context, R.drawable.button_bg_transparent));
                 break;
-            case R.id.pollDisagreeButton:
+            case R.id.button_disagree:
                 button.setTextColor(ContextCompat.getColor(context, R.color.vote_disagree_button));
                 button.setBackground(ContextCompat.getDrawable(context, R.drawable.button_bg_transparent));
                 break;

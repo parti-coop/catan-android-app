@@ -16,14 +16,14 @@ import xyz.parti.catan.models.LinkSource;
  */
 
 public class LinkSourceBinder {
-    @BindView(R.id.referenceLinkSourceTitle)
-    TextView referenceLinkSourceTitle;
-    @BindView(R.id.referenceLinkSourceBody)
-    TextView referenceLinkSourceBody;
-    @BindView(R.id.referenceLinkSourceSiteName)
-    TextView referenceLinkSourceSiteName;
-    @BindView(R.id.referenceLinkSourceImage)
-    ImageView referenceLinkSourceImage;
+    @BindView(R.id.textview_title)
+    TextView titleTextView;
+    @BindView(R.id.textview_body)
+    TextView bodyTextView;
+    @BindView(R.id.textview_site_name)
+    TextView siteNameTextView;
+    @BindView(R.id.imageview_image)
+    ImageView imageImageView;
 
     public LinkSourceBinder(ViewGroup view) {
         ButterKnife.bind(this, view);
@@ -31,20 +31,20 @@ public class LinkSourceBinder {
 
     public void bindData(LinkSource linkSource) {
         if(linkSource.title != null) {
-            referenceLinkSourceTitle.setText(linkSource.title);
-            referenceLinkSourceTitle.setVisibility(View.VISIBLE);
+            titleTextView.setText(linkSource.title);
+            titleTextView.setVisibility(View.VISIBLE);
         }
         if(linkSource.body != null) {
-            referenceLinkSourceBody.setText(linkSource.body);
-            referenceLinkSourceBody.setVisibility(View.VISIBLE);
+            bodyTextView.setText(linkSource.body);
+            bodyTextView.setVisibility(View.VISIBLE);
         }
         if(linkSource.site_name != null) {
-            referenceLinkSourceSiteName.setText(linkSource.site_name);
-            referenceLinkSourceSiteName.setVisibility(View.VISIBLE);
+            siteNameTextView.setText(linkSource.site_name);
+            siteNameTextView.setVisibility(View.VISIBLE);
         }
         if(linkSource.image_url != null) {
-            ImageHelper.loadInto(referenceLinkSourceImage, linkSource.image_url);
-            referenceLinkSourceImage.setVisibility(View.VISIBLE);
+            ImageHelper.loadInto(imageImageView, linkSource.image_url);
+            imageImageView.setVisibility(View.VISIBLE);
         }
     }
 }

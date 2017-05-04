@@ -26,11 +26,11 @@ public interface PostsService {
 
     @GET("/api/v1/posts/dashboard_after")
     Call<Page<Post>> getDashboardAfter(
-            @Query("last_id") long last_id);
+            @Query("last_id") long lastId);
 
     @GET("/api/v1/posts/has_updated")
     Call<JsonObject> hasUpdated(
-            @Query("last_stroked_at") Date last_stroked_at);
+            @Query("last_stroked_at") Date lastStrokedAt);
 
     @GET("/api/v1/posts/{id}/download_file/{file_source_id}")
     @Streaming

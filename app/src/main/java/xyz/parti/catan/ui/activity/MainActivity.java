@@ -63,23 +63,23 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
     public static final int REQUEST_NEW_COMMENT = 1;
 
-    @BindView(R.id.appToolbar)
+    @BindView(R.id.toolbar_app)
     Toolbar appToolbar;
-    @BindView(R.id.dashboardView)
-    RecyclerView dashboardView;
-    @BindView(R.id.rootLayout)
-    DrawerLayout rootLayout;
-    @BindView(R.id.appToolbarLayout)
-    AppBarLayout appToolbarLayout;
-    @BindView(R.id.drawerPane)
-    RelativeLayout drawerPane;
-    @BindView(R.id.drawerNavigationView)
+    @BindView(R.id.recyclerview_list)
+    RecyclerView listRecyclerView;
+    @BindView(R.id.drawer_layout_root)
+    DrawerLayout rootDrawerLayout;
+    @BindView(R.id.appbar_layout)
+    AppBarLayout appBarLayout;
+    @BindView(R.id.layout_drawer_panel)
+    RelativeLayout drawerPanelLayout;
+    @BindView(R.id.navigation_view_drawer)
     NavigationView drawerNavigationView;
-    @BindView(R.id.swipeContainer)
-    SwipeRefreshLayout swipeContainer;
-    @BindView(R.id.newPostsSignLayout)
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.layout_new_posts_sign)
     FrameLayout newPostsSignLayout;
-    @BindView(R.id.newPostsSignButton)
+    @BindView(R.id.button_new_posts_sign)
     FancyButton newPostsSignButton;
 
     private PostFeedRecyclerViewAdapter feedAdapter;
@@ -133,14 +133,14 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void setUpSwipeRefresh() {
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 presenter.loadFirstPosts();
             }
         });
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         navigationItems.add(new NavigationItem(this, R.string.navigation_logout));
         drawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
-                rootLayout,            /* DrawerLayout object */
+                rootDrawerLayout,            /* DrawerLayout object */
                 R.string.drawer_open,  /* "open drawer" description */
                 R.string.drawer_close  /* "close drawer" description */
         );
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                rootLayout.closeDrawers();
+                rootDrawerLayout.closeDrawers();
 
                 switch (item.getItemId()){
                     case R.id.logoutButton:
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 .withStartGravity(Gravity.TOP)
                 .build();
         newPostsSignSlideUp.hide();
-        dashboardView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -219,22 +219,22 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         newPostsSignButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
-                swipeContainer.post(new Runnable() {
+                swipeRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
                         if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
                             newPostsSignSlideUp.hide();
                         }
-                        swipeContainer.setRefreshing(true);
-                        dashboardView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        swipeRefreshLayout.setRefreshing(true);
+                        listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                             public void onScrollStateChanged(RecyclerView view, int state) {
                                 if (state == RecyclerView.SCROLL_STATE_IDLE) {
                                     view.removeOnScrollListener(this);
-                                    appToolbarLayout.setExpanded(true, true);
+                                    appBarLayout.setExpanded(true, true);
                                 }
                             }
                         });
-                        dashboardView.smoothScrollToPosition(0);
+                        listRecyclerView.smoothScrollToPosition(0);
                         presenter.loadFirstPosts();
                     }
                 });
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
                 @Override
                 public void onLoadMore() {
-                    dashboardView.post(new Runnable() {
+                    listRecyclerView.post(new Runnable() {
                         @Override
                         public void run() {
                             presenter.loadMorePosts();
@@ -287,9 +287,9 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 }
             });
 
-        dashboardView.setHasFixedSize(true);
-        dashboardView.setLayoutManager(new LinearLayoutManager(this));
-        dashboardView.setAdapter(feedAdapter);
+        listRecyclerView.setHasFixedSize(true);
+        listRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        listRecyclerView.setAdapter(feedAdapter);
 
 //        loadFirstPosts();
         this.presenter.setPostFeedRecyclerViewAdapter(feedAdapter);
@@ -428,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     @Override
     public void setSwipeRefreshing(boolean b) {
-        swipeContainer.setRefreshing(false);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

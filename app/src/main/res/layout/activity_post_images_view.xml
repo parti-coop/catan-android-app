@@ -6,7 +6,7 @@
     android:padding="16dp">
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/imagesViewPager"
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/postImagesViewPostDesc"
+            android:id="@+id/textview_post_desc"
             android:textColor="#fff"
             android:maxLines="1"
             android:ellipsize="end"
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/postImagesViewPostUserNickname"
+                android:id="@+id/textview_user_nickname"
                 android:textColor="#fff"
                 android:paddingRight="8dp"
                 android:maxWidth="200dp"
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <com.github.curioustechizen.ago.RelativeTimeTextView
-                android:id="@+id/postImagesViewPostCreatedAt"
+                android:id="@+id/textview_post_created_at"
                 android:textColor="#fff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
