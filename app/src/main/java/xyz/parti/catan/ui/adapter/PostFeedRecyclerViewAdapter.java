@@ -1,10 +1,15 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.icu.text.CompactDecimalFormat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -79,6 +84,12 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         TextView dashboardPostPrefixGroupTitle;
         @BindView(R.id.dashboardPostReferences)
         LinearLayout dashboardPostReferences;
+        @BindView(R.id.dashbardPostLikeButton)
+        Button dashbardPostLikeButton;
+        @BindView(R.id.dashbardPostNewCommentButton)
+        Button dashbardPostNewCommentButton;
+        @BindView(R.id.dashbardPostShowLikesButton)
+        Button dashbardPostShowLikesButton;
         @BindView(R.id.dashboardPostComments)
         LinearLayout commentsLayout;
 
@@ -152,7 +163,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             }
         }
 
-        private void bindBasic(Post post) {
+        private void bindBasic(final Post post) {
             ImageHelper.loadInto(dashboardPostPartiLogo, post.parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
             dashboardPostPartiTitle.setText(post.parti.title);
             if(post.parti.group.isIndie()) {
@@ -179,6 +190,34 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             } else {
                 dashboardPostBody.setVisibility(android.view.View.VISIBLE);
                 SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), dashboardPostBody, post.parsed_body);
+            }
+
+            dashbardPostNewCommentButton.setOnClickListener(new android.view.View.OnClickListener() {
+                @Override
+                public void onClick(android.view.View view) {
+                    presenter.onClickNewComment(post);
+                }
+            });
+
+            if(post.is_upvoted_by_me) {
+                dashbardPostLikeButton.setTypeface(null, Typeface.BOLD);
+                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
+            } else {
+                dashbardPostLikeButton.setTypeface(null, Typeface.NORMAL);
+                dashbardPostLikeButton.setTextColor(ContextCompat.getColor(context, R.color.post_button_text));
+            }
+            dashbardPostLikeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickLike(post);
+                }
+            });
+
+            if(post.upvotes_count > 0) {
+                dashbardPostShowLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
+                dashbardPostShowLikesButton.setVisibility(View.VISIBLE);
+            } else {
+                dashbardPostShowLikesButton.setVisibility(View.GONE);
             }
         }
     }

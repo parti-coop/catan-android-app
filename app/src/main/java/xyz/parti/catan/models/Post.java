@@ -24,9 +24,8 @@ public class Post implements RecyclableModel<Post> {
     public Date created_at;
     public Date last_stroked_at;
     public Boolean is_upvotable;
+    public Boolean is_upvoted_by_me;
     public Long upvotes_count;
-    public User[] latest_upvote_users;
-    public Upvote[] latest_upvotes;
     public Long comments_count;
     public Comment[] latest_comments;
     public LinkSource link_source;
@@ -80,5 +79,15 @@ public class Post implements RecyclableModel<Post> {
         List<Comment> temp = new ArrayList<>(Arrays.asList(this.latest_comments));
         temp.add(comment);
         latest_comments = temp.toArray(new Comment[temp.size()]);
+    }
+
+    public void toggleUpvoting() {
+        if(is_upvoted_by_me) {
+            this.upvotes_count--;
+            this.is_upvoted_by_me = false;
+        } else {
+            this.upvotes_count++;
+            this.is_upvoted_by_me = true;
+        }
     }
 }

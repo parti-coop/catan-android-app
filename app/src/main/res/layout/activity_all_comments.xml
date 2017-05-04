@@ -39,16 +39,17 @@
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="@dimen/default_elevation"
-        android:background="@color/comments_background">
+        android:elevation="@dimen/comment_elevation"
+        android:background="#fff">
         <EditText
             android:id="@+id/commentFormEditText"
             android:hint="@string/comment_form_placeholer"
             android:background="@drawable/edittext_bg_comment"
-            android:padding="5dp"
+            android:paddingBottom="20dp"
             android:textSize="14sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -61,11 +62,8 @@
             android:gravity="center"
             android:text="{fa-send}"
             android:textColor="@color/text_muted"
-            android:textSize="@dimen/comment_send_button"
-            android:layout_marginBottom="2dp"
             android:layout_marginLeft="8dp"
             android:elevation="4dp"
-            android:orientation="vertical"
             android:background="@android:color/transparent" />
     </LinearLayout>
 </LinearLayout>

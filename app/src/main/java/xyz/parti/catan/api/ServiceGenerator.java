@@ -2,6 +2,8 @@ package xyz.parti.catan.api;
 
 import android.util.Log;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import java.io.IOException;
 
 import okhttp3.Authenticator;
@@ -29,7 +31,7 @@ public class ServiceGenerator {
     public static <S> S createUnsignedService(Class<S> serviceClass) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-        OkHttpClient client = httpClient.build();
+        OkHttpClient client = httpClient.addNetworkInterceptor(new StethoInterceptor()).build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
         return retrofit.create(serviceClass);
     }
@@ -39,7 +41,7 @@ public class ServiceGenerator {
 
         oAuthIntercept(httpClient, token);
 
-        OkHttpClient client = httpClient.build();
+        OkHttpClient client = httpClient.addNetworkInterceptor(new StethoInterceptor()).build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
         return retrofit.create(serviceClass);
     }
@@ -50,7 +52,7 @@ public class ServiceGenerator {
         oAuthIntercept(httpClient, session);
         refreshableAuthenticate(httpClient, session);
 
-        OkHttpClient client = httpClient.build();
+        OkHttpClient client = httpClient.addNetworkInterceptor(new StethoInterceptor()).build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
         return retrofit.create(serviceClass);
     }

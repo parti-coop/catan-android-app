@@ -24,6 +24,7 @@ import xyz.parti.catan.models.Post;
 import xyz.parti.catan.models.User;
 import xyz.parti.catan.services.FeedbacksService;
 import xyz.parti.catan.services.PostsService;
+import xyz.parti.catan.services.UpvotesService;
 import xyz.parti.catan.services.VotingsService;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
@@ -37,10 +38,11 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class PostFeedPresenter {
-    private final VotingsService votingsService;
     private final SessionManager session;
     private View view;
-    private PostsService postsService;
+    private final PostsService postsService;
+    private final VotingsService votingsService;
+    private final UpvotesService upvotesService;
     private final FeedbacksService feedbacksService;
     private PostFeedRecyclerViewAdapter feedAdapter;
 
@@ -50,6 +52,7 @@ public class PostFeedPresenter {
         postsService = ServiceGenerator.createService(PostsService.class, session);
         feedbacksService = ServiceGenerator.createService(FeedbacksService.class, session);
         votingsService = ServiceGenerator.createService(VotingsService.class, session);
+        upvotesService = ServiceGenerator.createService(UpvotesService.class, session);
     }
 
     public void detachView() {
@@ -221,6 +224,28 @@ public class PostFeedPresenter {
         view.showImageFileSource(post);
     }
 
+    public void onClickLike(final Post post) {
+        Call<JsonNull> call =  ( post.is_upvoted_by_me ?
+                upvotesService.destroy("Post", post.id) : upvotesService.create("Post", post.id)
+        );
+        call.enqueue(new Callback<JsonNull>() {
+            @Override
+            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
+                if(response.isSuccessful()) {
+                    post.toggleUpvoting();
+                    changePost(post);
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonNull> call, Throwable t) {
+                ReportHelper.wtf(getApplicationContext(), t);
+            }
+        });
+    }
+
     public void onClickMoreComments(Post post) {
         view.showAllComments(post);
     }
@@ -324,7 +349,6 @@ public class PostFeedPresenter {
     public PartiAccessToken getPartiAccessToken() {
         return session.getPartiAccessToken();
     }
-
 
     public interface View {
         void setSwipeRefreshing(boolean b);

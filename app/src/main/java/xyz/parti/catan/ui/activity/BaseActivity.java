@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.facebook.stetho.Stetho;
+
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.sessions.SessionManager;
@@ -19,6 +21,7 @@ import xyz.parti.catan.sessions.SessionManager;
 public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
         registerReceiver(receiver, new IntentFilter(SessionManager.LOGOUT_ACTION));
     }
 
