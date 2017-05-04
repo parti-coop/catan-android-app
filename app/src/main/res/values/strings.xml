@@ -29,6 +29,7 @@
     <string name="action_refresh_posts">새소식</string>
     <string name="dashboard_post_prefix_group_title">{fa-angle-right}</string>
 
+    <string name="references_link_source_site_name_fallback">{fa-external-link} 원글보기</string>
     <string name="references_doc_file_source_icon">{fa-floppy-o}</string>
 
     <string name="references_poll_agree_button">{fa-thumbs-up} 찬성</string>

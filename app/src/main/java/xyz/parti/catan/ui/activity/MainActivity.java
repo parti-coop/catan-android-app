@@ -303,7 +303,9 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         if(downloadProgressDialog != null) {
             downloadProgressDialog.dismiss();
         }
-        presenter.detachView();
+        if(presenter != null) {
+            presenter.detachView();
+        }
     }
 
     @Override
@@ -444,5 +446,15 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     @Override
     public void showUrl(Uri url) {
         startActivity(new Intent(Intent.ACTION_VIEW, url));
+    }
+
+    @Override
+    public void showVideo(Uri webUrl, @NonNull Uri appUrl) {
+        try {
+            Intent appIntent = new Intent(Intent.ACTION_VIEW, appUrl);
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            showUrl(webUrl);
+        }
     }
 }

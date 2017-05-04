@@ -170,7 +170,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                 linkSourcesLayout.setOnClickListener(new android.view.View.OnClickListener() {
                     @Override
                     public void onClick(android.view.View view) {
-                        presenter.onClickLinkSource(post.link_source.url);
+                        presenter.onClickLinkSource(post);
                     }
 
                 });

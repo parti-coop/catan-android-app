@@ -212,8 +212,16 @@ public class PostFeedPresenter {
         });
     }
 
-    public void onClickLinkSource(String url) {
-        view.showUrl(Uri.parse(url));
+    public void onClickLinkSource(Post post) {
+        if(post.link_source == null) {
+            return;
+        }
+
+        if(post.link_source.is_video && post.link_source.video_app_url != null) {
+            view.showVideo(Uri.parse(post.link_source.url), Uri.parse(post.link_source.video_app_url));
+        } else {
+            view.showUrl(Uri.parse(post.link_source.url));
+        }
     }
 
     public void onClickDocFileSource(final Post post, final FileSource docFileSource) {
@@ -355,6 +363,7 @@ public class PostFeedPresenter {
         boolean isVisibleNewPostsSignSlideUp();
         void showNewPostsSignSlideUp();
         void showUrl(Uri parse);
+        void showVideo(Uri webUrl, Uri appUrl);
         void downloadFile(Post post, FileSource docFileSource);
         void showImageFileSource(Post post);
         void showAllComments(Post post);
