@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
@@ -63,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     @BindView(R.id.toolbar_app)
     Toolbar appToolbar;
-    @BindView(R.id.recyclerview_list)
-    RecyclerView listRecyclerView;
+    @BindView(R.id.recyclerview_post_list)
+    RecyclerView postListRecyclerView;
     @BindView(R.id.drawer_layout_root)
     DrawerLayout rootDrawerLayout;
     @BindView(R.id.appbar_layout)
@@ -73,12 +74,14 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     RelativeLayout drawerPanelLayout;
     @BindView(R.id.navigation_view_drawer)
     NavigationView drawerNavigationView;
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.swipe_refresh_layout_post_list)
+    SwipeRefreshLayout postListSwipeRefreshLayout;
     @BindView(R.id.layout_new_posts_sign)
     FrameLayout newPostsSignLayout;
     @BindView(R.id.button_new_posts_sign)
     FancyButton newPostsSignButton;
+    @BindView(R.id.layout_post_list_demo)
+    ShimmerFrameLayout postListDemoLayout;
 
     private PostFeedRecyclerViewAdapter feedAdapter;
     private SessionManager session;
@@ -99,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(assertValidNetwork()) {
+        if(ensureValidNetwork()) {
             session = new SessionManager(getApplicationContext());
             session.checkLogin(new SessionManager.OnCheckListener() {
                 @Override
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         }
     }
 
-    private boolean assertValidNetwork() {
+    private boolean ensureValidNetwork() {
         if(!NetworkHelper.isValidNetwork(this)) {
             Intent intent = new Intent(this, DisconnectActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -141,14 +144,14 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void setUpSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        postListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 presenter.loadFirstPosts();
             }
         });
         // Configure the refreshing colors
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+        postListSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -199,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     private void setUpCheckNewPost() {
         newPostsSignAnimator = new NewPostSignAnimator(this.newPostsSignLayout);
 
-        listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        postListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -215,11 +218,11 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 if(newPostsSignAnimator != null) {
                     newPostsSignAnimator.hideImmediately();
                 }
-                swipeRefreshLayout.post(new Runnable() {
+                postListSwipeRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.setRefreshing(true);
-                        listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        postListSwipeRefreshLayout.setRefreshing(true);
+                        postListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                             public void onScrollStateChanged(RecyclerView view, int state) {
                                 if (state == RecyclerView.SCROLL_STATE_IDLE) {
                                     view.removeOnScrollListener(this);
@@ -227,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                                 }
                             }
                         });
-                        listRecyclerView.smoothScrollToPosition(0);
+                        postListRecyclerView.smoothScrollToPosition(0);
                         presenter.loadFirstPosts();
                     }
                 });
@@ -279,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
                 @Override
                 public void onLoadMore() {
-                    listRecyclerView.post(new Runnable() {
+                    postListRecyclerView.post(new Runnable() {
                         @Override
                         public void run() {
                             presenter.loadMorePosts();
@@ -290,15 +293,17 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 }
             });
 
-        listRecyclerView.setHasFixedSize(true);
-        listRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        listRecyclerView.setAdapter(feedAdapter);
-        listRecyclerView.setItemViewCacheSize(50);
-        listRecyclerView.setDrawingCacheEnabled(true);
-        listRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        postListRecyclerView.setHasFixedSize(true);
+        postListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        postListRecyclerView.setAdapter(feedAdapter);
+        postListRecyclerView.setItemViewCacheSize(50);
+        postListRecyclerView.setDrawingCacheEnabled(true);
+        postListRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         this.presenter.setPostFeedRecyclerViewAdapter(feedAdapter);
         this.presenter.loadFirstPosts();
+
+        this.postListDemoLayout.startShimmerAnimation();
     }
 
     @Override
@@ -425,6 +430,12 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
+    public void ensureToPostListDemoIsGone() {
+        postListDemoLayout.stopShimmerAnimation();
+        postListDemoLayout.setVisibility(View.GONE);
+    }
+
+    @Override
     public void showImageFileSource(Post post) {
         Intent intent = new Intent(this, PostImagesViewActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
@@ -433,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     @Override
     public void setSwipeRefreshing(boolean b) {
-        swipeRefreshLayout.setRefreshing(false);
+        postListSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

@@ -20,19 +20,58 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_refresh_layout"
+                android:id="@+id/swipe_refresh_layout_post_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
-                <android.support.v7.widget.RecyclerView
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    android:id="@+id/recyclerview_list"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scrollbars="none">
-                    <!--android:descendantFocusability="beforeDescendants"-->
-                    <!--android:focusableInTouchMode="true"-->
-                </android.support.v7.widget.RecyclerView>
+                    android:orientation="vertical">
+
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/layout_post_list_demo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:auto_start="false"
+                        app:duration="2000"
+                        app:angle="cw_270"
+                        app:base_alpha="0.6"
+                        app:repeat_delay="1000">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+                            <include
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/post_card_padding"
+                                layout="@layout/dashboard_post_demo" />
+                            <include
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/post_card_padding"
+                                layout="@layout/dashboard_post_demo" />
+                            <include
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/post_card_padding"
+                                layout="@layout/dashboard_post_demo" />
+                            <include
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/post_card_padding"
+                                layout="@layout/dashboard_post_demo" />
+                        </LinearLayout>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                        android:id="@+id/recyclerview_post_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="none" />
+                </LinearLayout>
             </android.support.v4.widget.SwipeRefreshLayout>
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/appbar_layout"

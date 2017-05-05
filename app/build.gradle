@@ -68,6 +68,7 @@ dependencies {
     compile 'com.github.medyo:fancybuttons:1.8.3'
     compile 'com.facebook.stetho:stetho:1.5.0'
     compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    compile 'com.github.facebook:shimmer-android:0.1.0'
     annotationProcessor 'org.parceler:parceler:1.1.6'
 
     testCompile 'junit:junit:4.12'

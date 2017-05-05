@@ -74,6 +74,7 @@ public class PostFeedPresenter {
         APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
+                view.ensureToPostListDemoIsGone();
                 if(response.isSuccessful()){
                     feedAdapter.clearData();
 
@@ -386,5 +387,6 @@ public class PostFeedPresenter {
         void hideDownloadDocFileSourceProgress();
         void showDownloadedFile(File file, String mimeType);
         void showSimpleMessage(String message);
+        void ensureToPostListDemoIsGone();
     }
 }
