@@ -1,6 +1,5 @@
 package xyz.parti.catan.sessions;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,15 +8,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.parceler.Parcel;
-import org.parceler.Parcels;
-
-import okhttp3.Request;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.models.User;
-import xyz.parti.catan.ui.activity.LoginMenuActivity;
+import xyz.parti.catan.ui.activity.BaseActivity;
+import xyz.parti.catan.ui.activity.LogInMenuActivity;
 
 /**
  * Created by dalikim on 2017. 3. 26..
@@ -26,7 +22,6 @@ import xyz.parti.catan.ui.activity.LoginMenuActivity;
 public class SessionManager {
     private static final String CURRENT_SESSION_VERSION = "1";
     private static final String PREF_NAME = "SESSION";
-    public static final String LOGOUT_ACTION = "parti.xyz.catan.session.lotout";
 
     private static final String KEY_SESSION_VERSION = "session_version";
     private static final String KEY_IS_LOGIN = "IsLoggedIn";
@@ -134,7 +129,7 @@ public class SessionManager {
         startLogin();
 
         Intent broadcast = new Intent();
-        broadcast.setAction(LOGOUT_ACTION);
+        broadcast.setAction(BaseActivity.ACTION_LOGOUT);
         LocalBroadcastManager.getInstance(this.context).sendBroadcast(broadcast);
     }
 
@@ -145,7 +140,7 @@ public class SessionManager {
     }
 
     public void startLogin() {
-        Intent i = new Intent(this.context, LoginMenuActivity.class);
+        Intent i = new Intent(this.context, LogInMenuActivity.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // Add new Flag to start new Activity

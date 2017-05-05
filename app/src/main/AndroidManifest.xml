@@ -4,6 +4,7 @@
     package="xyz.parti.catan">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -30,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.LoginMenuActivity"
+            android:name=".ui.activity.LogInMenuActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_login_menu"></activity>
         <activity
@@ -57,8 +58,20 @@
             android:label="@string/title_activity_all_comments"
             android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activity.DisconnectActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_disconnect"></activity>
 
-        <receiver android:name=".alarms.LocalBroadcastableAlarmReceiver" />
+        <receiver android:name=".receivers.LocalBroadcastableAlarmReceiver" />
+        <receiver
+            android:name=".receivers.NetworkChangeReceiver"
+            android:label="NetworkChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <meta-data
             android:name="xyz.parti.catan.api.UnsafeOkHttpGlideModule"

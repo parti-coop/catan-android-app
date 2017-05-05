@@ -47,7 +47,8 @@ import mehdi.sakout.fancybuttons.FancyButton;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.alarms.LocalBroadcastableAlarmReceiver;
+import xyz.parti.catan.helper.NetworkHelper;
+import xyz.parti.catan.receivers.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
@@ -108,28 +109,45 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        session = new SessionManager(getApplicationContext());
-        session.checkLogin(new SessionManager.OnCheckListener() {
-            @Override
-            public void onLoggedIn() {
-                if(BuildConfig.DEBUG) {
-                    Log.d(Constants.TAG, "이미 로그인되어 있음");
+        if(assertValidNetwork()) {
+            session = new SessionManager(getApplicationContext());
+            session.checkLogin(new SessionManager.OnCheckListener() {
+                @Override
+                public void onLoggedIn() {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(Constants.TAG, "이미 로그인되어 있음");
+                    }
+                    ButterKnife.bind(MainActivity.this);
+
+                    presenter = new PostFeedPresenter(MainActivity.this, session);
+                    setUpToolbar();
+                    setUpFeed();
+                    setUpCheckNewPost();
+                    setUpDrawerBar();
+                    setUpSwipeRefresh();
                 }
-                ButterKnife.bind(MainActivity.this);
 
-                presenter = new PostFeedPresenter(MainActivity.this, session);
-                setUpToolbar();
-                setUpFeed();
-                setUpCheckNewPost();
-                setUpDrawerBar();
-                setUpSwipeRefresh();
-            }
+                @Override
+                public void onLoggedOut() {
+                    finish();
+                }
+            });
+        }
+    }
 
-            @Override
-            public void onLoggedOut() {
-                finish();
-            }
-        });
+    private boolean assertValidNetwork() {
+        if(!NetworkHelper.isValidNetwork(this)) {
+            Intent intent = new Intent(this, DisconnectActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+            finish();
+
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void setUpSwipeRefresh() {
@@ -191,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     private void setUpCheckNewPost() {
         newPostsSignAnimator = new NewPostSignAnimator(this.newPostsSignLayout);
         newPostsSignAnimator.hideImmediately();
-        startCheckNewPostAlarm();
+
         listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

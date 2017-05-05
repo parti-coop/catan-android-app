@@ -36,8 +36,8 @@ import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.services.UsersService;
 import xyz.parti.catan.sessions.SessionManager;
 
-public class LoginMenuActivity extends BaseActivity {
-    private UserLoginTask authTask = null;
+public class LogInMenuActivity extends BaseActivity {
+    private UserLogInTask authTask = null;
 
     @BindView(R.id.button_login_by_email)
     View loginByEmailButton;
@@ -61,19 +61,19 @@ public class LoginMenuActivity extends BaseActivity {
 
         session = new SessionManager(getApplicationContext());
         
-        ButterKnife.bind(LoginMenuActivity.this);
+        ButterKnife.bind(LogInMenuActivity.this);
 
         loginByEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(LoginMenuActivity.this, EmailLoginActivity.class);
-                LoginMenuActivity.this.startActivity(i);
+                Intent i = new Intent(LogInMenuActivity.this, EmailLoginActivity.class);
+                LogInMenuActivity.this.startActivity(i);
             }
         });
         loginByFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(LoginMenuActivity.this, Arrays.asList("email"));
+                LoginManager.getInstance().logInWithReadPermissions(LogInMenuActivity.this, Arrays.asList("email"));
             }
         });
 
@@ -123,7 +123,7 @@ public class LoginMenuActivity extends BaseActivity {
         }
 
         showProgress(true);
-        authTask = new UserLoginTask("facebook", accessToken.getCurrentAccessToken().getToken(), LoginMenuActivity.this);
+        authTask = new UserLogInTask("facebook", accessToken.getCurrentAccessToken().getToken(), LogInMenuActivity.this);
         authTask.execute((Void) null);
     }
 
@@ -167,14 +167,14 @@ public class LoginMenuActivity extends BaseActivity {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLogInTask extends AsyncTask<Void, Void, Boolean> {
 
         Activity mActivity;
 
         private final String provider;
         private final String accessToken;
 
-        UserLoginTask(String provider, String accessToken, Activity activity) {
+        UserLogInTask(String provider, String accessToken, Activity activity) {
             this.provider = provider;
             this.accessToken = accessToken;
             this.mActivity = activity;
@@ -236,5 +236,10 @@ public class LoginMenuActivity extends BaseActivity {
             authTask = null;
             showProgress(false);
         }
+    }
+
+    @Override
+    public boolean willFinishIfLogOut() {
+        return false;
     }
 }

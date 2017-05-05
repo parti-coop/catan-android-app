@@ -54,4 +54,9 @@
 
     <!-- com.github.curioustechizen.android-ago -->
     <string name="just_now">방금</string>
+
+    <string name="no_network_connect">네트워크 연결이 끊어졌습니다</string>
+    <string name="check_network_status_button">다시 시도하기</string>
+    <string name="fail_to_connect">연결할 수 없습니다. 잠시 후에 다시 시도해 주세요.</string>
+    <string name="title_activity_disconnect">네트워크 끊김</string>
 </resources>

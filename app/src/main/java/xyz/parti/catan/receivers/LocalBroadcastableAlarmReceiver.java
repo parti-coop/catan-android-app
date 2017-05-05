@@ -1,11 +1,9 @@
-package xyz.parti.catan.alarms;
+package xyz.parti.catan.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-
-import xyz.parti.catan.ui.activity.MainActivity;
 
 /**
  * Created by dalikim on 2017. 3. 29..
