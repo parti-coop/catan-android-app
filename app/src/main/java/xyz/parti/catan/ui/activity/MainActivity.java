@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     RecyclerView postListRecyclerView;
     @BindView(R.id.drawer_layout_root)
     DrawerLayout rootDrawerLayout;
-    @BindView(R.id.appbar_layout)
+    @BindView(R.id.appbarlayout)
     AppBarLayout appBarLayout;
     @BindView(R.id.layout_drawer_panel)
     RelativeLayout drawerPanelLayout;
@@ -294,16 +294,18 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             });
 
         postListRecyclerView.setHasFixedSize(true);
-        postListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        final LinearLayoutManager recyclerViewLayout = new LinearLayoutManager(this);
+        postListRecyclerView.setLayoutManager(recyclerViewLayout);
         postListRecyclerView.setAdapter(feedAdapter);
         postListRecyclerView.setItemViewCacheSize(50);
         postListRecyclerView.setDrawingCacheEnabled(true);
         postListRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        this.presenter.setPostFeedRecyclerViewAdapter(feedAdapter);
-        this.presenter.loadFirstPosts();
+        presenter.setPostFeedRecyclerViewAdapter(feedAdapter);
+        presenter.loadFirstPosts();
 
-        this.postListDemoLayout.startShimmerAnimation();
+        postListSwipeRefreshLayout.setEnabled(false);
+        postListDemoLayout.startShimmerAnimation();
     }
 
     @Override
@@ -328,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     protected void onResume() {
         super.onResume();
         startCheckNewPostJob();
+        presenter.onResume();
     }
 
     @Override
@@ -436,6 +439,13 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
+    public void showPostListDemo() {
+        appBarLayout.setExpanded(true);
+        postListDemoLayout.startShimmerAnimation();
+        postListDemoLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void showImageFileSource(Post post) {
         Intent intent = new Intent(this, PostImagesViewActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
@@ -443,7 +453,8 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
-    public void setSwipeRefreshing(boolean b) {
+    public void stopAndEnableSwipeRefreshing() {
+        postListSwipeRefreshLayout.setEnabled(true);
         postListSwipeRefreshLayout.setRefreshing(false);
     }
 

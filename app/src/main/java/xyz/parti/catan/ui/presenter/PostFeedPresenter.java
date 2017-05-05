@@ -2,6 +2,7 @@ package xyz.parti.catan.ui.presenter;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonNull;
@@ -13,6 +14,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.helper.ReportHelper;
@@ -47,6 +49,7 @@ public class PostFeedPresenter {
     private final FeedbacksService feedbacksService;
     private PostFeedRecyclerViewAdapter feedAdapter;
     private Date lastStrockedAtOfNewPostCheck = null;
+    private long lastLoadFirstPostsAtMillis = -1;
 
     public PostFeedPresenter(View view, SessionManager session) {
         this.view = view;
@@ -74,6 +77,7 @@ public class PostFeedPresenter {
         APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
+                lastLoadFirstPostsAtMillis = System.currentTimeMillis();
                 view.ensureToPostListDemoIsGone();
                 if(response.isSuccessful()){
                     feedAdapter.clearData();
@@ -85,14 +89,14 @@ public class PostFeedPresenter {
                     ReportHelper.wtf(getApplicationContext(), "Load first post error : " + response.code());
                 }
                 feedAdapter.setLoadFinished();
-                view.setSwipeRefreshing(false);
+                view.stopAndEnableSwipeRefreshing();
             }
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
                 ReportHelper.wtf(getApplicationContext(), t);
                 feedAdapter.setLoadFinished();
-                view.setSwipeRefreshing(false);
+                view.stopAndEnableSwipeRefreshing();
             }
         });
 
@@ -372,8 +376,27 @@ public class PostFeedPresenter {
         return session.getPartiAccessToken();
     }
 
+    public void onResume() {
+        if(lastLoadFirstPostsAtMillis <= 0 || feedAdapter == null) {
+            return;
+        }
+        Post model = feedAdapter.getFirstModel();
+        if(model == null) {
+            return;
+        }
+
+        long reload_gap_mills = 10 * 60 * 1000;
+        if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
+            Log.d(Constants.TAG_LOCAL, "LOAD!!");
+            feedAdapter.clearData();
+            feedAdapter.notifyDataSetChanged();
+            view.showPostListDemo();
+            loadFirstPosts();
+        }
+    }
+
     public interface View {
-        void setSwipeRefreshing(boolean b);
+        void stopAndEnableSwipeRefreshing();
         boolean isVisibleNewPostsSign();
         void showNewPostsSign();
         void showUrl(Uri parse);
@@ -388,5 +411,6 @@ public class PostFeedPresenter {
         void showDownloadedFile(File file, String mimeType);
         void showSimpleMessage(String message);
         void ensureToPostListDemoIsGone();
+        void showPostListDemo();
     }
 }
