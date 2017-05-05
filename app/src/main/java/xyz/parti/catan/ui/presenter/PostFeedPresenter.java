@@ -163,7 +163,7 @@ public class PostFeedPresenter {
             return;
         }
 
-        Date lastStrockedAt = getLastStrockedAtForNewPost();
+        final Date lastStrockedAt = getLastStrockedAtForNewPost();
         if (lastStrockedAt == null) return;
 
         Call<Update> call = postsService.hasUpdated(lastStrockedAt);
@@ -171,13 +171,12 @@ public class PostFeedPresenter {
             @Override
             public void onResponse(Call<Update> call, Response<Update> response) {
                 if(response.isSuccessful()) {
-                    if (view.isVisibleNewPostsSign()) {
-                        return;
-                    }
-                    if (response.body().has_updated) {
-                        PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
-                        view.showNewPostsSign();
-                    }
+                    if (view.isVisibleNewPostsSign()) return;
+                    if (!response.body().has_updated) return;
+                    if (!lastStrockedAt.equals(getLastStrockedAtForNewPost())) return;
+
+                    PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
+                    view.showNewPostsSign();
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Check new post error : " + response.code());
                 }
@@ -196,14 +195,21 @@ public class PostFeedPresenter {
             return lastStrockedAtOfNewPostCheck;
         }
 
-        Date lastStrockedAt = null;
+        Date lastStrockedAtOfFirstInPostList = null;
         if(!feedAdapter.isEmpty()) {
             InfinitableModelHolder<Post> firstPostHolder = feedAdapter.getFirstHolder();
             if(!firstPostHolder.isLoader()) {
-                lastStrockedAt = firstPostHolder.getModel().last_stroked_at;
+                lastStrockedAtOfFirstInPostList = firstPostHolder.getModel().last_stroked_at;
             }
         }
-        return lastStrockedAt;
+
+        if(lastStrockedAtOfNewPostCheck == null) {
+            return lastStrockedAtOfFirstInPostList;
+        } else if(lastStrockedAtOfFirstInPostList == null) {
+            return lastStrockedAtOfNewPostCheck;
+        } else {
+            return (lastStrockedAtOfNewPostCheck.getTime() > lastStrockedAtOfFirstInPostList.getTime() ? lastStrockedAtOfNewPostCheck : lastStrockedAtOfFirstInPostList);
+        }
     }
 
     public void changePost(final Post post, Object playload) {
