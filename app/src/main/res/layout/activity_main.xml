@@ -44,10 +44,10 @@
                     layout="@layout/app_toolbar" />
             </android.support.design.widget.AppBarLayout>
             <FrameLayout
+                android:id="@+id/layout_new_posts_sign"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/layout_new_posts_sign">
+                android:layout_height="wrap_content">
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/button_new_posts_sign"
                     android:layout_width="wrap_content"

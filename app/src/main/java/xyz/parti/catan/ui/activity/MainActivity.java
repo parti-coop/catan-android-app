@@ -12,7 +12,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,7 +26,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -36,7 +34,6 @@ import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.mancj.slideup.SlideUp;
 
 import org.parceler.Parcels;
 
@@ -58,6 +55,7 @@ import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.NavigationItem;
+import xyz.parti.catan.ui.view.NewPostSignAnimator;
 
 public class MainActivity extends AppCompatActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
@@ -89,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
 
+    private NewPostSignAnimator newPostsSignAnimator;
+
     private BroadcastReceiver newPostsBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     };
     List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
-    private SlideUp newPostsSignSlideUp;
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
 
@@ -190,41 +189,27 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void setUpCheckNewPost() {
+        newPostsSignAnimator = new NewPostSignAnimator(this.newPostsSignLayout);
+        newPostsSignAnimator.hideImmediately();
         startCheckNewPostAlarm();
-
-        newPostsSignSlideUp = new SlideUp.Builder(newPostsSignLayout)
-                .withStartState(SlideUp.State.HIDDEN)
-                .withStartGravity(Gravity.TOP)
-                .build();
-        newPostsSignSlideUp.hide();
         listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(!newPostsSignSlideUp.isVisible() || newPostsSignSlideUp.isAnimationRunning()) {
-                    return;
-                }
 
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
-                            newPostsSignSlideUp.hide();
-                        }
-                    }
-                }, 5000);
+                if(newPostsSignAnimator != null) {
+                    newPostsSignAnimator.hideDelayed(5000);
+                }
             }
         });
-
         newPostsSignButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
                 swipeRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(newPostsSignSlideUp.isVisible() && !newPostsSignSlideUp.isAnimationRunning()) {
-                            newPostsSignSlideUp.hide();
+                        if(newPostsSignAnimator != null) {
+                            newPostsSignAnimator.hideImmediately();
                         }
                         swipeRefreshLayout.setRefreshing(true);
                         listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -437,13 +422,13 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
-    public boolean isVisibleNewPostsSignSlideUp() {
-        return newPostsSignSlideUp.isVisible();
+    public boolean isVisibleNewPostsSign() {
+        return newPostsSignLayout.getVisibility() == View.VISIBLE;
     }
 
     @Override
-    public void showNewPostsSignSlideUp() {
-        newPostsSignSlideUp.show();
+    public void showNewPostsSign() {
+        newPostsSignAnimator.show();
     }
 
     @Override

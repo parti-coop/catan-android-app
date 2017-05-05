@@ -6,4 +6,5 @@ package xyz.parti.catan;
 
 public class Constants {
     public static final String TAG = "Catan";
+    public static final String TAG_LOCAL = "Catan-Local";
 }

@@ -1,6 +1,8 @@
 package xyz.parti.catan.ui.presenter;
 
 import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonNull;
@@ -13,6 +15,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.helper.ReportHelper;
@@ -21,6 +24,7 @@ import xyz.parti.catan.models.Option;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.PartiAccessToken;
 import xyz.parti.catan.models.Post;
+import xyz.parti.catan.models.Update;
 import xyz.parti.catan.models.User;
 import xyz.parti.catan.services.FeedbacksService;
 import xyz.parti.catan.services.PostsService;
@@ -45,6 +49,7 @@ public class PostFeedPresenter {
     private final UpvotesService upvotesService;
     private final FeedbacksService feedbacksService;
     private PostFeedRecyclerViewAdapter feedAdapter;
+    private Date lastStrockedAtOfNewPostCheck = null;
 
     public PostFeedPresenter(View view, SessionManager session) {
         this.view = view;
@@ -149,8 +154,44 @@ public class PostFeedPresenter {
     }
 
     public void checkNewPosts() {
+        if(view.isVisibleNewPostsSign()) {
+            return;
+        }
         if(feedAdapter == null) {
             return;
+        }
+
+        Date lastStrockedAt = getLastStrockedAtForNewPost();
+        if (lastStrockedAt == null) return;
+
+        Call<Update> call = postsService.hasUpdated(lastStrockedAt);
+        call.enqueue(new Callback<Update>() {
+            @Override
+            public void onResponse(Call<Update> call, Response<Update> response) {
+                if(response.isSuccessful()) {
+                    if (view.isVisibleNewPostsSign()) {
+                        return;
+                    }
+                    if (response.body().has_updated) {
+                        PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
+                        view.showNewPostsSign();
+                    }
+                } else {
+                    ReportHelper.wtf(getApplicationContext(), "Check new post error : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Update> call, Throwable t) {
+                ReportHelper.wtf(getApplicationContext(), t);
+            }
+        });
+    }
+
+    @Nullable
+    private Date getLastStrockedAtForNewPost() {
+        if(this.lastStrockedAtOfNewPostCheck != null) {
+            return lastStrockedAtOfNewPostCheck;
         }
 
         Date lastStrockedAt = null;
@@ -160,32 +201,7 @@ public class PostFeedPresenter {
                 lastStrockedAt = firstPostHolder.getModel().last_stroked_at;
             }
         }
-        if(lastStrockedAt == null) {
-            return;
-        }
-
-        Call<JsonObject> call = postsService.hasUpdated(lastStrockedAt);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(response.isSuccessful()) {
-                    if (view.isVisibleNewPostsSignSlideUp()) {
-                        return;
-                    }
-
-                    if (response.body().get("has_updated").getAsBoolean()) {
-                        view.showNewPostsSignSlideUp();
-                    }
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Check new post error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+        return lastStrockedAt;
     }
 
     public void changePost(final Post post, Object playload) {
@@ -360,8 +376,8 @@ public class PostFeedPresenter {
 
     public interface View {
         void setSwipeRefreshing(boolean b);
-        boolean isVisibleNewPostsSignSlideUp();
-        void showNewPostsSignSlideUp();
+        boolean isVisibleNewPostsSign();
+        void showNewPostsSign();
         void showUrl(Uri parse);
         void showVideo(Uri webUrl, Uri appUrl);
         void downloadFile(Post post, FileSource docFileSource);

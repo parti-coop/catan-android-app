@@ -14,6 +14,7 @@ import retrofit2.http.Query;
 import retrofit2.http.Streaming;
 import xyz.parti.catan.models.Page;
 import xyz.parti.catan.models.Post;
+import xyz.parti.catan.models.Update;
 import xyz.parti.catan.models.User;
 
 /**
@@ -29,7 +30,7 @@ public interface PostsService {
             @Query("last_id") long lastId);
 
     @GET("/api/v1/posts/has_updated")
-    Call<JsonObject> hasUpdated(
+    Call<Update> hasUpdated(
             @Query("last_stroked_at") Date lastStrokedAt);
 
     @GET("/api/v1/posts/{id}/download_file/{file_source_id}")
