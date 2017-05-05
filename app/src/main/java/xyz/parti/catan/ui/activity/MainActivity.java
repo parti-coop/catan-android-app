@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -48,7 +47,6 @@ import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.NetworkHelper;
-import xyz.parti.catan.receivers.LocalBroadcastableAlarmReceiver;
 import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
@@ -90,15 +88,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private NewPostSignAnimator newPostsSignAnimator;
 
-    private BroadcastReceiver newPostsBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(presenter == null) {
-                return;
-            }
-            presenter.checkNewPosts();
-        }
-    };
+    private CheckNewPostBroadcastReceiver newPostsBroadcastReceiver = new CheckNewPostBroadcastReceiver();
     List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog downloadProgressDialog;
@@ -243,20 +233,23 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 });
             }
         });
-    }
 
-    private void startCheckNewPostAlarm() {
-        Log.d(Constants.TAG, "startCheckNewPostAlarm");
         newPostsAlarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, LocalBroadcastableAlarmReceiver.class);
-        intent.putExtra(LocalBroadcastableAlarmReceiver.INTENT_EXTRA_ACTION, ACTION_CHECK_NEW_POSTS);
-        newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
+        newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_CHECK_NEW_POSTS), 0);
     }
 
-    private void cancelCheckNewPostAlarm() {
-        Log.d(Constants.TAG, "cancelCheckNewPostAlarm");
+    private void startCheckNewPostJob() {
+        Log.d(Constants.TAG, "startCheckNewPostJob");
+        if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
+            registerReceiver(newPostsBroadcastReceiver, new IntentFilter(ACTION_CHECK_NEW_POSTS));
+            newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
+        }
+    }
+
+    private void cancelCheckNewPostJob() {
+        Log.d(Constants.TAG, "cancelCheckNewPostJob");
+        unregisterReceiver(newPostsBroadcastReceiver);
         if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
             newPostsAlarmMgr.cancel(newPostsAlarmIntent);
         }
@@ -303,28 +296,26 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(newPostsBroadcastReceiver);
+        cancelCheckNewPostJob();
         if(downloadProgressDialog != null) {
             downloadProgressDialog.dismiss();
         }
         if(presenter != null) {
             presenter.detachView();
         }
+        super.onDestroy();
     }
 
     @Override
     protected void onPause()  {
         super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(newPostsBroadcastReceiver);
-        cancelCheckNewPostAlarm();
+        cancelCheckNewPostJob();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(newPostsBroadcastReceiver, new IntentFilter(ACTION_CHECK_NEW_POSTS));
-        startCheckNewPostAlarm();
+        startCheckNewPostJob();
     }
 
     @Override
@@ -462,4 +453,14 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             showUrl(webUrl);
         }
     }
+
+    public class CheckNewPostBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(presenter == null) {
+                return;
+            }
+            presenter.checkNewPosts();
+        }
+    };
 }

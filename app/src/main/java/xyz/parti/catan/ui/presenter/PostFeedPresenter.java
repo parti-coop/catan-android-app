@@ -2,11 +2,9 @@ package xyz.parti.catan.ui.presenter;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.util.Date;
@@ -15,7 +13,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
 import xyz.parti.catan.helper.ReportHelper;

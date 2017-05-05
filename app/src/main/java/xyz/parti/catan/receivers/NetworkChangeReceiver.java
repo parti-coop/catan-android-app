@@ -19,7 +19,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(!NetworkHelper.isValidNetwork(context)) {
-            Log.d(Constants.TAG_LOCAL, "INVALID");
             Intent intentCleanUp = new Intent(BaseActivity.ACTION_NETWORK_DISCONNECT);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intentCleanUp);
 
@@ -28,7 +27,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentShowDisconnect);
         } else {
-            Log.d(Constants.TAG_LOCAL, "VALID");
             Intent intentCleanUp = new Intent(DisconnectActivity.ACTION_NETWORK_RECONNECT);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intentCleanUp);
         }

@@ -63,7 +63,6 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_disconnect"></activity>
 
-        <receiver android:name=".receivers.LocalBroadcastableAlarmReceiver" />
         <receiver
             android:name=".receivers.NetworkChangeReceiver"
             android:label="NetworkChangeReceiver" >
