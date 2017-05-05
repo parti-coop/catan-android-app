@@ -240,8 +240,10 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private void startCheckNewPostJob() {
         Log.d(Constants.TAG, "startCheckNewPostJob");
-        if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
+        if(newPostsBroadcastReceiver != null) {
             registerReceiver(newPostsBroadcastReceiver, new IntentFilter(ACTION_CHECK_NEW_POSTS));
+        }
+        if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
             newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
         }
@@ -249,7 +251,12 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private void cancelCheckNewPostJob() {
         Log.d(Constants.TAG, "cancelCheckNewPostJob");
-        unregisterReceiver(newPostsBroadcastReceiver);
+        if(newPostsBroadcastReceiver != null) {
+            try {
+                unregisterReceiver(newPostsBroadcastReceiver);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
         if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
             newPostsAlarmMgr.cancel(newPostsAlarmIntent);
         }
