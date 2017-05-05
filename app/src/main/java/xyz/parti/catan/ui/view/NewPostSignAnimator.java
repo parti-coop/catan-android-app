@@ -21,6 +21,8 @@ public class NewPostSignAnimator {
 
     public NewPostSignAnimator(@NonNull View view) {
         this.view = view;
+        this.view.setTranslationX(view.getHeight());
+        this.view.setVisibility(View.INVISIBLE);
 
         slideUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
         slideUp.setAnimationListener(new Animation.AnimationListener() {
@@ -78,6 +80,9 @@ public class NewPostSignAnimator {
     }
 
     public void show() {
+        if(isVisible() || isAnimationRunning()) {
+            return;
+        }
         view.startAnimation(slideDown);
     }
 

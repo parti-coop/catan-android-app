@@ -208,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private void setUpCheckNewPost() {
         newPostsSignAnimator = new NewPostSignAnimator(this.newPostsSignLayout);
-        newPostsSignAnimator.hideImmediately();
 
         listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -223,12 +222,12 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         newPostsSignButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
+                if(newPostsSignAnimator != null) {
+                    newPostsSignAnimator.hideImmediately();
+                }
                 swipeRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(newPostsSignAnimator != null) {
-                            newPostsSignAnimator.hideImmediately();
-                        }
                         swipeRefreshLayout.setRefreshing(true);
                         listRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                             public void onScrollStateChanged(RecyclerView view, int state) {
