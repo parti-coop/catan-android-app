@@ -52,6 +52,7 @@ import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.binder.DrawerNavigationHeaderBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.NavigationItem;
@@ -92,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     private NewPostSignAnimator newPostsSignAnimator;
 
     private CheckNewPostBroadcastReceiver newPostsBroadcastReceiver = new CheckNewPostBroadcastReceiver();
-    List<NavigationItem> navigationItems = new ArrayList<>();
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
@@ -158,12 +158,11 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void setUpDrawerBar() {
-        navigationItems.add(new NavigationItem(this, R.string.navigation_logout));
         drawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
-                rootDrawerLayout,            /* DrawerLayout object */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
+                rootDrawerLayout,      /* DrawerLayout object */
+                R.string.drawer_open,        /* "open drawer" description */
+                R.string.drawer_close       /* "close drawer" description */
         );
         drawerNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -172,14 +171,19 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 rootDrawerLayout.closeDrawers();
 
                 switch (item.getItemId()){
-                    case R.id.logoutButton:
-                        session.logoutUser();
+                    case R.id.button_settings:
+                        if(presenter != null) {
+                            presenter.showSettings();
+                        }
                         return true;
                     default:
                         return true;
                 }
             }
         });
+        drawerNavigationView.setCheckedItem(R.id.item_post_feed);
+
+        new DrawerNavigationHeaderBinder(drawerNavigationView.getHeaderView(0)).bindData(session.getCurrentUser());
     }
 
     @Override
@@ -452,6 +456,12 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     @Override
     public void ensureToExpendedAppBar() {
         appBarLayout.setExpanded(true);
+    }
+
+    @Override
+    public void showSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     @Override

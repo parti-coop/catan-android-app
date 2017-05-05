@@ -41,7 +41,7 @@
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>
 
-    <string name="navigation_logout">로그아웃</string>
+    <string name="navigation_settings">설정</string>
     <string name="drawer_open">메뉴를 엽니다</string>
     <string name="drawer_close">메뉴를 닫습니다</string>
 
@@ -54,9 +54,11 @@
 
     <!-- com.github.curioustechizen.android-ago -->
     <string name="just_now">방금</string>
+    <string name="title_activity_settings">설정</string>
 
     <string name="no_network_connect">네트워크 연결이 끊어졌습니다</string>
     <string name="check_network_status_button">다시 시도하기</string>
     <string name="fail_to_connect">연결할 수 없습니다. 잠시 후에 다시 시도해 주세요.</string>
     <string name="title_activity_disconnect">네트워크 끊김</string>
+    <string name="navigation_menu_post_feed">내 피드</string>
 </resources>

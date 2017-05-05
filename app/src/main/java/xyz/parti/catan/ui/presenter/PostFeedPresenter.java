@@ -402,6 +402,10 @@ public class PostFeedPresenter {
         }
     }
 
+    public void showSettings() {
+        view.showSettings();
+    }
+
     public interface View {
         void stopAndEnableSwipeRefreshing();
         boolean isVisibleNewPostsSign();
@@ -420,5 +424,6 @@ public class PostFeedPresenter {
         void ensureToPostListDemoIsGone();
         void showPostListDemo();
         void ensureToExpendedAppBar();
+        void showSettings();
     }
 }

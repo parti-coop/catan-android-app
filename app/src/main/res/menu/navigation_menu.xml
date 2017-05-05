@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_post_feed"
+            android:icon="@drawable/ic_post_feed"
+            android:title="@string/navigation_menu_post_feed" />
+    </group>
+    <item
+        android:id="@+id/button_settings"
+        android:icon="@drawable/ic_setting"
+        android:title="@string/navigation_settings" />
+</menu>

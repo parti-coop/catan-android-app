@@ -122,8 +122,11 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
-            app:headerLayout="@layout/navigation_main"
-            app:menu="@menu/activity_main_drawer" />
+            app:itemIconTint="@color/drawer_item"
+            app:itemTextColor="@color/drawer_item"
+            app:itemBackground="@android:color/transparent"
+            app:headerLayout="@layout/navigation_header"
+            app:menu="@menu/navigation_menu" />
         <!--<ListView-->
             <!--android:id="@+id/navList"-->
             <!--android:layout_width="280dp"-->
