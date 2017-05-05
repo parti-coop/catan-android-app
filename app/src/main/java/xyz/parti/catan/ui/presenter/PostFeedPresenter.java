@@ -90,6 +90,7 @@ public class PostFeedPresenter {
                 }
                 feedAdapter.setLoadFinished();
                 view.stopAndEnableSwipeRefreshing();
+                view.ensureToExpendedAppBar();
             }
 
             @Override
@@ -418,5 +419,6 @@ public class PostFeedPresenter {
         void showSimpleMessage(String message);
         void ensureToPostListDemoIsGone();
         void showPostListDemo();
+        void ensureToExpendedAppBar();
     }
 }

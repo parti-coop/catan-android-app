@@ -222,15 +222,19 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                     @Override
                     public void run() {
                         postListSwipeRefreshLayout.setRefreshing(true);
-                        postListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                            public void onScrollStateChanged(RecyclerView view, int state) {
-                                if (state == RecyclerView.SCROLL_STATE_IDLE) {
-                                    view.removeOnScrollListener(this);
-                                    appBarLayout.setExpanded(true, true);
+                        if(postListRecyclerView.computeVerticalScrollOffset() != 0) {
+                            postListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                                public void onScrollStateChanged(RecyclerView view, int state) {
+                                    if (state == RecyclerView.SCROLL_STATE_IDLE) {
+                                        view.removeOnScrollListener(this);
+                                        appBarLayout.setExpanded(true, true);
+                                    }
                                 }
-                            }
-                        });
-                        postListRecyclerView.smoothScrollToPosition(0);
+                            });
+                            postListRecyclerView.smoothScrollToPosition(0);
+                        } else {
+                            appBarLayout.setExpanded(true, true);
+                        }
                         presenter.loadFirstPosts();
                     }
                 });
@@ -443,6 +447,11 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         appBarLayout.setExpanded(true);
         postListDemoLayout.startShimmerAnimation();
         postListDemoLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void ensureToExpendedAppBar() {
+        appBarLayout.setExpanded(true);
     }
 
     @Override
