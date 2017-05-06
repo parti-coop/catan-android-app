@@ -41,7 +41,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class PostFeedPresenter {
-    private final SessionManager session;
+    private SessionManager session;
     private View view;
     private final PostsService postsService;
     private final VotingsService votingsService;
@@ -62,10 +62,13 @@ public class PostFeedPresenter {
 
     public void detachView() {
         view = null;
+        session = null;
+        feedAdapter = null;
+        Log.d(Constants.TAG_TEST, "CLEAR ALL!!!!!");
     }
 
     private boolean isActive() {
-        return view != null;
+        return view != null && session != null && feedAdapter != null;
     }
 
     public void setPostFeedRecyclerViewAdapter(PostFeedRecyclerViewAdapter feedAdapter) {
@@ -423,6 +426,8 @@ public class PostFeedPresenter {
         long reload_gap_mills = 10 * 60 * 1000;
         if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
             Log.d(Constants.TAG_TEST, "LOAD!!");
+            Log.d(Constants.TAG_TEST, "lastLoadFirstPostsAtMillis : " + lastLoadFirstPostsAtMillis);
+            Log.d(Constants.TAG_TEST, "System.currentTimeMillis() : " + System.currentTimeMillis());
             feedAdapter.clearData();
             feedAdapter.notifyDataSetChanged();
             view.showPostListDemo();

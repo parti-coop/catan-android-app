@@ -163,8 +163,8 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         presenter.detachView();
+        super.onDestroy();
     }
 
     @Override

@@ -64,7 +64,7 @@ public class ServiceGenerator {
             @Override
             public Request authenticate(Route route, Response response) throws IOException {
                 PartiAccessToken prefToken = session.getPartiAccessToken();
-                if (prefToken.access_token != currentToken.access_token) {
+                if ((currentToken == null && prefToken != null && prefToken.access_token != null) || (prefToken.access_token.equals(currentToken.access_token))) {
                     return response.request().newBuilder()
                             .header("Authorization", prefToken.getValidTokenType() + " " + prefToken.access_token)
                             .build();

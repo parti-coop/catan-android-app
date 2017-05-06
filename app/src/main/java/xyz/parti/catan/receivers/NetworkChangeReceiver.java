@@ -21,7 +21,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             LocalBroadcastManager.getInstance(context).sendBroadcast(intentCleanUp);
 
             Intent intentShowDisconnect = new Intent(context, DisconnectActivity.class);
-            intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentShowDisconnect);
         } else {

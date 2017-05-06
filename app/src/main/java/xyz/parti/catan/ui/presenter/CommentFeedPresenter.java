@@ -38,10 +38,11 @@ public class CommentFeedPresenter {
 
     public void detachView() {
         view = null;
+        feedAdapter = null;
     }
 
     private boolean isActive() {
-        return view != null;
+        return view != null && feedAdapter != null;
     }
 
     public void setCommentFeedRecyclerViewAdapter(CommentFeedRecyclerViewAdapter feedAdapter) {
