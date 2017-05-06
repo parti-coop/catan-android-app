@@ -142,10 +142,8 @@ public class SessionManager {
     public void startLogin() {
         Intent i = new Intent(this.context, LogInMenuActivity.class);
         // Closing all the Activities
-        Log.d(Constants.TAG_TEST, "Closing all the Activities");
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // Add new Flag to start new Activity
-        Log.d(Constants.TAG_TEST, "Add new Flag to start new Activity");
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // Staring Login Activity
         context.startActivity(i);

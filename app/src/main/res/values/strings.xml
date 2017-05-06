@@ -63,4 +63,6 @@
 
     <string name="navigation_menu_post_feed">내 피드</string>
     <string name="license">라이센스</string>
+    <string name="new_version">새로운 버전의 앱이 업로드되었습니다. 업그레이드하시겠습니까? 버전 :  %s</string>
+    <string name="ok">확인</string>
 </resources>

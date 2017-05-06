@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,7 +40,6 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +47,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
+import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Post;
@@ -55,7 +56,6 @@ import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.DrawerNavigationHeaderBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
-import xyz.parti.catan.ui.view.NavigationItem;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 
 public class MainActivity extends AppCompatActivity implements PostFeedPresenter.View {
@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     @BindView(R.id.layout_post_list_demo)
     ShimmerFrameLayout postListDemoLayout;
 
-    private PostFeedRecyclerViewAdapter feedAdapter;
     private SessionManager session;
 
     private AlarmManager newPostsAlarmMgr;
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         setContentView(R.layout.activity_main);
 
         if(ensureValidNetwork()) {
-            session = new SessionManager(getApplicationContext());
+            session = new SessionManager(this.getApplicationContext());
             session.checkLogin(new SessionManager.OnCheckListener() {
                 @Override
                 public void onLoggedIn() {
@@ -113,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                     ButterKnife.bind(MainActivity.this);
 
                     presenter = new PostFeedPresenter(MainActivity.this, session);
+                    checkAppVersion();
                     setUpToolbar();
                     setUpFeed();
                     setUpCheckNewPost();
@@ -126,6 +126,10 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 }
             });
         }
+    }
+
+    private void checkAppVersion() {
+        presenter.checkAppVersion();
     }
 
     private boolean ensureValidNetwork() {
@@ -284,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     private void setUpFeed() {
         downloadProgressDialog = new ProgressDialog(this);
 
-        feedAdapter = new PostFeedRecyclerViewAdapter(this);
+        PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this);
         feedAdapter.setPresenter(presenter);
         feedAdapter.setLoadMoreListener(
             new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
@@ -437,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     @Override
     public void showSimpleMessage(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -462,6 +466,22 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     public void showSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void showNewVersionMessage(String newVersion) {
+        Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000).setAction(R.string.ok,
+                new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IntentHelper.startPlayStore(MainActivity.this, getPackageName());
+            }
+        }).show();
     }
 
     @Override
@@ -505,9 +525,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     public class CheckNewPostBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(presenter == null) {
-                return;
-            }
+            if(presenter == null) return;
             presenter.checkNewPosts();
         }
     };

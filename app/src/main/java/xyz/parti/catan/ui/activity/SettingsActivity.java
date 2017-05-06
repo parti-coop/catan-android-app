@@ -21,6 +21,7 @@ import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.api.ServiceGenerator;
+import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.services.SettingsService;
 import xyz.parti.catan.sessions.SessionManager;
@@ -47,12 +48,12 @@ public class SettingsActivity extends BaseActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(this.getApplicationContext());
         settingsService = ServiceGenerator.createService(SettingsService.class, session);
 
         ButterKnife.bind(this);
 
-        versionTextView.setText(Constants.VERSION);
+        versionTextView.setText(AppVersionHelper.getCurrentVerion(this));
     }
 
     @OnClick(R.id.layout_setting_profile)
@@ -92,11 +93,9 @@ public class SettingsActivity extends BaseActivity {
 
     private boolean startActivityWith(JsonObject setting, String fieldName, String fallbackUrl) {
         if (setting != null && setting.get(fieldName).getAsString() != null) {
-            Log.d(Constants.TAG_TEST, setting.toString());
             startActivityForUrl(setting.get(fieldName).getAsString());
             return true;
         }
-        Log.d(Constants.TAG_TEST, "XXX");
 
         if(fallbackUrl == null) {
             return false;

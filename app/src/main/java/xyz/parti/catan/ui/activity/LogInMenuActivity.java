@@ -59,7 +59,7 @@ public class LogInMenuActivity extends BaseActivity {
         callbackManager = initFacebook();
         setContentView(R.layout.activity_login_menu);
 
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(this.getApplicationContext());
         
         ButterKnife.bind(LogInMenuActivity.this);
 
@@ -223,11 +223,11 @@ public class LogInMenuActivity extends BaseActivity {
                 finish();
 
                 // Staring MainActivity
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(LogInMenuActivity.this.getApplicationContext(), MainActivity.class);
                 startActivity(i);
                 this.mActivity.finish();
             } else {
-                Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                Toast.makeText(LogInMenuActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
             }
         }
 

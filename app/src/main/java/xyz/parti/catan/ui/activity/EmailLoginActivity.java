@@ -64,7 +64,7 @@ public class EmailLoginActivity extends BaseActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_login);
 
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(this.getApplicationContext());
         ButterKnife.bind(EmailLoginActivity.this);
 
         // Set up the login form.
@@ -340,7 +340,7 @@ public class EmailLoginActivity extends BaseActivity implements LoaderCallbacks<
                 // session.createLoginSession(100, "jerry", "", "", 100);
 
                 // Staring MainActivity
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(EmailLoginActivity.this.getApplicationContext(), MainActivity.class);
                 startActivity(i);
                 this.mActivity.finish();
             } else {

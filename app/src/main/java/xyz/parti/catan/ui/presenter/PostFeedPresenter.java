@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.presenter;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,6 +18,7 @@ import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.APIHelper;
+import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.models.FileSource;
 import xyz.parti.catan.models.Option;
@@ -32,6 +34,7 @@ import xyz.parti.catan.services.VotingsService;
 import xyz.parti.catan.sessions.SessionManager;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.task.AppVersionCheckTask;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -64,7 +67,6 @@ public class PostFeedPresenter {
         view = null;
         session = null;
         feedAdapter = null;
-        Log.d(Constants.TAG_TEST, "CLEAR ALL!!!!!");
     }
 
     private boolean isActive() {
@@ -97,7 +99,7 @@ public class PostFeedPresenter {
                     feedAdapter.appendModels(page.items);
                     feedAdapter.setMoreDataAvailable(page.has_more_item);
                 }else{
-                    ReportHelper.wtf(getApplicationContext(), "Load first post error : " + response.code());
+                    ReportHelper.wtf(view.getContext(), "Load first post error : " + response.code());
                 }
                 feedAdapter.setLoadFinished();
                 view.stopAndEnableSwipeRefreshing();
@@ -425,9 +427,6 @@ public class PostFeedPresenter {
 
         long reload_gap_mills = 10 * 60 * 1000;
         if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
-            Log.d(Constants.TAG_TEST, "LOAD!!");
-            Log.d(Constants.TAG_TEST, "lastLoadFirstPostsAtMillis : " + lastLoadFirstPostsAtMillis);
-            Log.d(Constants.TAG_TEST, "System.currentTimeMillis() : " + System.currentTimeMillis());
             feedAdapter.clearData();
             feedAdapter.notifyDataSetChanged();
             view.showPostListDemo();
@@ -437,6 +436,16 @@ public class PostFeedPresenter {
 
     public void showSettings() {
         view.showSettings();
+    }
+
+    public void checkAppVersion() {
+        new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(view.getContext()), view.getContext()).check(new AppVersionCheckTask.NewVersionAction() {
+            @Override
+            public void run(String newVersion) {
+                if(isActive())
+                    view.showNewVersionMessage(newVersion);
+            }
+        });
     }
 
     public interface View {
@@ -458,5 +467,7 @@ public class PostFeedPresenter {
         void showPostListDemo();
         void ensureToExpendedAppBar();
         void showSettings();
+        Context getContext();
+        void showNewVersionMessage(String newVersion);
     }
 }

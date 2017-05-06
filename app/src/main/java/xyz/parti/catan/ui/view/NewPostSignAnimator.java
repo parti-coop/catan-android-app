@@ -8,8 +8,6 @@ import android.view.animation.AnimationUtils;
 
 import xyz.parti.catan.R;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 /**
  * Created by dalikim on 2017. 5. 5..
  */
@@ -24,7 +22,7 @@ public class NewPostSignAnimator {
         this.view.setTranslationX(view.getHeight());
         this.view.setVisibility(View.INVISIBLE);
 
-        slideUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
+        slideUp = AnimationUtils.loadAnimation(view.getContext(), R.anim.slide_up);
         slideUp.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -41,7 +39,7 @@ public class NewPostSignAnimator {
 
             }
         });
-        slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
+        slideDown = AnimationUtils.loadAnimation(view.getContext(), R.anim.slide_down);
         slideDown.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
