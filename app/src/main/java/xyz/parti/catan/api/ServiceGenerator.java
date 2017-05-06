@@ -1,5 +1,6 @@
 package xyz.parti.catan.api;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -46,7 +47,7 @@ public class ServiceGenerator {
         return retrofit.create(serviceClass);
     }
 
-    public static <S> S createService(Class<S> serviceClass, final SessionManager session) {
+    public static <S> S createService(Class<S> serviceClass, @NonNull final SessionManager session) {
         final OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
         oAuthIntercept(httpClient, session);

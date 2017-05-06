@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="define_int_stetho"></string>
+    <!-- Author section -->
+    <string name="library_stetho_author">Facebook</string>
+    <string name="library_stetho_authorWebsite">http://facebook.github.io/stetho/</string>
+    <!-- Library section -->
+    <string name="library_stetho_libraryName">Stetho</string>
+    <string name="library_stetho_libraryDescription">Stetho is a sophisticated debug bridge for Android applications. When enabled, developers have access to the Chrome Developer Tools feature natively part of the Chrome desktop browser. Developers can also choose to enable the optional dumpapp tool which offers a powerful command-line interface to application internals.</string>
+    <string name="library_stetho_libraryWebsite"></string>
+    <string name="library_stetho_libraryVersion">1.5.0</string>
+    <!-- OpenSource section -->
+    <string name="library_stetho_isOpenSource">true</string>
+    <string name="library_stetho_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_stetho_classPath">com.facebook.stetho.Stetho</string>
+    <!-- License section -->
+    <string name="library_stetho_licenseId">bsd_3</string>
+    <!-- Custom variables section -->
+</resources>

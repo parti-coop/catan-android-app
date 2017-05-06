@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="brand_gray_darker">#212121</color>
     <color name="brand_gray_dark">#777777</color>
     <color name="brand_gray">#ccc</color>
     <color name="brand_gray_light">#efefef</color>

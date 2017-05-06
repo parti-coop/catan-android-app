@@ -8,7 +8,6 @@ import org.parceler.Parcel;
 
 @Parcel
 public class User {
-    public String user;
     public Long id;
     public String email;
     public String nickname;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="define_int_android_iconify"></string>
+    <!-- Author section -->
+    <string name="library_android_iconify_author">JoanZapata</string>
+    <string name="library_android_iconify_authorWebsite">http://joanzapata.com/android-iconify</string>
+    <!-- Library section -->
+    <string name="library_android_iconify_libraryName">android-iconify</string>
+    <string name="library_android_iconify_libraryDescription">Iconify offers you a huge collection of vector icons to choose from, and an intuitive way to add and customize them in your Android app.</string>
+    <string name="library_android_iconify_libraryWebsite"></string>
+    <string name="library_android_iconify_libraryVersion">2.2.2</string>
+    <!-- OpenSource section -->
+    <string name="library_android_iconify_isOpenSource">true</string>
+    <string name="library_android_iconify_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_android_iconify_classPath">com.joanzapata.iconify.widget.IconTextView</string>
+    <!-- License section -->
+    <string name="library_android_iconify_licenseId">apache_2_0</string>
+    <!-- Custom variables section -->
+</resources>

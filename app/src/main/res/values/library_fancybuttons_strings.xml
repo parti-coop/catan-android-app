@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="define_int_fancybuttons"></string>
+    <!-- Author section -->
+    <string name="library_fancybuttons_author">medyo</string>
+    <string name="library_fancybuttons_authorWebsite">https://github.com/medyo/Fancybuttons</string>
+    <!-- Library section -->
+    <string name="library_fancybuttons_libraryName">Fancybuttons</string>
+    <string name="library_fancybuttons_libraryDescription">Icons, Borders, Radius ... for Android buttons.</string>
+    <string name="library_fancybuttons_libraryWebsite"></string>
+    <string name="library_fancybuttons_libraryVersion">1.8.3</string>
+    <!-- OpenSource section -->
+    <string name="library_fancybuttons_isOpenSource">true</string>
+    <string name="library_fancybuttons_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_fancybuttons_classPath">mehdi.sakout.fancybuttons.FancyButton</string>
+    <!-- License section -->
+    <string name="library_fancybuttons_licenseId">apache_2_0</string>
+    <!-- Custom variables section -->
+</resources>

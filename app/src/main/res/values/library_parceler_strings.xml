@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="define_int_parceler"></string>
+    <!-- Author section -->
+    <string name="library_parceler_author">johncarl81</string>
+    <string name="library_parceler_authorWebsite">http://parceler.org</string>
+    <!-- Library section -->
+    <string name="library_parceler_libraryName">parceler</string>
+    <string name="library_parceler_libraryDescription">Android Parcelables made easy through code generation.</string>
+    <string name="library_parceler_libraryWebsite"></string>
+    <string name="library_parceler_libraryVersion">1.1.6</string>
+    <!-- OpenSource section -->
+    <string name="library_parceler_isOpenSource">true</string>
+    <string name="library_parceler_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_parceler_classPath">org.parceler.Parcels</string>
+    <!-- License section -->
+    <string name="library_parceler_licenseId">apache_2_0</string>
+    <!-- Custom variables section -->
+</resources>

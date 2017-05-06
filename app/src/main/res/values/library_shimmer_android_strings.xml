@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="define_int_shimmer_android"></string>
+    <!-- Author section -->
+    <string name="library_shimmer_android_author">Facebook</string>
+    <string name="library_shimmer_android_authorWebsite">http://facebook.github.io/shimmer-android/</string>
+    <!-- Library section -->
+    <string name="library_shimmer_android_libraryName">shimmer-android</string>
+    <string name="library_shimmer_android_libraryDescription">An easy, flexible way to add a shimmering effect to any view in an Android app.</string>
+    <string name="library_shimmer_android_libraryWebsite"></string>
+    <string name="library_shimmer_android_libraryVersion">0.1.0</string>
+    <!-- OpenSource section -->
+    <string name="library_shimmer_android_isOpenSource">true</string>
+    <string name="library_shimmer_android_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_shimmer_android_classPath">com.facebook.stetho.Stetho</string>
+    <!-- License section -->
+    <string name="library_shimmer_android_licenseId">bsd_2</string>
+    <!-- Custom variables section -->
+</resources>

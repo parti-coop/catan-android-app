@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="define_int_tedpermission"></string>
+    <!-- Author section -->
+    <string name="library_tedpermission_author">ParkSangGwon</string>
+    <string name="library_tedpermission_authorWebsite">https://github.com/ParkSangGwon/TedPermission</string>
+    <!-- Library section -->
+    <string name="library_tedpermission_libraryName">TedPermission</string>
+    <string name="library_tedpermission_libraryDescription">Easy check permission library for Android Marshmallow</string>
+    <string name="library_tedpermission_libraryWebsite"></string>
+    <string name="library_tedpermission_libraryVersion">1.0.3</string>
+    <!-- OpenSource section -->
+    <string name="library_tedpermission_isOpenSource">true</string>
+    <string name="library_tedpermission_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_tedpermission_classPath">org.parceler.Parcels</string>
+    <!-- License section -->
+    <string name="library_tedpermission_licenseId">apache_2_0</string>
+    <!-- Custom variables section -->
+</resources>
