@@ -64,6 +64,10 @@ public class PostFeedPresenter {
         view = null;
     }
 
+    private boolean isActive() {
+        return view != null;
+    }
+
     public void setPostFeedRecyclerViewAdapter(PostFeedRecyclerViewAdapter feedAdapter) {
         this.feedAdapter = feedAdapter;
     }
@@ -77,6 +81,10 @@ public class PostFeedPresenter {
         APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
+                if(!isActive()) {
+                    return;
+                }
+
                 lastLoadFirstPostsAtMillis = System.currentTimeMillis();
                 view.ensureToPostListDemoIsGone();
                 if(response.isSuccessful()){
@@ -95,6 +103,10 @@ public class PostFeedPresenter {
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
+                if(!isActive()) {
+                    return;
+                }
+
                 ReportHelper.wtf(getApplicationContext(), t);
                 feedAdapter.setLoadFinished();
                 view.stopAndEnableSwipeRefreshing();
@@ -119,6 +131,10 @@ public class PostFeedPresenter {
         call.enqueue(new Callback<Page<Post>>() {
             @Override
             public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
+                if(!isActive()) {
+                    return;
+                }
+
                 if(response.isSuccessful()){
                     //remove loading view
                     feedAdapter.removeLastMoldelHolder();
@@ -147,6 +163,10 @@ public class PostFeedPresenter {
 
             @Override
             public void onFailure(Call<Page<Post>> call, Throwable t) {
+                if(!isActive()) {
+                    return;
+                }
+
                 feedAdapter.setMoreDataAvailable(false);
                 feedAdapter.notifyDataSetChanged();
                 feedAdapter.setLoadFinished();
@@ -171,6 +191,10 @@ public class PostFeedPresenter {
         call.enqueue(new Callback<Update>() {
             @Override
             public void onResponse(Call<Update> call, Response<Update> response) {
+                if(!isActive()) {
+                    return;
+                }
+
                 if(response.isSuccessful()) {
                     if (view.isVisibleNewPostsSign()) return;
                     if (!response.body().has_updated) return;
@@ -185,6 +209,10 @@ public class PostFeedPresenter {
 
             @Override
             public void onFailure(Call<Update> call, Throwable t) {
+                if(!isActive()) {
+                    return;
+                }
+
                 ReportHelper.wtf(getApplicationContext(), t);
             }
         });
@@ -394,7 +422,7 @@ public class PostFeedPresenter {
 
         long reload_gap_mills = 10 * 60 * 1000;
         if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
-            Log.d(Constants.TAG_LOCAL, "LOAD!!");
+            Log.d(Constants.TAG_TEST, "LOAD!!");
             feedAdapter.clearData();
             feedAdapter.notifyDataSetChanged();
             view.showPostListDemo();

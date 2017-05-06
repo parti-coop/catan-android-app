@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 
 import butterknife.BindView;
@@ -25,8 +24,6 @@ import xyz.parti.catan.api.ServiceGenerator;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.services.SettingsService;
 import xyz.parti.catan.sessions.SessionManager;
-
-import static android.R.style.ThemeOverlay;
 
 /**
  * Created by dalikim on 2017. 5. 6..
@@ -80,15 +77,12 @@ public class SettingsActivity extends BaseActivity {
 
     @OnClick(R.id.layout_license)
     public void showAbout(View view) {
-        //openMenu("app_license_url", String.format("https://parti.xyz/app/license?version=%s", Constants.VERSION));
         new LibsBuilder()
-                //provide a style (optional) style/Base.Theme.AppCompat.Light.DialogWhenLarge(LIGHT, DARK, LIGHT_DARK_TOOLBAR)
                 .withActivityTheme(R.style.Theme_AppCompat_Light_NoActionBar)
                 .withActivityTitle(getResources().getString(R.string.license))
                 .withLicenseShown(true)
                 .withLicenseDialog(true)
                 .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android")
-                //start the activity
                 .start(this);
     }
 
@@ -98,11 +92,11 @@ public class SettingsActivity extends BaseActivity {
 
     private boolean startActivityWith(JsonObject setting, String fieldName, String fallbackUrl) {
         if (setting != null && setting.get(fieldName).getAsString() != null) {
-            Log.d(Constants.TAG_LOCAL, setting.toString());
+            Log.d(Constants.TAG_TEST, setting.toString());
             startActivityForUrl(setting.get(fieldName).getAsString());
             return true;
         }
-        Log.d(Constants.TAG_LOCAL, "XXX");
+        Log.d(Constants.TAG_TEST, "XXX");
 
         if(fallbackUrl == null) {
             return false;

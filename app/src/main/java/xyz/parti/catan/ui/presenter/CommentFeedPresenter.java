@@ -40,6 +40,10 @@ public class CommentFeedPresenter {
         view = null;
     }
 
+    private boolean isActive() {
+        return view != null;
+    }
+
     public void setCommentFeedRecyclerViewAdapter(CommentFeedRecyclerViewAdapter feedAdapter) {
         this.feedAdapter = feedAdapter;
     }
@@ -54,6 +58,10 @@ public class CommentFeedPresenter {
         call.enqueue(new Callback<Page<Comment>>() {
             @Override
             public void onResponse(Call<Page<Comment>> call, Response<Page<Comment>> response) {
+                if(!isActive()) {
+                    return;
+                }
+
                 if(response.isSuccessful()) {
                     Page<Comment> page = response.body();
                     feedAdapter.appendModels(page.items);
@@ -66,6 +74,10 @@ public class CommentFeedPresenter {
 
             @Override
             public void onFailure(Call<Page<Comment>> call, Throwable t) {
+                if(!isActive()) {
+                    return;
+                }
+
                 ReportHelper.wtf(getApplicationContext(), t);
                 feedAdapter.setLoadFinished();
             }
@@ -92,6 +104,10 @@ public class CommentFeedPresenter {
         call.enqueue(new Callback<Page<Comment>>() {
             @Override
             public void onResponse(Call<Page<Comment>> call, Response<Page<Comment>> response) {
+                if(!isActive()) {
+                    return;
+                }
+
                 if(response.isSuccessful()) {
                     //remove loading view
                     feedAdapter.removeFirstMoldelHolder();
@@ -117,6 +133,10 @@ public class CommentFeedPresenter {
 
             @Override
             public void onFailure(Call<Page<Comment>> call, Throwable t) {
+                if(!isActive()) {
+                    return;
+                }
+
                 feedAdapter.setMoreDataAvailable(false);
                 feedAdapter.notifyDataSetChanged();
                 feedAdapter.setLoadFinished();

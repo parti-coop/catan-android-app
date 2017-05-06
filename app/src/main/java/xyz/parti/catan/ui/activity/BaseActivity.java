@@ -30,8 +30,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void onDestroy(){
-        //this is very important, you have to unregister the
-        //logOutReceiver before the activity is destroyed.
         LocalBroadcastManager.getInstance(this).unregisterReceiver(logOutReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(networkDisconnectReceiver);
         super.onDestroy();
@@ -46,6 +44,7 @@ public class BaseActivity extends AppCompatActivity {
                 }
                 return;
             }else{
+                Log.d(Constants.TAG, "Destroying after logout");
                 finish();
             }
         }
@@ -60,6 +59,7 @@ public class BaseActivity extends AppCompatActivity {
                 }
                 return;
             }else{
+                Log.d(Constants.TAG, "Destroying after disconnect");
                 finish();
             }
         }
