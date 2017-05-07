@@ -2,14 +2,20 @@ package xyz.parti.catan.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterSession;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -134,7 +140,37 @@ public class SettingsActivity extends BaseActivity {
 
     @OnClick(R.id.textview_logout)
     public void logOut(View view) {
+        logOutFacebook();
+        logOutTwitter();
         session.logoutUser();
+        clearCookies();
+    }
+
+    private void logOutTwitter() {
+        TwitterSession twitterSession = Twitter.getSessionManager().getActiveSession();
+        if (twitterSession != null) {
+            Twitter.getSessionManager().clearActiveSession();
+            Twitter.logOut();
+        }
+    }
+
+    public void clearCookies() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(this);
+            cookieSyncMngr.startSync();
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncMngr.stopSync();
+            cookieSyncMngr.sync();
+        }
+    }
+
+    private void logOutFacebook() {
+        LoginManager.getInstance().logOut();
     }
 
 

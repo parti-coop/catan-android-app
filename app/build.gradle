@@ -1,4 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 25
@@ -24,9 +29,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dexOptions {
-        javaMaxHeapSize '4096m'
-    }
     apply plugin: "com.android.application"
     buildTypes {
         def var_api_base_url = "API_BASE_URL"
@@ -42,9 +44,13 @@ android {
     defaultConfig {
         def PARTI_APP_ID = '"' + partiApplicationIdProp + '"' ?: '"Define Parti Api Id"'
         def PARTI_SECRET_KEY = '"' + partiSecretKeyProp + '"' ?: '"Define Parti Secret Key"'
-
         buildConfigField "String", "PARTI_APP_ID", PARTI_APP_ID
         buildConfigField "String", "PARTI_SECRET_KEY", PARTI_SECRET_KEY
+
+        def TWITTER_KEY = '"' + partiApplicationIdProp + '"' ?: '"Define Parti Api Id"'
+        def TWITTER_SECRET = '"' + partiSecretKeyProp + '"' ?: '"Define Parti Secret Key"'
+        buildConfigField "String", "TWITTER_KEY", TWITTER_KEY
+        buildConfigField "String", "TWITTER_SECRET", TWITTER_SECRET
     }
 }
 
@@ -74,6 +80,9 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.2.2'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile('com.twitter.sdk.android:twitter:2.3.2@aar') {
+        transitive = true;
+    }
 
     compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
     compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"

@@ -16,5 +16,7 @@ org.gradle.jvmargs=-Xmx1536m
 # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
 # org.gradle.parallel=true
 
-partiApplicationIdProp=e3d881d55506921f297b9820aabadc26f2d07d361468f2c5eb5f9f624e9ecd9b
-partiSecretKeyProp=2f03ef7768b41ae43a1a39f9849032e00f2895d3f189a0ecf444c26ca22db665
+partiApplicationIdProp=XX
+partiSecretKeyProp=XX
+twitterKey=XX
+twitterSecret=XX

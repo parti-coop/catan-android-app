@@ -85,7 +85,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         }
 
         RxUtil.unsubscribe(loadFirstPostsSubscription);
-        loadFirstPostsSubscription = ServiceBuilder.subscribeOn(postsService.getDashBoardLastest())
+        loadFirstPostsSubscription = ServiceBuilder.basicOn(postsService.getDashBoardLastest())
                 .subscribe(response -> {
                     /* SUCCESS */
                     if (!isActive()) {
@@ -131,7 +131,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         feedAdapter.appendLoader();
 
         RxUtil.unsubscribe(loadMorePostsSubscription);
-        loadMorePostsSubscription = ServiceBuilder.subscribeOn(postsService.getDashboardAfter(post.id))
+        loadMorePostsSubscription = ServiceBuilder.basicOn(postsService.getDashboardAfter(post.id))
                 .subscribe(response -> {
                     /* SUCCESS **/
                     if(!isActive()) {
@@ -186,7 +186,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         if (lastStrockedAt == null) return;
 
         RxUtil.unsubscribe(checkNewPostsSubscription);
-        checkNewPostsSubscription = ServiceBuilder.subscribeOn(postsService.hasUpdated(lastStrockedAt))
+        checkNewPostsSubscription = ServiceBuilder.basicOn(postsService.hasUpdated(lastStrockedAt))
                 .subscribe(response -> {
                     if(!isActive()) {
                         return;
@@ -241,7 +241,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
 
     private void reloadPostSurvey(final Post post) {
         RxUtil.unsubscribe(reloadPostSubscription);
-        reloadPostSubscription = ServiceBuilder.subscribeOn(postsService.getPost(post.id))
+        reloadPostSubscription = ServiceBuilder.basicOn(postsService.getPost(post.id))
             .subscribe(response -> {
                 if(!isActive()) return;
                 if(response.isSuccessful()) {

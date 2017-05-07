@@ -42,7 +42,7 @@
             android:textStyle="bold" />
 
         <com.joanzapata.iconify.widget.IconButton
-            android:id="@+id/loginByTwitterButton"
+            android:id="@+id/button_login_by_twitter"
             style="?android:textAppearanceSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -177,7 +177,7 @@ public class ServiceBuilder {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
-    public static<T> Flowable<T> subscribeOn(Flowable<T> responseFlowable) {
+    public static<T> Flowable<T> basicOn(Flowable<T> responseFlowable) {
         return responseFlowable
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io());

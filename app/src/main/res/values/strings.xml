@@ -65,4 +65,5 @@
     <string name="license">라이센스</string>
     <string name="new_version">새로운 버전의 앱이 업로드되었습니다. 업그레이드하시겠습니까? 버전 :  %s</string>
     <string name="ok">확인</string>
+    <string name="login_fail">로그인 실패했습니다</string>
 </resources>
