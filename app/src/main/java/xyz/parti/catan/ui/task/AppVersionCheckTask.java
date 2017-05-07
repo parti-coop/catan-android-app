@@ -11,8 +11,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.services.AppVersionService;
+import xyz.parti.catan.data.ServiceBuilder;
+import xyz.parti.catan.data.services.AppVersionService;
 
 /**
  * Created by dalikim on 2017. 5. 6..
@@ -41,7 +41,7 @@ public class AppVersionCheckTask {
         if(lastCheckedAtMills > 0 && (System.currentTimeMillis() - lastCheckedAtMills < CHECK_INTERVAL_MILLS)) {
             return;
         }
-        AppVersionService appVersionService = ServiceGenerator.createUnsignedService(AppVersionService.class);
+        AppVersionService appVersionService = ServiceBuilder.createUnsignedService(AppVersionService.class);
         Call<JsonObject> call = appVersionService.getLastVersion();
         call.enqueue(new Callback<JsonObject>() {
             @Override

@@ -1,17 +1,14 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.parti.catan.R;
-import xyz.parti.catan.models.Post;
-import xyz.parti.catan.models.RecyclableModel;
+import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.model.RecyclableModel;
 
 /**
  * Created by dalikim on 2017. 4. 30..

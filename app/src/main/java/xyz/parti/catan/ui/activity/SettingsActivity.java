@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,13 +17,12 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.api.ServiceGenerator;
+import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.services.SettingsService;
-import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.data.services.SettingsService;
+import xyz.parti.catan.data.SessionManager;
 
 /**
  * Created by dalikim on 2017. 5. 6..
@@ -49,7 +47,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         session = new SessionManager(this.getApplicationContext());
-        settingsService = ServiceGenerator.createService(SettingsService.class, session);
+        settingsService = ServiceBuilder.createService(SettingsService.class, session);
 
         ButterKnife.bind(this);
 

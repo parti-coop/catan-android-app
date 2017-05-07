@@ -24,10 +24,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
-import xyz.parti.catan.models.Poll;
-import xyz.parti.catan.models.Post;
-import xyz.parti.catan.models.Survey;
+import xyz.parti.catan.data.model.Poll;
+import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.model.Survey;
+import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.ui.binder.FileSourcesBinder;
 import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.LinkSourceBinder;
@@ -247,14 +247,14 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                 titleTextView.setVisibility(android.view.View.GONE);
             } else {
                 titleTextView.setVisibility(android.view.View.VISIBLE);
-                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), titleTextView, post.parsed_title);
+                TextHelper.setTextViewHTML(itemView.getContext(), titleTextView, post.parsed_title);
             }
 
             if(TextUtils.isEmpty(post.parsed_body)) {
                 bodyTextView.setVisibility(android.view.View.GONE);
             } else {
                 bodyTextView.setVisibility(android.view.View.VISIBLE);
-                SmartHtmlTextViewHelper.setTextViewHTML(itemView.getContext(), bodyTextView, post.parsed_body);
+                TextHelper.setTextViewHTML(itemView.getContext(), bodyTextView, post.parsed_body);
             }
 
             newCommentButton.setOnClickListener(new android.view.View.OnClickListener() {

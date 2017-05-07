@@ -4,14 +4,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.models.User;
+import xyz.parti.catan.data.model.User;
 
 /**
  * Created by dalikim on 2017. 5. 6..

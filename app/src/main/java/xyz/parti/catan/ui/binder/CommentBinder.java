@@ -12,8 +12,8 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.helper.SmartHtmlTextViewHelper;
-import xyz.parti.catan.models.Comment;
+import xyz.parti.catan.data.model.Comment;
+import xyz.parti.catan.helper.TextHelper;
 
 /**
  * Created by dalikim on 2017. 4. 29..
@@ -44,7 +44,7 @@ public class CommentBinder {
     public void bindData(Comment comment, boolean isLineVisible) {
         ImageHelper.loadInto(userImageImageView, comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(comment.user.nickname);
-        SmartHtmlTextViewHelper.setTextViewHTML(context, bodyTextView, comment.body);
+        TextHelper.setTextViewHTML(context, bodyTextView, comment.body);
         createdAtTextView.setReferenceTime(comment.created_at.getTime());
 
         if(isLineVisible) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -16,10 +15,9 @@ import java.io.OutputStream;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.models.PartiAccessToken;
-import xyz.parti.catan.services.PostsService;
+import xyz.parti.catan.data.ServiceBuilder;
+import xyz.parti.catan.data.model.PartiAccessToken;
+import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
@@ -35,16 +33,14 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     private final PartiAccessToken partiAccessToken;
     private final long postId;
     private final long fileSourceId;
-    private Context context;
     private final String fileName;
     private File outputFile;
 
-    public DownloadFilesTask(PostFeedPresenter presenter, Context context, long postId, long fileSourceId, String fileName) {
+    public DownloadFilesTask(PostFeedPresenter presenter, long postId, long fileSourceId, String fileName) {
         this.presenter = presenter;
         this.partiAccessToken = presenter.getPartiAccessToken();
         this.postId = postId;
         this.fileSourceId = fileSourceId;
-        this.context = context;
         this.fileName = fileName;
     }
 
@@ -59,7 +55,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     //파일 다운로드를 진행합니다.
     @Override
     protected Long doInBackground(String... args) {
-        PostsService postsService = ServiceGenerator.createNoRefreshService(PostsService.class, partiAccessToken);
+        PostsService postsService = ServiceBuilder.createNoRefreshService(PostsService.class, partiAccessToken);
         Call<ResponseBody> request = postsService.downloadFile(postId, fileSourceId);
         try {
             ResponseBody body = request.execute().body();

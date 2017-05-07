@@ -12,7 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.models.LinkSource;
+import xyz.parti.catan.data.model.LinkSource;
 
 /**
  * Created by dalikim on 2017. 4. 5..

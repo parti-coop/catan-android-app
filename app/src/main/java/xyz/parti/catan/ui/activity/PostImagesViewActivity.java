@@ -22,8 +22,8 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
-import xyz.parti.catan.models.FileSource;
-import xyz.parti.catan.models.Post;
+import xyz.parti.catan.data.model.FileSource;
+import xyz.parti.catan.data.model.Post;
 
 /**
  * Created by dalikim on 2017. 4. 13..

@@ -3,7 +3,6 @@ package xyz.parti.catan.ui.presenter;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonNull;
@@ -12,26 +11,25 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import xyz.parti.catan.Constants;
-import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.helper.APIHelper;
+import xyz.parti.catan.data.ServiceBuilder;
+import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.model.FileSource;
+import xyz.parti.catan.data.model.Option;
+import xyz.parti.catan.data.model.Page;
+import xyz.parti.catan.data.model.PartiAccessToken;
+import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.data.services.FeedbacksService;
+import xyz.parti.catan.data.services.PostsService;
+import xyz.parti.catan.data.services.UpvotesService;
+import xyz.parti.catan.data.services.VotingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.models.FileSource;
-import xyz.parti.catan.models.Option;
-import xyz.parti.catan.models.Page;
-import xyz.parti.catan.models.PartiAccessToken;
-import xyz.parti.catan.models.Post;
-import xyz.parti.catan.models.Update;
-import xyz.parti.catan.models.User;
-import xyz.parti.catan.services.FeedbacksService;
-import xyz.parti.catan.services.PostsService;
-import xyz.parti.catan.services.UpvotesService;
-import xyz.parti.catan.services.VotingsService;
-import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.helper.RxUtil;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
@@ -43,9 +41,8 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  * Created by dalikim on 2017. 5. 3..
  */
 
-public class PostFeedPresenter {
+public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     private SessionManager session;
-    private View view;
     private final PostsService postsService;
     private final VotingsService votingsService;
     private final UpvotesService upvotesService;
@@ -54,23 +51,27 @@ public class PostFeedPresenter {
     private Date lastStrockedAtOfNewPostCheck = null;
     private long lastLoadFirstPostsAtMillis = -1;
 
-    public PostFeedPresenter(View view, SessionManager session) {
-        this.view = view;
+    private Disposable loadFirstPostsSubscription;
+    private Disposable loadMorePostsSubscription;
+    private Disposable checkNewPostsSubscription;
+    private Disposable reloadPostSubscription;
+
+    public PostFeedPresenter(SessionManager session) {
         this.session = session;
-        postsService = ServiceGenerator.createService(PostsService.class, session);
-        feedbacksService = ServiceGenerator.createService(FeedbacksService.class, session);
-        votingsService = ServiceGenerator.createService(VotingsService.class, session);
-        upvotesService = ServiceGenerator.createService(UpvotesService.class, session);
+        postsService = ServiceBuilder.createService(PostsService.class, session);
+        feedbacksService = ServiceBuilder.createService(FeedbacksService.class, session);
+        votingsService = ServiceBuilder.createService(VotingsService.class, session);
+        upvotesService = ServiceBuilder.createService(UpvotesService.class, session);
     }
 
     public void detachView() {
-        view = null;
+        super.detachView();
         session = null;
         feedAdapter = null;
     }
 
     private boolean isActive() {
-        return view != null && session != null && feedAdapter != null;
+        return getView() != null && session != null && feedAdapter != null;
     }
 
     public void setPostFeedRecyclerViewAdapter(PostFeedRecyclerViewAdapter feedAdapter) {
@@ -78,153 +79,141 @@ public class PostFeedPresenter {
     }
 
     public void loadFirstPosts() {
+        checkViewAttached();
         if(feedAdapter == null) {
             return;
         }
 
-        Call<Page<Post>> call = postsService.getDashBoardLastest();
-        APIHelper.enqueueWithRetry(call, 5, new Callback<Page<Post>>() {
-            @Override
-            public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
-                if(!isActive()) {
-                    return;
-                }
+        RxUtil.unsubscribe(loadFirstPostsSubscription);
+        loadFirstPostsSubscription = ServiceBuilder.subscribeOn(postsService.getDashBoardLastest())
+                .subscribe(response -> {
+                    /* SUCCESS */
+                    if (!isActive()) {
+                        return;
+                    }
 
-                lastLoadFirstPostsAtMillis = System.currentTimeMillis();
-                view.ensureToPostListDemoIsGone();
-                if(response.isSuccessful()){
-                    feedAdapter.clearData();
+                    lastLoadFirstPostsAtMillis = System.currentTimeMillis();
+                    getView().ensureToPostListDemoIsGone();
+                    if (response.isSuccessful()) {
+                        feedAdapter.clearData();
 
-                    Page<Post> page = response.body();
-                    feedAdapter.appendModels(page.items);
-                    feedAdapter.setMoreDataAvailable(page.has_more_item);
-                }else{
-                    ReportHelper.wtf(view.getContext(), "Load first post error : " + response.code());
-                }
-                feedAdapter.setLoadFinished();
-                view.stopAndEnableSwipeRefreshing();
-                view.ensureToExpendedAppBar();
-            }
-
-            @Override
-            public void onFailure(Call<Page<Post>> call, Throwable t) {
-                if(!isActive()) {
-                    return;
-                }
-
-                ReportHelper.wtf(getApplicationContext(), t);
-                feedAdapter.setLoadFinished();
-                view.stopAndEnableSwipeRefreshing();
-            }
-        });
-
+                        Page<Post> page = response.body();
+                        feedAdapter.appendModels(page.items);
+                        feedAdapter.setMoreDataAvailable(page.has_more_item);
+                    } else {
+                        getView().reportError("Load first post error : " + response.code());
+                    }
+                }, error -> {
+                    /* ERROR **/
+                    if (!isActive()) {
+                        return;
+                    }
+                    getView().reportError(error);
+                }, () -> {
+                    /* COMPLETED **/
+                    feedAdapter.setLoadFinished();
+                    getView().ensureExpendedAppBar();
+                    getView().stopAndEnableSwipeRefreshing();
+                });
+        guardDisposable(loadFirstPostsSubscription);
     }
 
     public void loadMorePosts() {
+        checkViewAttached();
         if(feedAdapter == null) {
             return;
         }
-        //add loading progress view
+
         Post post = feedAdapter.getLastModel();
         if(post == null) {
             return;
         }
-
         feedAdapter.appendLoader();
 
-        Call<Page<Post>> call = postsService.getDashboardAfter(post.id);
-        call.enqueue(new Callback<Page<Post>>() {
-            @Override
-            public void onResponse(Call<Page<Post>> call, Response<Page<Post>> response) {
-                if(!isActive()) {
-                    return;
-                }
-
-                if(response.isSuccessful()){
-                    //remove loading view
-                    feedAdapter.removeLastMoldelHolder();
-
-                    Page<Post> page = response.body();
-                    List<Post> result = page.items;
-                    if(result.size() > 0){
-                        //add loaded data
-                        feedAdapter.appendModels(page.items);
-                        feedAdapter.setMoreDataAvailable(page.has_more_item);
-                    }else{
-                        //result size 0 means there is no more data available at server
-                        feedAdapter.setMoreDataAvailable(false);
-                        feedAdapter.notifyDataSetChanged();
-                        //telling adapter to stop calling loadFirstPosts more as no more server data available
+        RxUtil.unsubscribe(loadMorePostsSubscription);
+        loadMorePostsSubscription = ServiceBuilder.subscribeOn(postsService.getDashboardAfter(post.id))
+                .subscribe(response -> {
+                    /* SUCCESS **/
+                    if(!isActive()) {
+                        return;
                     }
-                    feedAdapter.setLoadFinished();
-                }else{
+
+                    if(response.isSuccessful()){
+                        //remove loading view
+                        feedAdapter.removeLastMoldelHolder();
+
+                        Page<Post> page = response.body();
+                        List<Post> result = page.items;
+                        if(result.size() > 0){
+                            //add loaded data
+                            feedAdapter.appendModels(page.items);
+                            feedAdapter.setMoreDataAvailable(page.has_more_item);
+                        }else{
+                            //result size 0 means there is no more data available at server
+                            feedAdapter.setMoreDataAvailable(false);
+                            feedAdapter.notifyDataSetChanged();
+                            //telling adapter to stop calling loadFirstPosts more as no more server data available
+                        }
+                    }else{
+                        feedAdapter.setMoreDataAvailable(false);
+                        getView().reportError("Load more post error : " + response.code());
+                    }
+                }, error -> {
+                    /* ERROR **/
+                    if(!isActive()) {
+                        return;
+                    }
                     feedAdapter.setMoreDataAvailable(false);
-                    feedAdapter.notifyDataSetChanged();
+                    getView().reportError(error);
+                }, () -> {
+                    /* COMPLETED **/
                     feedAdapter.setLoadFinished();
-
-                    ReportHelper.wtf(getApplicationContext(), "Load More Response Error " + String.valueOf(response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Page<Post>> call, Throwable t) {
-                if(!isActive()) {
-                    return;
-                }
-
-                feedAdapter.setMoreDataAvailable(false);
-                feedAdapter.notifyDataSetChanged();
-                feedAdapter.setLoadFinished();
-
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+                });
+        guardDisposable(loadMorePostsSubscription);
     }
 
     public void checkNewPosts() {
-        if(view.isVisibleNewPostsSign()) {
-            return;
-        }
+        checkViewAttached();
         if(feedAdapter == null) {
             return;
         }
 
-        final Date lastStrockedAt = getLastStrockedAtForNewPost();
+        if(getView().isVisibleNewPostsSign()) {
+            return;
+        }
+
+        final Date lastStrockedAt = getLastStrockedAtForNewPostCheck();
         if (lastStrockedAt == null) return;
 
-        Call<Update> call = postsService.hasUpdated(lastStrockedAt);
-        call.enqueue(new Callback<Update>() {
-            @Override
-            public void onResponse(Call<Update> call, Response<Update> response) {
-                if(!isActive()) {
-                    return;
-                }
+        RxUtil.unsubscribe(checkNewPostsSubscription);
+        checkNewPostsSubscription = ServiceBuilder.subscribeOn(postsService.hasUpdated(lastStrockedAt))
+                .subscribe(response -> {
+                    if(!isActive()) {
+                        return;
+                    }
 
-                if(response.isSuccessful()) {
-                    if (view.isVisibleNewPostsSign()) return;
-                    if (!response.body().has_updated) return;
-                    if (!lastStrockedAt.equals(getLastStrockedAtForNewPost())) return;
+                    if(response.isSuccessful()) {
+                        if (getView().isVisibleNewPostsSign()) return;
+                        if (!response.body().has_updated) return;
+                        if (!lastStrockedAt.equals(getLastStrockedAtForNewPostCheck())) return;
 
-                    PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
-                    view.showNewPostsSign();
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Check new post error : " + response.code());
-                }
-            }
+                        PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
+                        getView().showNewPostsSign();
+                    } else {
+                        getView().reportError("Check new post error : " + response.code());
+                    }
+                }, error -> {
+                    if(!isActive()) {
+                        return;
+                    }
 
-            @Override
-            public void onFailure(Call<Update> call, Throwable t) {
-                if(!isActive()) {
-                    return;
-                }
-
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+                    getView().reportError(error);
+                });
+        guardDisposable(checkNewPostsSubscription);
     }
 
     @Nullable
-    private Date getLastStrockedAtForNewPost() {
+    private Date getLastStrockedAtForNewPostCheck() {
         if(this.lastStrockedAtOfNewPostCheck != null) {
             return lastStrockedAtOfNewPostCheck;
         }
@@ -250,24 +239,19 @@ public class PostFeedPresenter {
         feedAdapter.changeModel(post, playload);
     }
 
-    public void reloadPost(final Post post) {
-        Call<Post> call = postsService.getPost(post.id);
-        call.enqueue(new Callback<Post>() {
-            @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
+    private void reloadPostSurvey(final Post post) {
+        RxUtil.unsubscribe(reloadPostSubscription);
+        reloadPostSubscription = ServiceBuilder.subscribeOn(postsService.getPost(post.id))
+            .subscribe(response -> {
+                if(!isActive()) return;
                 if(response.isSuccessful()) {
                     post.survey = response.body().survey;
                     feedAdapter.changeModel(post, post.survey);
                 } else {
-                    ReportHelper.wtf(getApplicationContext(), "Rebind survey error : " + response.code());
+                    getView().reportError("Rebind survey error : " + response.code());
                 }
-            }
-
-            @Override
-            public void onFailure(Call<Post> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+            }, error -> getView().reportError(error));
+        guardDisposable(reloadPostSubscription);
     }
 
     public void onClickLinkSource(Post post) {
@@ -276,18 +260,18 @@ public class PostFeedPresenter {
         }
 
         if(post.link_source.is_video && post.link_source.video_app_url != null) {
-            view.showVideo(Uri.parse(post.link_source.url), Uri.parse(post.link_source.video_app_url));
+            getView().showVideo(Uri.parse(post.link_source.url), Uri.parse(post.link_source.video_app_url));
         } else {
-            view.showUrl(Uri.parse(post.link_source.url));
+            getView().showUrl(Uri.parse(post.link_source.url));
         }
     }
 
     public void onClickDocFileSource(final Post post, final FileSource docFileSource) {
-        view.downloadFile(post, docFileSource);
+        getView().downloadFile(post, docFileSource);
     }
 
     public void onClickImageFileSource(Post post) {
-        view.showImageFileSource(post);
+        getView().showImageFileSource(post);
     }
 
     public void onClickLike(final Post post) {
@@ -313,11 +297,11 @@ public class PostFeedPresenter {
     }
 
     public void onClickMoreComments(Post post) {
-        view.showAllComments(post);
+        getView().showAllComments(post);
     }
 
     public void onClickNewComment(Post post) {
-        view.showNewCommentForm(post);
+        getView().showNewCommentForm(post);
     }
 
     public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
@@ -326,7 +310,7 @@ public class PostFeedPresenter {
             @Override
             public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
                 if(response.isSuccessful()) {
-                    reloadPost(post);
+                    reloadPostSurvey(post);
                 } else {
                     ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
                 }
@@ -383,21 +367,25 @@ public class PostFeedPresenter {
     }
 
     public void onPreDownloadDocFileSource(final DownloadFilesTask task) {
-        view.showDownloadDocFileSourceProgress(task);
+        if(!isActive()) return;
+        getView().showDownloadDocFileSourceProgress(task);
     }
 
     public void onProgressUpdateDownloadDocFileSource(int percentage, String message) {
-        view.updateDownloadDocFileSourceProgress(percentage, message);
+        if(!isActive()) return;
+        getView().updateDownloadDocFileSourceProgress(percentage, message);
     }
 
     public void onPostDownloadDocFileSource() {
-        view.hideDownloadDocFileSourceProgress();
+        if(!isActive()) return;
+        getView().hideDownloadDocFileSourceProgress();
     }
 
     public void onSuccessDownloadDocFileSource(File outputFile, String fileName) {
+        if(!isActive()) return;
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         String mimeType = myMime.getMimeTypeFromExtension(getExtension(fileName));
-        view.showDownloadedFile(outputFile, mimeType);
+        getView().showDownloadedFile(outputFile, mimeType);
     }
 
     private String getExtension(String fileName) {
@@ -405,7 +393,8 @@ public class PostFeedPresenter {
     }
 
     public void onFailDownloadDocFileSource(String message) {
-        view.showSimpleMessage(message);
+        if(!isActive()) return;
+        getView().reportError(message);
     }
 
     public User getCurrentUser() {
@@ -429,22 +418,18 @@ public class PostFeedPresenter {
         if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
             feedAdapter.clearData();
             feedAdapter.notifyDataSetChanged();
-            view.showPostListDemo();
+            getView().showPostListDemo();
             loadFirstPosts();
         }
     }
 
     public void showSettings() {
-        view.showSettings();
+        getView().showSettings();
     }
 
     public void checkAppVersion() {
-        new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(view.getContext()), view.getContext()).check(new AppVersionCheckTask.NewVersionAction() {
-            @Override
-            public void run(String newVersion) {
-                if(isActive())
-                    view.showNewVersionMessage(newVersion);
-            }
+        new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(getView().getContext()), getView().getContext()).check(newVersion -> {
+            if(isActive()) getView().showNewVersionMessage(newVersion);
         });
     }
 
@@ -462,12 +447,13 @@ public class PostFeedPresenter {
         void updateDownloadDocFileSourceProgress(int percentage, String message);
         void hideDownloadDocFileSourceProgress();
         void showDownloadedFile(File file, String mimeType);
-        void showSimpleMessage(String message);
         void ensureToPostListDemoIsGone();
         void showPostListDemo();
-        void ensureToExpendedAppBar();
+        void ensureExpendedAppBar();
         void showSettings();
         Context getContext();
         void showNewVersionMessage(String newVersion);
+        void reportError(Throwable error);
+        void reportError(String message);
     }
 }

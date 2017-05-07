@@ -12,8 +12,8 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.models.Comment;
-import xyz.parti.catan.models.Post;
+import xyz.parti.catan.data.model.Comment;
+import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**

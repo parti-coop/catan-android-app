@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.models.User;
+import xyz.parti.catan.data.model.User;
 
 /**
  * Created by dalikim on 2017. 4. 25..

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import xyz.parti.catan.R;
-import xyz.parti.catan.models.Comment;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.ui.binder.CommentBinder;
 
 /**

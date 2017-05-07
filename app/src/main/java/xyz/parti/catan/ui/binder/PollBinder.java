@@ -11,7 +11,7 @@ import com.joanzapata.iconify.widget.IconButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.models.Post;
+import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**

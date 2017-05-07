@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:padding="@dimen/post_card_padding"
+        android:background="@drawable/demo_post_bg"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"

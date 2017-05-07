@@ -29,12 +29,12 @@ import retrofit2.Call;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.models.User;
-import xyz.parti.catan.services.AuthTokenService;
-import xyz.parti.catan.models.PartiAccessToken;
-import xyz.parti.catan.api.ServiceGenerator;
-import xyz.parti.catan.services.UsersService;
-import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.data.services.AuthTokenService;
+import xyz.parti.catan.data.model.PartiAccessToken;
+import xyz.parti.catan.data.ServiceBuilder;
+import xyz.parti.catan.data.services.UsersService;
+import xyz.parti.catan.data.SessionManager;
 
 public class LogInMenuActivity extends BaseActivity {
     private UserLogInTask authTask = null;
@@ -186,7 +186,7 @@ public class LogInMenuActivity extends BaseActivity {
                 String assertion = accessToken;
                 String grantType = "assertion";
 
-                AuthTokenService authTokenService = ServiceGenerator.createUnsignedService(AuthTokenService.class);
+                AuthTokenService authTokenService = ServiceBuilder.createUnsignedService(AuthTokenService.class);
                 Call<PartiAccessToken> call = authTokenService.getNewAccessToken(provider,
                         assertion, grantType, BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
                 retrofit2.Response<PartiAccessToken> tokenResponse = call.execute();
@@ -195,7 +195,7 @@ public class LogInMenuActivity extends BaseActivity {
                 }
                 PartiAccessToken token = tokenResponse.body();
 
-                UsersService userService = ServiceGenerator.createNoRefreshService(UsersService.class, token);
+                UsersService userService = ServiceBuilder.createNoRefreshService(UsersService.class, token);
                 Call<User> userCall = userService.getCurrentUser();
                 retrofit2.Response<User> userResponse = userCall.execute();
                 if (userResponse.code() == 200) {

@@ -49,9 +49,10 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
-import xyz.parti.catan.models.FileSource;
-import xyz.parti.catan.models.Post;
-import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.data.model.FileSource;
+import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.DrawerNavigationHeaderBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
@@ -84,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     @BindView(R.id.layout_post_list_demo)
     ShimmerFrameLayout postListDemoLayout;
 
-    private SessionManager session;
-
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
 
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         setContentView(R.layout.activity_main);
 
         if(ensureValidNetwork()) {
-            session = new SessionManager(this.getApplicationContext());
+            SessionManager session = new SessionManager(this.getApplicationContext());
             session.checkLogin(new SessionManager.OnCheckListener() {
                 @Override
                 public void onLoggedIn() {
@@ -111,7 +110,8 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                     }
                     ButterKnife.bind(MainActivity.this);
 
-                    presenter = new PostFeedPresenter(MainActivity.this, session);
+                    presenter = new PostFeedPresenter(session);
+                    presenter.attachView(MainActivity.this);
                     checkAppVersion();
                     setUpToolbar();
                     setUpFeed();
@@ -148,11 +148,8 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void setUpSwipeRefresh() {
-        postListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                presenter.loadFirstPosts();
-            }
+        postListSwipeRefreshLayout.setOnRefreshListener(() -> {
+            presenter.loadFirstPosts();
         });
         // Configure the refreshing colors
         postListSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -168,26 +165,22 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 R.string.drawer_open,        /* "open drawer" description */
                 R.string.drawer_close       /* "close drawer" description */
         );
-        drawerNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        drawerNavigationView.setNavigationItemSelectedListener(item -> {
+            rootDrawerLayout.closeDrawers();
 
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                rootDrawerLayout.closeDrawers();
-
-                switch (item.getItemId()){
-                    case R.id.button_settings:
-                        if(presenter != null) {
-                            presenter.showSettings();
-                        }
-                        return true;
-                    default:
-                        return true;
-                }
+            switch (item.getItemId()){
+                case R.id.button_settings:
+                    if(presenter != null) {
+                        presenter.showSettings();
+                    }
+                    return true;
+                default:
+                    return true;
             }
         });
         drawerNavigationView.setCheckedItem(R.id.item_post_feed);
 
-        new DrawerNavigationHeaderBinder(drawerNavigationView.getHeaderView(0)).bindData(session.getCurrentUser());
+        new DrawerNavigationHeaderBinder(drawerNavigationView.getHeaderView(0)).bindData(presenter.getCurrentUser());
     }
 
     @Override
@@ -290,20 +283,13 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
         PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this);
         feedAdapter.setPresenter(presenter);
-        feedAdapter.setLoadMoreListener(
-            new PostFeedRecyclerViewAdapter.OnLoadMoreListener() {
-                @Override
-                public void onLoadMore() {
-                    postListRecyclerView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            presenter.loadMorePosts();
-                        }
-                    });
-                    //Calling loadMorePosts function in Runnable to fix the
-                    // java.lang.IllegalStateException: Cannot call this method while RecyclerView is computing a layout or scrolling error
-                }
+        feedAdapter.setLoadMoreListener(() -> {
+            postListRecyclerView.post(() -> {
+                    presenter.loadMorePosts();
             });
+            //Calling loadMorePosts function in Runnable to fix the
+            // java.lang.IllegalStateException: Cannot call this method while RecyclerView is computing a layout or scrolling error
+        });
 
         postListRecyclerView.setHasFixedSize(true);
         final LinearLayoutManager recyclerViewLayout = new LinearLayoutManager(this);
@@ -383,11 +369,8 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 task.cancel(true);
             }
         });
-        downloadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                task.cancel(true);
-            }
+        downloadProgressDialog.setOnDismissListener(dialog -> {
+            task.cancel(true);
         });
 
         downloadProgressDialog.show();
@@ -412,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
                 .setPermissionListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted() {
-                        final DownloadFilesTask downloadTask = new DownloadFilesTask(presenter, MainActivity.this, post.id, docFileSource.id, docFileSource.name);
+                        final DownloadFilesTask downloadTask = new DownloadFilesTask(presenter, post.id, docFileSource.id, docFileSource.name);
                         downloadTask.execute();
                     }
 
@@ -438,12 +421,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         }
     }
 
-
-    @Override
-    public void showSimpleMessage(String message) {
-        Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    }
-
     @Override
     public void ensureToPostListDemoIsGone() {
         postListDemoLayout.stopShimmerAnimation();
@@ -458,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
-    public void ensureToExpendedAppBar() {
+    public void ensureExpendedAppBar() {
         appBarLayout.setExpanded(true);
     }
 
@@ -475,13 +452,22 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     @Override
     public void showNewVersionMessage(String newVersion) {
-        Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000).setAction(R.string.ok,
-                new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                IntentHelper.startPlayStore(MainActivity.this, getPackageName());
-            }
-        }).show();
+        Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000)
+                .setAction(R.string.ok,
+                    view -> {
+                        IntentHelper.startPlayStore(MainActivity.this, getPackageName());
+                    })
+                .show();
+    }
+
+    @Override
+    public void reportError(Throwable error) {
+        ReportHelper.wtf(this, error);
+    }
+
+    @Override
+    public void reportError(String message) {
+        ReportHelper.wtf(this, message);
     }
 
     @Override
@@ -528,5 +514,5 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
             if(presenter == null) return;
             presenter.checkNewPosts();
         }
-    };
+    }
 }

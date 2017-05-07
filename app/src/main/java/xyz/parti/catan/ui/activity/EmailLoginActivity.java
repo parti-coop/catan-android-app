@@ -33,7 +33,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.sessions.SessionManager;
+import xyz.parti.catan.data.SessionManager;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

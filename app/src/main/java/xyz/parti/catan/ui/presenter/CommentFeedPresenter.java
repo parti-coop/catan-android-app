@@ -8,14 +8,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.api.ServiceGenerator;
+import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.models.Comment;
-import xyz.parti.catan.models.Page;
-import xyz.parti.catan.models.Post;
-import xyz.parti.catan.services.CommentsService;
-import xyz.parti.catan.sessions.SessionManager;
-import xyz.parti.catan.ui.activity.AllCommentsActivity;
+import xyz.parti.catan.data.model.Comment;
+import xyz.parti.catan.data.model.Page;
+import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.services.CommentsService;
+import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -33,7 +32,7 @@ public class CommentFeedPresenter {
     public CommentFeedPresenter(View view, Post post, SessionManager session) {
         this.view = view;
         this.post = post;
-        commentsService = ServiceGenerator.createService(CommentsService.class, session);
+        commentsService = ServiceBuilder.createService(CommentsService.class, session);
     }
 
     public void detachView() {
