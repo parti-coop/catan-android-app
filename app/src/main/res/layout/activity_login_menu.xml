@@ -51,7 +51,7 @@
             android:textStyle="bold" />
 
         <com.joanzapata.iconify.widget.IconButton
-            android:id="@+id/loginByGoogleButton"
+            android:id="@+id/button_login_by_google"
             style="?android:textAppearanceSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

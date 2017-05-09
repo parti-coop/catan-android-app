@@ -47,10 +47,13 @@ android {
         buildConfigField "String", "PARTI_APP_ID", PARTI_APP_ID
         buildConfigField "String", "PARTI_SECRET_KEY", PARTI_SECRET_KEY
 
-        def TWITTER_KEY = '"' + partiApplicationIdProp + '"' ?: '"Define Parti Api Id"'
-        def TWITTER_SECRET = '"' + partiSecretKeyProp + '"' ?: '"Define Parti Secret Key"'
+        def TWITTER_KEY = '"' + twitterKey + '"' ?: '"Define Twitter Key Id"'
+        def TWITTER_SECRET = '"' + twitterSecret + '"' ?: '"Define Twitter Secret Key"'
         buildConfigField "String", "TWITTER_KEY", TWITTER_KEY
         buildConfigField "String", "TWITTER_SECRET", TWITTER_SECRET
+
+        def GOOGLE_WEB_CLIENT_ID = '"' + googleWebClientId + '"' ?: '"Define Google Web Client Id"'
+        buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", GOOGLE_WEB_CLIENT_ID
     }
 }
 
@@ -83,6 +86,7 @@ dependencies {
     compile('com.twitter.sdk.android:twitter:2.3.2@aar') {
         transitive = true;
     }
+    compile 'com.google.android.gms:play-services-auth:9.8.0'
 
     compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
     compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
@@ -107,3 +111,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

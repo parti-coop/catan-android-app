@@ -15,14 +15,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.helper.AppVersionHelper;
@@ -147,6 +150,10 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void logOutTwitter() {
+        if (!Fabric.isInitialized()) {
+            TwitterAuthConfig authConfig = new TwitterAuthConfig(BuildConfig.TWITTER_KEY, BuildConfig.TWITTER_SECRET);
+            Fabric.with(this, new Twitter(authConfig));
+        }
         TwitterSession twitterSession = Twitter.getSessionManager().getActiveSession();
         if (twitterSession != null) {
             Twitter.getSessionManager().clearActiveSession();
