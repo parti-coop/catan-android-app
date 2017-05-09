@@ -2,6 +2,7 @@ package xyz.parti.catan.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -59,6 +60,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     private LoginTask partiLoginTask;
     private ProgressToggler progressToggler;
+    private View decorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,20 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
             startActivity(i);
         });
+        decorView = getWindow().getDecorView();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        // super.onWindowFocusChanged(hasFocus);
+        if( hasFocus ) {
+            int uiOption = getWindow().getDecorView().getSystemUiVisibility();
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
+                uiOption |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT )
+                uiOption |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            decorView.setSystemUiVisibility( uiOption );
+        }
     }
 
     @NonNull

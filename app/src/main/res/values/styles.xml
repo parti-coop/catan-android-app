@@ -8,4 +8,15 @@
         <item name="colorAccent">@color/style_color_accent</item>
     </style>
 
+    <style name="LoginTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
+        <item name="colorPrimary">#966fd6</item>
+        <item name="colorPrimaryDark">#8763c0</item>
+        <item name="colorControlNormal">#fff</item>
+        <item name="colorAccent">#fff</item>
+        <item name="colorControlActivated">#fff</item>
+        <item name="colorControlHighlight">#fff</item>
+        <item name="android:textColorPrimary">#fff</item>
+        <item name="android:textColorHint">#fff</item>
+    </style>
+
 </resources>

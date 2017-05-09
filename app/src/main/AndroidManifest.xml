@@ -31,12 +31,15 @@
         </activity>
         <activity
             android:name=".ui.activity.LogInActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_login_menu"></activity>
+            android:label="@string/title_activity_login"></activity>
         <activity
             android:name=".ui.activity.EmailLoginActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_login"></activity>
+            android:theme="@style/LoginTheme"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_email_login"></activity>
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
@@ -49,20 +52,24 @@
         </activity>
         <activity
             android:name=".ui.activity.PostImagesViewActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_post_images_view" />
         <activity
             android:name=".ui.activity.AllCommentsActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_all_comments"
             android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activity.DisconnectActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_disconnect"></activity>
         <activity
             android:name=".ui.activity.SettingsActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
             android:label="@string/title_activity_settings"></activity>

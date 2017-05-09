@@ -6,7 +6,7 @@
     <!-- Strings related to login -->
     <string name="title_activity_all_comments">댓글</string>
     <string name="title_activity_login">로그인</string>
-    <string name="title_activity_login_menu">로그인</string>
+    <string name="title_activity_email_login">이메일 로그인</string>
     <string name="title_activity_post_images_view">사진보기</string>
 
     <string name="prompt_email">이메일</string>
@@ -19,12 +19,11 @@
     <string name="error_field_required">값을 입력해 주세요</string>
     <string name="eamil_login_permission_rationale">이메일 주소를 자동완성하기 위해 주소록에 접근할 권한이 필요합니다</string>
 
-    <string name="login_by_email_button">{fa-envelope} 이메일로 로그인</string>
-    <string name="login_by_facebook_button">{fa-facebook} 페이스북으로 로그인</string>
-    <string name="login_by_twitter_button">{fa-twitter} 트위터로 로그인</string>
-    <string name="login_by_google_button">{fa-google} 구글로 로그인</string>
+    <string name="login_by_email_button">이메일로 로그인</string>
+    <string name="login_by_facebook_button">페이스북으로 로그인</string>
+    <string name="login_by_twitter_button">트위터로 로그인</string>
+    <string name="login_by_google_button">구글로 로그인</string>
     <string name="sign_up_link">처음 오셨나요? <u>회원가입</u></string>
-    <string name="login_menu_title">로그인</string>
 
     <string name="action_refresh_posts">새소식</string>
     <string name="dashboard_post_prefix_group_title">{fa-angle-right}</string>

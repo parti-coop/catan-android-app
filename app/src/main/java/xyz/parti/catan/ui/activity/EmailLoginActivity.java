@@ -3,10 +3,10 @@ package xyz.parti.catan.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
@@ -15,13 +15,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import xyz.parti.catan.R;
+import xyz.parti.catan.helper.KeyboardHelper;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;
 
 public class EmailLoginActivity extends BaseActivity {
     // UI references.
     @BindView(R.id.textview_email)
-    AutoCompleteTextView emailTextView;
+    EditText emailTextView;
     @BindView(R.id.edittext_password)
     EditText passwordEditText;
     @BindView(R.id.progressbar_status)
@@ -33,6 +34,7 @@ public class EmailLoginActivity extends BaseActivity {
 
     private LoginTask partiLoginTask;
     private ProgressToggler progressToggler;
+    private View decorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,9 @@ public class EmailLoginActivity extends BaseActivity {
 
         partiLoginTask = setUpLoginTask();
         progressToggler = new ProgressToggler(formView, statusProgressBar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @NonNull
@@ -113,6 +118,7 @@ public class EmailLoginActivity extends BaseActivity {
         }
 
         progressToggler.toggle(true);
+        KeyboardHelper.hideKey(this);
         partiLoginTask.loginCredentials(email, password);
     }
 
@@ -122,6 +128,12 @@ public class EmailLoginActivity extends BaseActivity {
 
     private boolean isPasswordValid(String password) {
         return password.length() >= 8;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
     }
 }
 
