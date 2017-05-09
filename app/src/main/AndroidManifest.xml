@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- SD카드 기록 허용하는 퍼미션 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- SD카드 읽기 허용하는 퍼미션, 킷캣이후로는 필요없음 -->
@@ -31,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.LogInMenuActivity"
+            android:name=".ui.activity.LogInActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_login_menu"></activity>
         <activity

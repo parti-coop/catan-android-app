@@ -13,7 +13,7 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.ui.activity.BaseActivity;
-import xyz.parti.catan.ui.activity.LogInMenuActivity;
+import xyz.parti.catan.ui.activity.LogInActivity;
 
 /**
  * Created by dalikim on 2017. 3. 26..
@@ -140,7 +140,7 @@ public class SessionManager {
     }
 
     public void startLogin() {
-        Intent i = new Intent(this.context, LogInMenuActivity.class);
+        Intent i = new Intent(this.context, LogInActivity.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // Add new Flag to start new Activity
