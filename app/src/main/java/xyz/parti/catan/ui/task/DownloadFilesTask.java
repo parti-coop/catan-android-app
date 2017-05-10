@@ -107,13 +107,19 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         super.onProgressUpdate(progress);
 
         // if we get here, length is known, now set indeterminate to false
-        presenter.onProgressUpdateDownloadDocFileSource(Integer.parseInt(progress[0]), progress[1]);
+        if(presenter != null) {
+            presenter.onProgressUpdateDownloadDocFileSource(Integer.parseInt(progress[0]), progress[1]);
+        }
     }
 
     //파일 다운로드 완료 후
     @Override
     protected void onPostExecute(Long size) { //5
         super.onPostExecute(size);
+
+        if(presenter == null) {
+            return;
+        }
 
         presenter.onPostDownloadDocFileSource();
         if(size <= 0) {

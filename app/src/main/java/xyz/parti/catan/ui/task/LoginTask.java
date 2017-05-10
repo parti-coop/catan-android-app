@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
@@ -16,6 +17,7 @@ import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.AuthTokenService;
 import xyz.parti.catan.data.services.UsersService;
 import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.helper.RxGuardian;
 
 /**
  * Created by dalikim on 2017. 5. 9..
@@ -26,14 +28,21 @@ public class LoginTask {
     private final Context context;
     private final After afterLogin;
     private final SessionManager session;
+    private final RxGuardian rxGuardian;
+    private Disposable loginDisposable;
 
     public LoginTask(Context context, LoginTask.After afterLogin) {
         this.context = context;
         this.afterLogin = afterLogin;
         this.session = new SessionManager(this.context.getApplicationContext());
         this.authTokenService = ServiceBuilder.createUnsignedService(AuthTokenService.class);
+        this.rxGuardian = new RxGuardian();
     }
-    
+
+    public void cancel() {
+        this.rxGuardian.unsubscribeAll();
+    }
+
     public void loginSocial(String provider, String assertion) {
         loginSocial(provider, assertion, null);
     }
@@ -53,8 +62,8 @@ public class LoginTask {
     }
 
     private void process(Flowable<Response<PartiAccessToken>> flowable) {
-        ServiceBuilder.basicOn(flowable
-                .flatMap(response -> {
+        loginDisposable = rxGuardian.subscribe(loginDisposable,
+                flowable.flatMap(response -> {
                     if(response.isSuccessful()) {
                         UsersService userService = ServiceBuilder.createNoRefreshService(UsersService.class, response.body());
                         return userService.getCurrentUser();
@@ -62,8 +71,7 @@ public class LoginTask {
                         return Flowable.error(new NotFoundUserError());
                     }
                 }, (tokenResponse, userResponse) -> new Pair<>(tokenResponse.body(), userResponse))
-            ).subscribe(
-                pair -> {
+                , pair -> {
                     PartiAccessToken token = pair.first;
                     Response<User> response = pair.second;
 

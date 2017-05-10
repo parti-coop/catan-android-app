@@ -177,11 +177,5 @@ public class ServiceBuilder {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
-    public static<T> Flowable<T> basicOn(Flowable<T> responseFlowable) {
-        return responseFlowable
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io());
-    }
-
     private static class AuthFailError extends IOException {}
 }

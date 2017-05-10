@@ -87,6 +87,12 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
     @Override
+    public void onPause() {
+        this.partiLoginTask.cancel();
+        super.onPause();
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         // super.onWindowFocusChanged(hasFocus);
         if( hasFocus ) {

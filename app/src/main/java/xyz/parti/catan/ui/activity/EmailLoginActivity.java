@@ -49,6 +49,12 @@ public class EmailLoginActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public void onPause() {
+        this.partiLoginTask.cancel();
+        super.onPause();
+    }
+
     @NonNull
     private LoginTask setUpLoginTask() {
         return new LoginTask(this, new LoginTask.After() {

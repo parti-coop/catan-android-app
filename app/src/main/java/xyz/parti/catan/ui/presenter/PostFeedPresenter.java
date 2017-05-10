@@ -29,7 +29,7 @@ import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.helper.RxUtil;
+import xyz.parti.catan.helper.RxHelper;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
@@ -55,6 +55,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     private Disposable loadMorePostsSubscription;
     private Disposable checkNewPostsSubscription;
     private Disposable reloadPostSubscription;
+    private AppVersionCheckTask appVersionCheckTaks;
 
     public PostFeedPresenter(SessionManager session) {
         this.session = session;
@@ -64,10 +65,19 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         upvotesService = ServiceBuilder.createService(UpvotesService.class, session);
     }
 
+    @Override
+    public void attachView(PostFeedPresenter.View view) {
+        super.attachView(view);
+        appVersionCheckTaks = new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(getView().getContext()), getView().getContext());
+    }
+
     public void detachView() {
         super.detachView();
         session = null;
         feedAdapter = null;
+        if(appVersionCheckTaks != null) {
+            appVersionCheckTaks.cancel();
+        }
     }
 
     private boolean isActive() {
@@ -84,9 +94,9 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
             return;
         }
 
-        RxUtil.unsubscribe(loadFirstPostsSubscription);
-        loadFirstPostsSubscription = ServiceBuilder.basicOn(postsService.getDashBoardLastest())
-                .subscribe(response -> {
+        loadFirstPostsSubscription = getRxGuardian().subscribe(loadFirstPostsSubscription,
+                postsService.getDashBoardLastest(),
+                response -> {
                     /* SUCCESS */
                     if (!isActive()) {
                         return;
@@ -119,7 +129,6 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     getView().ensureExpendedAppBar();
                     getView().stopAndEnableSwipeRefreshing();
                 });
-        guardDisposable(loadFirstPostsSubscription);
     }
 
     public void loadMorePosts() {
@@ -134,9 +143,9 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         }
         feedAdapter.appendLoader();
 
-        RxUtil.unsubscribe(loadMorePostsSubscription);
-        loadMorePostsSubscription = ServiceBuilder.basicOn(postsService.getDashboardAfter(post.id))
-                .subscribe(response -> {
+        loadMorePostsSubscription = getRxGuardian().subscribe(loadMorePostsSubscription,
+                postsService.getDashboardAfter(post.id),
+                response -> {
                     /* SUCCESS **/
                     if(!isActive()) {
                         return;
@@ -174,7 +183,6 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     /* COMPLETED **/
                     feedAdapter.setLoadFinished();
                 });
-        guardDisposable(loadMorePostsSubscription);
     }
 
     public void checkNewPosts() {
@@ -190,9 +198,10 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         final Date lastStrockedAt = getLastStrockedAtForNewPostCheck();
         if (lastStrockedAt == null) return;
 
-        RxUtil.unsubscribe(checkNewPostsSubscription);
-        checkNewPostsSubscription = ServiceBuilder.basicOn(postsService.hasUpdated(lastStrockedAt))
-                .subscribe(response -> {
+        RxHelper.unsubscribe(checkNewPostsSubscription);
+        checkNewPostsSubscription = getRxGuardian().subscribe(checkNewPostsSubscription,
+                postsService.hasUpdated(lastStrockedAt),
+                response -> {
                     if(!isActive()) {
                         return;
                     }
@@ -214,7 +223,6 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
 
                     getView().reportError(error);
                 });
-        guardDisposable(checkNewPostsSubscription);
     }
 
     @Nullable
@@ -245,18 +253,18 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     }
 
     private void reloadPostSurvey(final Post post) {
-        RxUtil.unsubscribe(reloadPostSubscription);
-        reloadPostSubscription = ServiceBuilder.basicOn(postsService.getPost(post.id))
-            .subscribe(response -> {
-                if(!isActive()) return;
-                if(response.isSuccessful()) {
-                    post.survey = response.body().survey;
-                    feedAdapter.changeModel(post, post.survey);
-                } else {
-                    getView().reportError("Rebind survey error : " + response.code());
-                }
-            }, error -> getView().reportError(error));
-        guardDisposable(reloadPostSubscription);
+        RxHelper.unsubscribe(reloadPostSubscription);
+        reloadPostSubscription = getRxGuardian().subscribe(reloadPostSubscription,
+                postsService.getPost(post.id),
+                response -> {
+                    if(!isActive()) return;
+                    if(response.isSuccessful()) {
+                        post.survey = response.body().survey;
+                        feedAdapter.changeModel(post, post.survey);
+                    } else {
+                        getView().reportError("Rebind survey error : " + response.code());
+                    }
+                }, error -> getView().reportError(error));
     }
 
     public void onClickLinkSource(Post post) {
@@ -433,7 +441,11 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     }
 
     public void checkAppVersion() {
-        new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(getView().getContext()), getView().getContext()).check(newVersion -> {
+        if(this.appVersionCheckTaks == null) {
+            return;
+        }
+
+        this.appVersionCheckTaks.check(newVersion -> {
             if(isActive()) getView().showNewVersionMessage(newVersion);
         });
     }
