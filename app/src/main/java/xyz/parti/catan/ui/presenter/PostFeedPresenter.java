@@ -109,6 +109,10 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                         return;
                     }
                     getView().reportError(error);
+
+                    feedAdapter.setLoadFinished();
+                    getView().ensureExpendedAppBar();
+                    getView().stopAndEnableSwipeRefreshing();
                 }, () -> {
                     /* COMPLETED **/
                     feedAdapter.setLoadFinished();
@@ -163,6 +167,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     if(!isActive()) {
                         return;
                     }
+                    feedAdapter.setLoadFinished();
                     feedAdapter.setMoreDataAvailable(false);
                     getView().reportError(error);
                 }, () -> {
