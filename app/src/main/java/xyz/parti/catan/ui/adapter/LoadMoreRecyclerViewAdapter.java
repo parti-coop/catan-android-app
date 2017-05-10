@@ -14,7 +14,7 @@ import xyz.parti.catan.data.model.RecyclableModel;
  * Created by dalikim on 2017. 4. 30..
  */
 
-public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
+public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
     private static int TYPE_MODEL = 0;
     private static int TYPE_LOAD = 1;
 
@@ -51,12 +51,12 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public void appendLoader() {
-        holders.add(InfinitableModelHolder.<T>forLoader());
+        holders.add(InfinitableModelHolder.forLoader());
         notifyItemInserted(holders.size() - 1);
     }
 
     public void prependLoader() {
-        holders.add(0, InfinitableModelHolder.<T>forLoader());
+        holders.add(0, InfinitableModelHolder.forLoader());
         notifyItemInserted(0);
     }
 

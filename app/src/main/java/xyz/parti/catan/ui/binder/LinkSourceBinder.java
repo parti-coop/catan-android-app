@@ -11,8 +11,8 @@ import com.joanzapata.iconify.widget.IconTextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.data.model.LinkSource;
+import xyz.parti.catan.helper.ImageHelper;
 
 /**
  * Created by dalikim on 2017. 4. 5..
@@ -52,7 +52,7 @@ public class LinkSourceBinder {
         }
         siteNameTextView.setVisibility(View.VISIBLE);
         if(linkSource.image_url != null) {
-            ImageHelper.loadInto(imageImageView, linkSource.image_url);
+            new ImageHelper(imageImageView).loadInto(linkSource.image_url);
             if(linkSource.is_video) {
                 videoSignTextView.setVisibility(View.VISIBLE);
             } else {

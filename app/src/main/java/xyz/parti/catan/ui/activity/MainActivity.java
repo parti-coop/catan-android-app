@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private boolean ensureValidNetwork() {
-        if(!NetworkHelper.isValidNetwork(this)) {
+        if(!new NetworkHelper(this).isValidNetwork()) {
             Intent intent = new Intent(this, DisconnectActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000)
                 .setAction(R.string.ok,
                     view -> {
-                        IntentHelper.startPlayStore(MainActivity.this, getPackageName());
+                        new IntentHelper(this).startPlayStore(getPackageName());
                     })
                 .show();
     }

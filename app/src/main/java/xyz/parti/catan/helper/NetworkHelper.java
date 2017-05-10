@@ -12,8 +12,14 @@ import static android.net.ConnectivityManager.TYPE_WIFI;
  */
 
 public class NetworkHelper {
-    public static boolean isValidNetwork(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private Context context;
+
+    public NetworkHelper(Context context) {
+        this.context = context;
+    }
+
+    public boolean isValidNetwork() {
+        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return (null != activeNetwork && (activeNetwork.getType() == TYPE_WIFI || activeNetwork.getType() == TYPE_MOBILE));

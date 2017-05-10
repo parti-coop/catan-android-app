@@ -9,7 +9,13 @@ import android.content.pm.PackageManager;
  */
 
 public class AppVersionHelper {
-    public static String getCurrentVerion(Context context) {
+    private Context context;
+
+    public AppVersionHelper(Context context) {
+        this.context = context;
+    }
+
+    public String getCurrentVerion() {
         PackageManager packageManager = context.getPackageManager();
         PackageInfo packageInfo = null;
         try {

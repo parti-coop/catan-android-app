@@ -9,14 +9,18 @@ import android.net.Uri;
  */
 
 public class IntentHelper {
-    public static void startPlayStore(Context context, String appPackage)
-    {
-        final String appPackageName = appPackage;
+    private Context context;
+
+    public IntentHelper(Context context) {
+        this.context = context;
+    }
+
+    public void startPlayStore(String appPackage) {
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackage)));
         } catch (android.content.ActivityNotFoundException anfe) {
             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri
-                    .parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    .parse("https://play.google.com/store/apps/details?id=" + appPackage)));
         }
     }
 

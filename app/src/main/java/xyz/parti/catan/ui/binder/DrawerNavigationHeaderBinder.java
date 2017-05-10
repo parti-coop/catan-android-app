@@ -8,8 +8,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.ImageHelper;
 
 /**
  * Created by dalikim on 2017. 5. 6..
@@ -28,7 +28,7 @@ public class DrawerNavigationHeaderBinder {
     }
 
     public void bindData(User currentUser) {
-        ImageHelper.loadInto(userImageImageView, currentUser.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        new ImageHelper(userImageImageView).loadInto(currentUser.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(currentUser.nickname);
         userEmailTextView.setText(currentUser.email);
     }

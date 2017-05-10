@@ -15,9 +15,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
@@ -62,12 +62,7 @@ public class FileSourcesBinder {
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
                 android.view.View imageView = makeImageCell(context, fileSource.attachment_url, imageFileSourcesRow.size(), col);
-                imageView.setOnClickListener(new android.view.View.OnClickListener() {
-                    @Override
-                    public void onClick(android.view.View view) {
-                        presenter.onClickImageFileSource(post);
-                    }
-                });
+                imageView.setOnClickListener(view -> presenter.onClickImageFileSource(post));
                 rowLayout.addView(imageView);
                 col++;
             }
@@ -127,7 +122,7 @@ public class FileSourcesBinder {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         imageView.setLayoutParams(params);
         imageView.setAdjustViewBounds(true);
-        ImageHelper.loadInto(imageView, url, (col_size <= 1 ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP));
+        new ImageHelper(imageView).loadInto(url, (col_size <= 1 ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP));
 
         LinearLayout rowBgLayout = new LinearLayout(context);
         rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border));
@@ -155,12 +150,7 @@ public class FileSourcesBinder {
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
             docsLayout.addView(fileSourcesLayout);
 
-            fileSourcesLayout.setOnClickListener(new android.view.View.OnClickListener() {
-                @Override
-                public void onClick(android.view.View view) {
-                    presenter.onClickDocFileSource(post, docFileSource);
-                }
-            });
+            fileSourcesLayout.setOnClickListener(view -> presenter.onClickDocFileSource(post, docFileSource));
         }
     }
 

@@ -68,7 +68,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     @Override
     public void attachView(PostFeedPresenter.View view) {
         super.attachView(view);
-        appVersionCheckTaks = new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(getView().getContext()), getView().getContext());
+        appVersionCheckTaks = new AppVersionCheckTask(new AppVersionHelper(getView().getContext()).getCurrentVerion(), getView().getContext());
     }
 
     public void detachView() {

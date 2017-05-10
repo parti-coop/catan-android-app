@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.facebook.stetho.Stetho;
 
@@ -28,7 +27,7 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
+        //Stetho.initializeWithDefaults(this);
         LocalBroadcastManager.getInstance(this).registerReceiver(logOutReceiver, new IntentFilter(ACTION_LOGOUT));
         LocalBroadcastManager.getInstance(this).registerReceiver(networkDisconnectReceiver, new IntentFilter(ACTION_NETWORK_DISCONNECT));
         LocalBroadcastManager.getInstance(this).registerReceiver(newAppVersionAvailable, new IntentFilter(ACTION_NEW_APP_VERSION_AVAILABLE));
@@ -48,7 +47,6 @@ public class BaseActivity extends AppCompatActivity {
                 if(BuildConfig.DEBUG) {
                     Log.d(Constants.TAG, "Skip destroying after logout");
                 }
-                return;
             }else{
                 Log.d(Constants.TAG, "Destroying after logout");
                 finish();
@@ -63,7 +61,6 @@ public class BaseActivity extends AppCompatActivity {
                 if(BuildConfig.DEBUG) {
                     Log.d(Constants.TAG, "Skip destroying after disconnect");
                 }
-                return;
             }else{
                 Log.d(Constants.TAG, "Destroying after disconnect");
                 finish();
@@ -73,12 +70,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private BroadcastReceiver newAppVersionAvailable = new BroadcastReceiver(){
         public void onReceive(final Context context, Intent intent){
-            Snackbar.make(getWindow().getDecorView().getRootView(), "xx", Snackbar.LENGTH_LONG).setAction("확인", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    IntentHelper.startPlayStore(context, context.getPackageName());
-                }
-            });
+            Snackbar.make(getWindow().getDecorView().getRootView(), "xx", Snackbar.LENGTH_LONG).setAction("확인", view -> new IntentHelper(BaseActivity.this).startPlayStore(context.getPackageName()));
         }
     };
 

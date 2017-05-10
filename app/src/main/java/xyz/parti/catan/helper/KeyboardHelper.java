@@ -10,7 +10,13 @@ import android.view.inputmethod.InputMethodManager;
  */
 
 public class KeyboardHelper {
-    public static void hideKey(Activity activity) {
+    private Activity activity;
+
+    public KeyboardHelper(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void hideKey() {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();

@@ -28,10 +28,10 @@ import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
+import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.services.SettingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.data.services.SettingsService;
-import xyz.parti.catan.data.SessionManager;
 
 /**
  * Created by dalikim on 2017. 5. 6..
@@ -60,7 +60,7 @@ public class SettingsActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        versionTextView.setText(AppVersionHelper.getCurrentVerion(this));
+        versionTextView.setText(new AppVersionHelper(this).getCurrentVerion());
     }
 
     @OnClick(R.id.layout_setting_profile)

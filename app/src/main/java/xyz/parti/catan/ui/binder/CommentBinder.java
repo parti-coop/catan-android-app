@@ -42,9 +42,9 @@ public class CommentBinder {
         bindData(comment, true);
     }
     public void bindData(Comment comment, boolean isLineVisible) {
-        ImageHelper.loadInto(userImageImageView, comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        new ImageHelper(userImageImageView).loadInto(comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(comment.user.nickname);
-        TextHelper.setTextViewHTML(context, bodyTextView, comment.body);
+        new TextHelper(context).setTextViewHTML(bodyTextView, comment.body);
         createdAtTextView.setReferenceTime(comment.created_at.getTime());
 
         if(isLineVisible) {

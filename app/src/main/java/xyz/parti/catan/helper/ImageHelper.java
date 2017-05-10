@@ -17,11 +17,17 @@ import xyz.parti.catan.R;
  */
 
 public class ImageHelper {
-    public static Target<GlideDrawable> loadInto(ImageView imageView, String url) {
-        return loadInto(imageView, url, ImageView.ScaleType.CENTER_CROP);
+    private ImageView imageView;
+
+    public ImageHelper(ImageView imageView) {
+        this.imageView = imageView;
     }
 
-    public static Target<GlideDrawable> loadInto(ImageView imageView, String url, ImageView.ScaleType scaleType) {
+    public Target<GlideDrawable> loadInto(String url) {
+        return loadInto(url, ImageView.ScaleType.CENTER_CROP);
+    }
+
+    public Target<GlideDrawable> loadInto(String url, ImageView.ScaleType scaleType) {
         Context context = imageView.getContext();
 
         return Glide.with(context)
@@ -31,7 +37,7 @@ public class ImageHelper {
                 .into(new ScaleImageViewTarget(imageView, scaleType, ImageView.ScaleType.CENTER_INSIDE));
     }
 
-    public static Target<GlideDrawable> loadInto(ImageView imageView, String url, ImageView.ScaleType successScaleType, ImageView.ScaleType errorScaleType) {
+    public Target<GlideDrawable> loadInto(String url, ImageView.ScaleType successScaleType, ImageView.ScaleType errorScaleType) {
         Context context = imageView.getContext();
 
         return Glide.with(context)
@@ -45,12 +51,12 @@ public class ImageHelper {
      * Created by dalikim on 2017. 4. 20..
      */
 
-    public static class ScaleImageViewTarget extends GlideDrawableImageViewTarget
+    private class ScaleImageViewTarget extends GlideDrawableImageViewTarget
     {
         ImageView.ScaleType successScaleType;
         ImageView.ScaleType errorScaleType;
 
-        public ScaleImageViewTarget(ImageView view, ImageView.ScaleType successScaleType, ImageView.ScaleType errorScaleType) {
+        ScaleImageViewTarget(ImageView view, ImageView.ScaleType successScaleType, ImageView.ScaleType errorScaleType) {
             super(view);
             this.successScaleType = successScaleType;
             this.errorScaleType = errorScaleType;

@@ -5,8 +5,8 @@ import android.view.ViewGroup;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.ImageHelper;
 
 /**
  * Created by dalikim on 2017. 4. 25..
@@ -40,7 +40,7 @@ class VoteUsersBinder {
         if(reverse) {
             imageView.setRotationY(180);
         }
-        ImageHelper.loadInto(imageView, user.image_url, CircleImageView.ScaleType.CENTER_CROP, CircleImageView.ScaleType.CENTER_CROP);
+        new ImageHelper(imageView).loadInto(user.image_url, CircleImageView.ScaleType.CENTER_CROP, CircleImageView.ScaleType.CENTER_CROP);
         view.addView(imageView);
     }
 }

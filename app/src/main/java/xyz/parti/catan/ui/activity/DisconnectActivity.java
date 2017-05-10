@@ -47,7 +47,7 @@ public class DisconnectActivity extends BaseActivity {
 
     @OnClick(R.id.button_check)
     public void check(Button checkButton) {
-        if(NetworkHelper.isValidNetwork(this)) {
+        if(new NetworkHelper(this).isValidNetwork()) {
             cleanUp();
         } else {
             Toast.makeText(this.getApplicationContext(), R.string.fail_to_connect, Toast.LENGTH_LONG).show();

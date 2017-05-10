@@ -20,10 +20,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.helper.ImageHelper;
+import xyz.parti.catan.helper.TextHelper;
 
 /**
  * Created by dalikim on 2017. 4. 13..
@@ -31,7 +31,6 @@ import xyz.parti.catan.data.model.Post;
 
 public class PostImagesViewActivity extends BaseActivity {
     Post post;
-    private ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.textview_post_created_at)
@@ -49,18 +48,18 @@ public class PostImagesViewActivity extends BaseActivity {
 
         this.post = Parcels.unwrap(getIntent().getParcelableExtra("post"));
 
-        imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager(), post.getImageFileSources());
+        ImageFragmentPagerAdapter imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager(), post.getImageFileSources());
         viewPager.setAdapter(imageFragmentPagerAdapter);
 
-        this.postDescTextView.setText(TextHelper.converToHtml("<strong>" + this.post.specific_desc_striped_tags + "</strong>"));
+        this.postDescTextView.setText(new TextHelper(this).converToHtml("<strong>" + this.post.specific_desc_striped_tags + "</strong>"));
         this.postCreatedAtTextView.setReferenceTime(this.post.created_at.getTime());
         this.userNicknameTextView.setText(this.post.user.nickname);
     }
 
-    public static class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
+    private class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
         private final List<FileSource> imageFileSources;
 
-        public ImageFragmentPagerAdapter(FragmentManager fm, List<FileSource> imageFileSources) {
+        ImageFragmentPagerAdapter(FragmentManager fm, List<FileSource> imageFileSources) {
             super(fm);
             this.imageFileSources = imageFileSources;
         }
@@ -73,7 +72,6 @@ public class PostImagesViewActivity extends BaseActivity {
         @Override
         public Fragment getItem(int position) {
             String url = imageFileSources.get(position).attachment_url;
-            SwipeFragment fragment = new SwipeFragment();
             return SwipeFragment.newInstance(url);
         }
     }
@@ -90,7 +88,7 @@ public class PostImagesViewActivity extends BaseActivity {
 
             Bundle bundle = getArguments();
             String url = bundle.getString("attachment_url");
-            ImageHelper.loadInto(imageView, url, ImageView.ScaleType.CENTER_INSIDE);
+            new ImageHelper(imageView).loadInto(url, ImageView.ScaleType.CENTER_INSIDE);
             return swipeView;
         }
 

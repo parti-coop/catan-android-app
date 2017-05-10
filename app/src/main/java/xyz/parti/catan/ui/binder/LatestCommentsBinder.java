@@ -11,9 +11,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
@@ -45,30 +45,18 @@ public class LatestCommentsBinder {
         if(post.hasMoreComments()) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
             loadMoreTextView.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
-            loadMoreTextView.setOnClickListener(new android.view.View.OnClickListener() {
-                @Override
-                public void onClick(android.view.View view) {
-                    presenter.onClickMoreComments(post);
-                }
-            });
+            loadMoreTextView.setOnClickListener(view -> presenter.onClickMoreComments(post));
         } else {
             loadMoreTextView.setVisibility(android.view.View.GONE);
             loadMoreTextView.setOnClickListener(null);
         }
 
         listLayout.removeAllViews();
-        for(Comment comment: post.latest_comments) {
-            bindComment(comment);
-        }
+        for(Comment comment: post.latest_comments) bindComment(comment);
 
-        ImageHelper.loadInto(newCommentUserImageView, presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
 
-        newCommentInputTextView.setOnClickListener(new android.view.View.OnClickListener() {
-            @Override
-            public void onClick(android.view.View view) {
-                presenter.onClickNewComment(post);
-            }
-        });
+        newCommentInputTextView.setOnClickListener(view -> presenter.onClickNewComment(post));
     }
 
 

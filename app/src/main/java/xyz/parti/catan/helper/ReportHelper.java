@@ -13,12 +13,12 @@ import xyz.parti.catan.R;
 
 public class ReportHelper {
     public static void wtf(Context context, String msg) {
-        Toast.makeText(context, R.string.error_any, Toast.LENGTH_LONG).show();
+        Toast.makeText(context.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
         Log.wtf(Constants.TAG, msg);
     }
 
     public static void wtf(Context context, Throwable t) {
-        Toast.makeText(context, R.string.error_any, Toast.LENGTH_LONG).show();
+        Toast.makeText(context.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
         Log.wtf(Constants.TAG, t);
     }
 }

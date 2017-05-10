@@ -25,7 +25,13 @@ import xyz.parti.catan.R;
  */
 
 public class TextHelper {
-    public static CharSequence trimTrailingWhitespace(CharSequence source) {
+    private Context context;
+
+    public TextHelper(Context context) {
+        this.context = context;
+    }
+
+    public CharSequence trimTrailingWhitespace(CharSequence source) {
         if(source == null)
             return "";
         int i = source.length();
@@ -35,7 +41,7 @@ public class TextHelper {
         return source.subSequence(0, i+1);
     }
 
-    public static Spanned converToHtml(String txt) {
+    public Spanned converToHtml(String txt) {
         Spanned result;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             result = Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY);
@@ -45,7 +51,7 @@ public class TextHelper {
         return result;
     }
 
-    public static void makeLinkClickable(final Context context, SpannableStringBuilder strBuilder, final URLSpan span, ClickableSpan clickable) {
+    public void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span, ClickableSpan clickable) {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
@@ -54,11 +60,11 @@ public class TextHelper {
         strBuilder.removeSpan(span);
     }
 
-    public static void setTextViewHTML(final Context context, TextView text, String html) {
+    public void setTextViewHTML(TextView text, String html) {
         CharSequence sequence = trimTrailingWhitespace(converToHtml(html));
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
 
-        processLinks(context, sequence, strBuilder);
+        processLinks(sequence, strBuilder);
 
         Pattern mentionPattern = Pattern.compile("(@all)");
         Matcher matcher = mentionPattern.matcher(strBuilder);
@@ -71,7 +77,7 @@ public class TextHelper {
         text.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private static void processLinks(final Context context, CharSequence sequence, SpannableStringBuilder strBuilder) {
+    private void processLinks(CharSequence sequence, SpannableStringBuilder strBuilder) {
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
         for (final URLSpan span : urls) {
             ClickableSpan clickable =  new ClickableSpan() {
@@ -86,7 +92,7 @@ public class TextHelper {
                     ds.setColor(ContextCompat.getColor(context, R.color.default_text_view_link));
                 }
             };
-            makeLinkClickable(context, strBuilder, span, clickable);
+            makeLinkClickable(strBuilder, span, clickable);
         }
     }
 }
