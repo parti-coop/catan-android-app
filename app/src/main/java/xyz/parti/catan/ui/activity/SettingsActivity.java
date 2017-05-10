@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +33,7 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.services.SettingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.helper.RxGuardian;
 
 /**
  * Created by dalikim on 2017. 5. 6..
@@ -44,6 +46,8 @@ public class SettingsActivity extends BaseActivity {
     private SessionManager session;
     private SettingsService settingsService;
     private JsonObject setting;
+    private RxGuardian rxGuardian;
+    private Disposable settingPublisher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,8 @@ public class SettingsActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         versionTextView.setText(new AppVersionHelper(this).getCurrentVerion());
+        
+        rxGuardian = new RxGuardian();
     }
 
     @OnClick(R.id.layout_setting_profile)
@@ -118,23 +124,17 @@ public class SettingsActivity extends BaseActivity {
             return;
         }
 
-        Call<JsonElement> call = settingsService.getAll();
-        call.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                if(response.isSuccessful()) {
-                    setting = response.body().getAsJsonObject();
-                    startActivityWith(setting, menuName, fallbackUrl);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "load Setting error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+        settingPublisher = rxGuardian.subscribe(settingPublisher,
+                settingsService.getAll(),
+                response -> {
+                    if(response.isSuccessful()) {
+                        setting = response.body().getAsJsonObject();
+                        startActivityWith(setting, menuName, fallbackUrl);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "load Setting error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
     }
 
     private void startActivityForUrl(String url) {
@@ -183,6 +183,9 @@ public class SettingsActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        if(rxGuardian != null) {
+            rxGuardian.unsubscribeAll();
+        }
         super.onDestroy();
     }
 

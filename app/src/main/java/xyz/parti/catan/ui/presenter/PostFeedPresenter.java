@@ -11,9 +11,8 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
@@ -55,6 +54,10 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     private Disposable loadMorePostsPublisher;
     private Disposable checkNewPostsPublisher;
     private Disposable reloadPostPublisher;
+    private Disposable onClickSurveyOptionPublisher;
+    private Disposable onClickLikePublisher;
+    private Disposable onClickPollAgreePublisher;
+    private Disposable onClickPollDisgreePublisher;
     private AppVersionCheckTask appVersionCheckTaks;
 
     public PostFeedPresenter(SessionManager session) {
@@ -285,25 +288,20 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     }
 
     public void onClickLike(final Post post) {
-        Call<JsonNull> call =  ( post.is_upvoted_by_me ?
+        Flowable<Response<JsonNull>> call =  ( post.is_upvoted_by_me ?
                 upvotesService.destroy("Post", post.id) : upvotesService.create("Post", post.id)
         );
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    post.toggleUpvoting();
-                    changePost(post, Post.IS_UPVOTED_BY_ME);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+        onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
+                call,
+                response -> {
+                    if(response.isSuccessful()) {
+                        post.toggleUpvoting();
+                        changePost(post, Post.IS_UPVOTED_BY_ME);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
     }
 
     public void onClickMoreComments(Post post) {
@@ -315,65 +313,46 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     }
 
     public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
-        Call<JsonNull> call = feedbacksService.feedback(option.id, isChecked);
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    reloadPostSurvey(post);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+        onClickSurveyOptionPublisher = getRxGuardian().subscribe(onClickSurveyOptionPublisher,
+                feedbacksService.feedback(option.id, isChecked),
+                response -> {
+                    if(response.isSuccessful()) {
+                        reloadPostSurvey(post);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
     }
-
 
     public void onClickPollAgree(final Post post) {
         final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
-        Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    post.poll.updateChoice(getCurrentUser(), newChoice);
-                    changePost(post, post.poll);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+        onClickPollAgreePublisher = getRxGuardian().subscribe(onClickPollAgreePublisher,
+                votingsService.voting(post.poll.id, newChoice),
+                response -> {
+                    if(response.isSuccessful()) {
+                        post.poll.updateChoice(getCurrentUser(), newChoice);
+                        changePost(post, post.poll);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
     }
 
     public void onClickPollDisgree(final Post post) {
         final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
-        Call<JsonNull> call = votingsService.voting(post.poll.id, newChoice);
-        call.enqueue(new Callback<JsonNull>() {
-            @Override
-            public void onResponse(Call<JsonNull> call, Response<JsonNull> response) {
-                if(response.isSuccessful()) {
-                    post.poll.updateChoice(getCurrentUser(), newChoice);
-                    changePost(post, post.poll);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonNull> call, Throwable t) {
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+        onClickPollDisgreePublisher = getRxGuardian().subscribe(onClickPollDisgreePublisher,
+                votingsService.voting(post.poll.id, newChoice),
+                response -> {
+                    if(response.isSuccessful()) {
+                        post.poll.updateChoice(getCurrentUser(), newChoice);
+                        changePost(post, post.poll);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
     }
 
     public void onPreDownloadDocFileSource(final DownloadFilesTask task) {
