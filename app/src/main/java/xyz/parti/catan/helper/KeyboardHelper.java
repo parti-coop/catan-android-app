@@ -2,8 +2,11 @@ package xyz.parti.catan.helper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import xyz.parti.catan.Constants;
 
 /**
  * Created by dalikim on 2017. 5. 9..
@@ -17,7 +20,8 @@ public class KeyboardHelper {
     }
 
     public void hideKey() {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        Log.d(Constants.TAG_TEST, "키보드 숨겨짐");
+        InputMethodManager imm = (InputMethodManager) activity.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
         //If no view currently has focus, create a new one, just so we can grab a window token from it

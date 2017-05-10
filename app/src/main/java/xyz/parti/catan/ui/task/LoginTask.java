@@ -1,6 +1,7 @@
 package xyz.parti.catan.ui.task;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.util.Pair;
 
@@ -16,6 +17,7 @@ import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.AuthTokenService;
 import xyz.parti.catan.data.services.UsersService;
+import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.helper.RxGuardian;
 
@@ -25,9 +27,9 @@ import xyz.parti.catan.helper.RxGuardian;
 
 public class LoginTask {
     private final AuthTokenService authTokenService;
-    private final Context context;
-    private final After afterLogin;
-    private final SessionManager session;
+    private Context context;
+    private After afterLogin;
+    private SessionManager session;
     private final RxGuardian rxGuardian;
     private Disposable loginDisposable;
 
@@ -40,6 +42,13 @@ public class LoginTask {
     }
 
     public void cancel() {
+        this.rxGuardian.unsubscribeAll();
+    }
+
+    public void destroy() {
+        this.context = null;
+        this.afterLogin = null;
+        this.session = null;
         this.rxGuardian.unsubscribeAll();
     }
 
@@ -89,11 +98,11 @@ public class LoginTask {
                     afterLogin.onSuccess();
                 }, error -> {
                     if(error instanceof NotFoundUserError) {
-                        ReportHelper.wtf(context.getApplicationContext(), "TODO: 가입화면으로 넘겨야함");
+                        afterLogin.onNotFoundUser();
                     } else {
                         ReportHelper.wtf(context.getApplicationContext(), error);
+                        afterLogin.onError();
                     }
-                    afterLogin.onError();
                 });
     }
 
@@ -101,6 +110,7 @@ public class LoginTask {
 
     public interface After {
         void onSuccess();
+        void onNotFoundUser();
         void onFail();
         void onError();
     }

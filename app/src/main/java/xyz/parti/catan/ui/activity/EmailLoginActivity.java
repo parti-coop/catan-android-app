@@ -1,8 +1,10 @@
 package xyz.parti.catan.ui.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import xyz.parti.catan.R;
+import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.KeyboardHelper;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;
@@ -55,6 +58,11 @@ public class EmailLoginActivity extends BaseActivity {
         super.onPause();
     }
 
+    public void onDestroy() {
+        this.partiLoginTask.destroy();
+        super.onDestroy();
+    }
+
     @NonNull
     private LoginTask setUpLoginTask() {
         return new LoginTask(this, new LoginTask.After() {
@@ -64,6 +72,18 @@ public class EmailLoginActivity extends BaseActivity {
                 Intent i = new Intent(EmailLoginActivity.this.getApplicationContext(), MainActivity.class);
                 EmailLoginActivity.this.startActivity(i);
                 EmailLoginActivity.this.finish();
+            }
+
+            @Override
+            public void onNotFoundUser() {
+                progressToggler.toggle(false);
+                Snackbar.make(formView, String.format(getResources().getString(R.string.login_password_not_found_user)), 30 * 1000)
+                        .setAction(R.string.ok,
+                                view -> {
+                                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
+                                    startActivity(i);
+                                })
+                        .show();
             }
 
             @Override
@@ -124,7 +144,7 @@ public class EmailLoginActivity extends BaseActivity {
         }
 
         progressToggler.toggle(true);
-        new KeyboardHelper(this).hideKey();
+        formView.post(() -> new KeyboardHelper(this).hideKey());
         partiLoginTask.loginCredentials(email, password);
     }
 

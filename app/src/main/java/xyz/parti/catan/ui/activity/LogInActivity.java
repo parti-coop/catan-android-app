@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -92,6 +93,11 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         super.onPause();
     }
 
+    public void onDestroy() {
+        this.partiLoginTask.destroy();
+        super.onDestroy();
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         // super.onWindowFocusChanged(hasFocus);
@@ -114,6 +120,18 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
                 Intent i = new Intent(LogInActivity.this.getApplicationContext(), MainActivity.class);
                 LogInActivity.this.startActivity(i);
                 LogInActivity.this.finish();
+            }
+
+            @Override
+            public void onNotFoundUser() {
+                progressToggler.toggle(false);
+                Snackbar.make(panelLayout, String.format(getResources().getString(R.string.login_social_not_found_user)), 10 * 1000)
+                        .setAction(R.string.ok,
+                                view -> {
+                                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
+                                    startActivity(i);
+                                })
+                        .show();
             }
 
             @Override
@@ -203,7 +221,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         } else {
             Log.d(Constants.TAG, result.getStatus().toString());
             progressToggler.toggle(false);
-            Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+            Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_google_login, Toast.LENGTH_LONG).show();
         }
     }
 

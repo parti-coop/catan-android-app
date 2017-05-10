@@ -38,6 +38,7 @@
     <string name="doc_file_source_download_permission_denied">다운로드 하기 위한 권한이 필요합니다.\n[설정] > [권한] 에서 저장소에 접근할 수 있는 권한을 허용할 수 있습니다.</string>
 
     <string name="error_login">로그인이 취소되었습니다</string>
+    <string name="error_google_login">로그인이 취소되었습니다.\n [설정]에서 구글 계정을 다시 확인해 주세요.</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>
 
     <string name="navigation_settings">설정</string>
@@ -65,4 +66,6 @@
     <string name="new_version">새로운 버전의 앱이 업로드되었습니다. 업그레이드하시겠습니까? 버전 :  %s</string>
     <string name="ok">확인</string>
     <string name="login_fail">로그인 실패했습니다</string>
+    <string name="login_password_not_found_user">이메일과 비밀번호가 일치하지 않습니다. 새로 가입하시겠습니까?</string>
+    <string name="login_social_not_found_user">아직 가입하지 않으셨습니다. 새로 가입하시겠습니까?</string>
 </resources>
