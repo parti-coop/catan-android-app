@@ -42,8 +42,8 @@ android {
         }
     }
     defaultConfig {
-        def PARTI_APP_ID = '"' + partiApplicationIdProp + '"' ?: '"Define Parti Api Id"'
-        def PARTI_SECRET_KEY = '"' + partiSecretKeyProp + '"' ?: '"Define Parti Secret Key"'
+        def PARTI_APP_ID = '"' + partiApplicationId + '"' ?: '"Define Parti Api Id"'
+        def PARTI_SECRET_KEY = '"' + partiSecretKey + '"' ?: '"Define Parti Secret Key"'
         buildConfigField "String", "PARTI_APP_ID", PARTI_APP_ID
         buildConfigField "String", "PARTI_SECRET_KEY", PARTI_SECRET_KEY
 
