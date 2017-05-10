@@ -4,9 +4,7 @@ import android.util.Log;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.disposables.Disposable;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.helper.ReportHelper;
@@ -23,25 +21,32 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  * Created by dalikim on 2017. 5. 3..
  */
 
-public class CommentFeedPresenter {
-    private View view;
-    private Post post;
+public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> {
+    private final Post post;
     private final CommentsService commentsService;
     private CommentFeedRecyclerViewAdapter feedAdapter;
+    private Disposable firstCommentsPublisher;
+    private Disposable moreCommentsPublisher;
+    private Disposable createCommentPublisher;
 
-    public CommentFeedPresenter(View view, Post post, SessionManager session) {
-        this.view = view;
+    public CommentFeedPresenter(Post post, SessionManager session) {
         this.post = post;
         commentsService = ServiceBuilder.createService(CommentsService.class, session);
     }
 
+    @Override
+    public void attachView(CommentFeedPresenter.View view) {
+        super.attachView(view);
+    }
+
+    @Override
     public void detachView() {
-        view = null;
         feedAdapter = null;
+        super.detachView();
     }
 
     private boolean isActive() {
-        return view != null && feedAdapter != null;
+        return getView() != null && feedAdapter != null;
     }
 
     public void setCommentFeedRecyclerViewAdapter(CommentFeedRecyclerViewAdapter feedAdapter) {
@@ -50,60 +55,53 @@ public class CommentFeedPresenter {
 
     public void loadFirstComments() {
         if(feedAdapter == null) {
-            Log.d(Constants.TAG, "loadMoreComments : feedAdapter is null");
+            Log.d(Constants.TAG, "moreCommentsPublisher : feedAdapter is null");
             return;
         }
 
-        Call<Page<Comment>> call = commentsService.getComments(post.id);
-        call.enqueue(new Callback<Page<Comment>>() {
-            @Override
-            public void onResponse(Call<Page<Comment>> call, Response<Page<Comment>> response) {
-                if(!isActive()) {
-                    return;
-                }
+        firstCommentsPublisher = getRxGuardian().subscribe(firstCommentsPublisher,
+                commentsService.getComments(post.id),
+                response -> {
+                    if (!isActive()) {
+                        return;
+                    }
 
-                if(response.isSuccessful()) {
-                    Page<Comment> page = response.body();
-                    feedAdapter.appendModels(page.items);
-                    feedAdapter.setMoreDataAvailable(page.has_more_item);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "AllComments load first error : " + response.code());
-                }
-                feedAdapter.setLoadFinished();
-            }
+                    if (response.isSuccessful()) {
+                        Page<Comment> page = response.body();
+                        feedAdapter.appendModels(page.items);
+                        feedAdapter.setMoreDataAvailable(page.has_more_item);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "AllComments load first error : " + response.code());
+                        feedAdapter.setMoreDataAvailable(false);
+                    }
+                    feedAdapter.setLoadFinished();
+                }, error -> {
+                    if(!isActive()) {
+                        return;
+                    }
 
-            @Override
-            public void onFailure(Call<Page<Comment>> call, Throwable t) {
-                if(!isActive()) {
-                    return;
-                }
-
-                ReportHelper.wtf(getApplicationContext(), t);
-                feedAdapter.setLoadFinished();
-            }
-        });
-
-
+                    ReportHelper.wtf(getApplicationContext(), error);
+                    feedAdapter.setLoadFinished();
+                });
     }
 
     public void loadMoreComments() {
         if(feedAdapter == null) {
-            Log.d(Constants.TAG, "loadMoreComments : feedAdapter is null");
+            Log.d(Constants.TAG, "moreCommentsPublisher : feedAdapter is null");
             return;
         }
 
         Comment comment = feedAdapter.getFirstModel();
         if(comment == null) {
-            Log.d(Constants.TAG, "loadMoreComments : first comment is null");
+            Log.d(Constants.TAG, "moreCommentsPublisher : first comment is null");
             return;
         }
         feedAdapter.prependLoader();
         feedAdapter.notifyItemInserted(0);
 
-        Call<Page<Comment>> call = commentsService.getComments(post.id, comment.id);
-        call.enqueue(new Callback<Page<Comment>>() {
-            @Override
-            public void onResponse(Call<Page<Comment>> call, Response<Page<Comment>> response) {
+        moreCommentsPublisher = getRxGuardian().subscribe(moreCommentsPublisher,
+            commentsService.getComments(post.id, comment.id),
+            response -> {
                 if(!isActive()) {
                     return;
                 }
@@ -122,29 +120,20 @@ public class CommentFeedPresenter {
                         //result size 0 means there is no more data available at server
                         feedAdapter.setMoreDataAvailable(false);
                     }
-                    feedAdapter.setLoadFinished();
                 } else {
                     feedAdapter.setMoreDataAvailable(false);
-                    feedAdapter.notifyDataSetChanged();
-                    feedAdapter.setLoadFinished();
                     ReportHelper.wtf(getApplicationContext(), "AllComments load more error : " + response.code());
                 }
-            }
-
-            @Override
-            public void onFailure(Call<Page<Comment>> call, Throwable t) {
+                feedAdapter.setLoadFinished();
+            }, error -> {
                 if(!isActive()) {
                     return;
                 }
 
                 feedAdapter.setMoreDataAvailable(false);
-                feedAdapter.notifyDataSetChanged();
                 feedAdapter.setLoadFinished();
-
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
-
+                ReportHelper.wtf(getApplicationContext(), error);
+            });
     }
 
     public void onClickCommentCreateButton(String body) {
@@ -153,37 +142,39 @@ public class CommentFeedPresenter {
         }
 
         feedAdapter.setLoadStarted();
-        view.setSendingCommentForm();
+        getView().setSendingCommentForm();
 
-        Call<Comment> call = commentsService.createComment(post.id, body);
-        call.enqueue(new Callback<Comment>() {
-            @Override
-            public void onResponse(Call<Comment> call, Response<Comment> response) {
-                if(response.isSuccessful()) {
-                    Comment comment = response.body();
-                    feedAdapter.appendModel(comment);
-                    feedAdapter.notifyItemChanged(feedAdapter.getLastPosition() - 1);
-
-                    if(!feedAdapter.isEmpty()) {
-                        view.showCommentList();
+        createCommentPublisher = getRxGuardian().subscribe(createCommentPublisher,
+                commentsService.createComment(post.id, body),
+                response -> {
+                    if(!isActive()) {
+                        return;
                     }
-                    post.addComment(comment);
-                } else {
-                    ReportHelper.wtf(getApplicationContext(), "Create comment error : " + response.code());
-                }
-                view.setCompletedCommentForm();
-                feedAdapter.setLoadFinished();
-            }
 
-            @Override
-            public void onFailure(Call<Comment> call, Throwable t) {
-                view.setCompletedCommentForm();
-                feedAdapter.setLoadFinished();
+                    if(response.isSuccessful()) {
+                        Comment comment = response.body();
+                        feedAdapter.appendModel(comment);
+                        feedAdapter.notifyItemChanged(feedAdapter.getLastPosition() - 1);
 
-                ReportHelper.wtf(getApplicationContext(), t);
-            }
-        });
+                        if(!feedAdapter.isEmpty()) {
+                            getView().showCommentList();
+                        }
+                        post.addComment(comment);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Create comment error : " + response.code());
+                    }
+                    getView().setCompletedCommentForm();
+                    feedAdapter.setLoadFinished();
+                }, error -> {
+                    if(!isActive()) {
+                        return;
+                    }
 
+                    getView().setCompletedCommentForm();
+                    feedAdapter.setLoadFinished();
+
+                    ReportHelper.wtf(getApplicationContext(), error);
+                });
     }
 
     public Post getPost() {

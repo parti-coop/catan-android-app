@@ -51,10 +51,10 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     private Date lastStrockedAtOfNewPostCheck = null;
     private long lastLoadFirstPostsAtMillis = -1;
 
-    private Disposable loadFirstPostsSubscription;
-    private Disposable loadMorePostsSubscription;
-    private Disposable checkNewPostsSubscription;
-    private Disposable reloadPostSubscription;
+    private Disposable loadFirstPostsPublisher;
+    private Disposable loadMorePostsPublisher;
+    private Disposable checkNewPostsPublisher;
+    private Disposable reloadPostPublisher;
     private AppVersionCheckTask appVersionCheckTaks;
 
     public PostFeedPresenter(SessionManager session) {
@@ -71,6 +71,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         appVersionCheckTaks = new AppVersionCheckTask(new AppVersionHelper(getView().getContext()).getCurrentVerion(), getView().getContext());
     }
 
+    @Override
     public void detachView() {
         super.detachView();
         session = null;
@@ -94,7 +95,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
             return;
         }
 
-        loadFirstPostsSubscription = getRxGuardian().subscribe(loadFirstPostsSubscription,
+        loadFirstPostsPublisher = getRxGuardian().subscribe(loadFirstPostsPublisher,
                 postsService.getDashBoardLastest(),
                 response -> {
                     /* SUCCESS */
@@ -111,8 +112,12 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                         feedAdapter.appendModels(page.items);
                         feedAdapter.setMoreDataAvailable(page.has_more_item);
                     } else {
+                        feedAdapter.setMoreDataAvailable(false);
                         getView().reportError("Load first post error : " + response.code());
                     }
+                    feedAdapter.setLoadFinished();
+                    getView().ensureExpendedAppBar();
+                    getView().stopAndEnableSwipeRefreshing();
                 }, error -> {
                     /* ERROR **/
                     if (!isActive()) {
@@ -120,11 +125,6 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     }
                     getView().reportError(error);
 
-                    feedAdapter.setLoadFinished();
-                    getView().ensureExpendedAppBar();
-                    getView().stopAndEnableSwipeRefreshing();
-                }, () -> {
-                    /* COMPLETED **/
                     feedAdapter.setLoadFinished();
                     getView().ensureExpendedAppBar();
                     getView().stopAndEnableSwipeRefreshing();
@@ -143,7 +143,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         }
         feedAdapter.appendLoader();
 
-        loadMorePostsSubscription = getRxGuardian().subscribe(loadMorePostsSubscription,
+        loadMorePostsPublisher = getRxGuardian().subscribe(loadMorePostsPublisher,
                 postsService.getDashboardAfter(post.id),
                 response -> {
                     /* SUCCESS **/
@@ -164,13 +164,13 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                         }else{
                             //result size 0 means there is no more data available at server
                             feedAdapter.setMoreDataAvailable(false);
-                            feedAdapter.notifyDataSetChanged();
                             //telling adapter to stop calling loadFirstPosts more as no more server data available
                         }
                     }else{
                         feedAdapter.setMoreDataAvailable(false);
                         getView().reportError("Load more post error : " + response.code());
                     }
+                    feedAdapter.setLoadFinished();
                 }, error -> {
                     /* ERROR **/
                     if(!isActive()) {
@@ -179,9 +179,6 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     feedAdapter.setLoadFinished();
                     feedAdapter.setMoreDataAvailable(false);
                     getView().reportError(error);
-                }, () -> {
-                    /* COMPLETED **/
-                    feedAdapter.setLoadFinished();
                 });
     }
 
@@ -198,8 +195,8 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         final Date lastStrockedAt = getLastStrockedAtForNewPostCheck();
         if (lastStrockedAt == null) return;
 
-        RxHelper.unsubscribe(checkNewPostsSubscription);
-        checkNewPostsSubscription = getRxGuardian().subscribe(checkNewPostsSubscription,
+        RxHelper.unsubscribe(checkNewPostsPublisher);
+        checkNewPostsPublisher = getRxGuardian().subscribe(checkNewPostsPublisher,
                 postsService.hasUpdated(lastStrockedAt),
                 response -> {
                     if(!isActive()) {
@@ -253,8 +250,8 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     }
 
     private void reloadPostSurvey(final Post post) {
-        RxHelper.unsubscribe(reloadPostSubscription);
-        reloadPostSubscription = getRxGuardian().subscribe(reloadPostSubscription,
+        RxHelper.unsubscribe(reloadPostPublisher);
+        reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
                 postsService.getPost(post.id),
                 response -> {
                     if(!isActive()) return;

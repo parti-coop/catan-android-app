@@ -100,6 +100,7 @@ public class ServiceBuilder {
 
                 // We need a new client, since we don't want to make another call using our client with access token
                 AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
+
                 Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(currentToken.refresh_token,
                         "refresh_token", BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
 
