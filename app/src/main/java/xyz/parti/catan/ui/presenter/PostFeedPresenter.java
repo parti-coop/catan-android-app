@@ -121,6 +121,10 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     feedAdapter.setLoadFinished();
                     getView().ensureExpendedAppBar();
                     getView().stopAndEnableSwipeRefreshing();
+                    
+                    if(feedAdapter.getItemCount() <= 0) {
+                        getView().showEmpty(!response.isSuccessful());
+                    }
                 }, error -> {
                     /* ERROR **/
                     if (!isActive()) {
@@ -398,6 +402,12 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         if(lastLoadFirstPostsAtMillis <= 0 || feedAdapter == null) {
             return;
         }
+
+        if(feedAdapter.getItemCount() <= 0) {
+            this.retryLoadingPost();
+            return;
+        }
+
         Post model = feedAdapter.getFirstModel();
         if(model == null) {
             return;
@@ -426,6 +436,19 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         });
     }
 
+    public void retryLoadingPost() {
+        if(!isActive()) return;
+
+        getView().readyToRetry();
+        loadFirstPosts();
+    }
+
+    public void goToParties() {
+        if(!isActive()) return;
+
+        getView().showUrl(Uri.parse("https://parti.xyz/parties"));
+    }
+
     public interface View {
         void stopAndEnableSwipeRefreshing();
         boolean isVisibleNewPostsSign();
@@ -448,5 +471,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         void showNewVersionMessage(String newVersion);
         void reportError(Throwable error);
         void reportError(String message);
+        void showEmpty(boolean isError);
+        void readyToRetry();
     }
 }

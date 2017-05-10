@@ -127,6 +127,9 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
 
     @Override
     final public int getItemCount() {
+        if(holders == null) {
+            return 0;
+        }
         return holders.size();
     }
 
@@ -156,6 +159,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
     }
 
     public T getFirstModel() {
+        if(getItemCount() <= 0) return null;
         return getModel(0);
     }
     public T getLastModel() {

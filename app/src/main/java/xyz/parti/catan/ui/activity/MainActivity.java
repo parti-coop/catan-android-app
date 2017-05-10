@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import mehdi.sakout.fancybuttons.FancyButton;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
@@ -84,6 +84,12 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     FancyButton newPostsSignButton;
     @BindView(R.id.layout_post_list_demo)
     ShimmerFrameLayout postListDemoLayout;
+    @BindView(R.id.layout_no_posts_sign)
+    RelativeLayout noPostSignLayout;
+    @BindView(R.id.button_go_to_parties)
+    FancyButton goToPartiesButton;
+    @BindView(R.id.button_retry)
+    FancyButton retryButton;
 
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
@@ -148,9 +154,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     private void setUpSwipeRefresh() {
-        postListSwipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.loadFirstPosts();
-        });
+        postListSwipeRefreshLayout.setOnRefreshListener(() -> presenter.loadFirstPosts());
         // Configure the refreshing colors
         postListSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -284,9 +288,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this);
         feedAdapter.setPresenter(presenter);
         feedAdapter.setLoadMoreListener(() -> {
-            postListRecyclerView.post(() -> {
-                    presenter.loadMorePosts();
-            });
+            postListRecyclerView.post(() -> presenter.loadMorePosts());
             //Calling loadMorePosts function in Runnable to fix the
             // java.lang.IllegalStateException: Cannot call this method while RecyclerView is computing a layout or scrolling error
         });
@@ -358,20 +360,47 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     }
 
     @Override
+    public void showEmpty(boolean isError) {
+        postListDemoLayout.setVisibility(View.GONE);
+        postListRecyclerView.setVisibility(View.GONE);
+        noPostSignLayout.setVisibility(View.VISIBLE);
+
+        if(isError) {
+            retryButton.setVisibility(View.VISIBLE);
+            goToPartiesButton.setVisibility(View.GONE);
+        } else {
+            retryButton.setVisibility(View.GONE);
+            goToPartiesButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @OnClick(R.id.button_retry)
+    public void onClickRetry() {
+        presenter.retryLoadingPost();
+    }
+
+    @OnClick(R.id.button_go_to_parties)
+    public void onClickGoToParties() {
+        presenter.goToParties();
+    }
+
+    @Override
+    public void readyToRetry() {
+        postListDemoLayout.setVisibility(View.VISIBLE);
+        postListRecyclerView.setVisibility(View.VISIBLE);
+        noPostSignLayout.setVisibility(View.GONE);
+        retryButton.setVisibility(View.GONE);
+        goToPartiesButton.setVisibility(View.GONE);
+    }
+
+    @Override
     public void showDownloadDocFileSourceProgress(final DownloadFilesTask task) {
         downloadProgressDialog.setMessage("다운로드 중");
         downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         downloadProgressDialog.setIndeterminate(true);
         downloadProgressDialog.setCancelable(true);
-        downloadProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                task.cancel(true);
-            }
-        });
-        downloadProgressDialog.setOnDismissListener(dialog -> {
-            task.cancel(true);
-        });
+        downloadProgressDialog.setOnCancelListener(dialogInterface -> task.cancel(true));
+        downloadProgressDialog.setOnDismissListener(dialog -> task.cancel(true));
 
         downloadProgressDialog.show();
     }
@@ -454,9 +483,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
     public void showNewVersionMessage(String newVersion) {
         Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000)
                 .setAction(R.string.ok,
-                    view -> {
-                        new IntentHelper(this).startPlayStore(getPackageName());
-                    })
+                    view -> new IntentHelper(this).startPlayStore(getPackageName()))
                 .show();
     }
 
