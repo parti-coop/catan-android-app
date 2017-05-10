@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="define_int_rxandroid"></string>
+	<!-- Author section -->
+	<string name="library_rxandroid_author">ReactiveX</string>
+	<string name="library_rxandroid_authorWebsite">https://github.com/ReactiveX/RxAndroid</string>
+	<!-- Library section -->
+	<string name="library_rxandroid_libraryName">RxAndroid</string>
+	<string name="library_rxandroid_libraryDescription">RxJava bindings for Android</string>
+	<string name="library_rxandroid_libraryWebsite"></string>
+	<string name="library_rxandroid_libraryVersion">2.0.1</string>
+	<!-- OpenSource section -->
+	<string name="library_rxandroid_isOpenSource">true</string>
+	<string name="library_rxandroid_repositoryLink"></string>
+	<!-- ClassPath for autoDetect section -->
+	<string name="library_rxandroid_classPath">io.reactivex.android.schedulers.AndroidSchedulers</string>
+	<!-- License section -->
+	<string name="library_rxandroid_licenseId">apache_2_0</string>
+	<!-- Custom variables section -->
+</resources>

@@ -96,7 +96,7 @@ public class SettingsActivity extends BaseActivity {
                 .withActivityTitle(getResources().getString(R.string.license))
                 .withLicenseShown(true)
                 .withLicenseDialog(true)
-                .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android")
+                .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android", "rxjava", "rxandroid")
                 .start(this);
     }
 

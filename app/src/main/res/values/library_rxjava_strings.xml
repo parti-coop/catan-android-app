@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="define_int_rxjava"></string>
+	<!-- Author section -->
+	<string name="library_rxjava_author">ReactiveX</string>
+	<string name="library_rxjava_authorWebsite">https://github.com/ReactiveX/RxJava</string>
+	<!-- Library section -->
+	<string name="library_rxjava_libraryName">RxJava</string>
+	<string name="library_rxjava_libraryDescription">RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.</string>
+	<string name="library_rxjava_libraryWebsite"></string>
+	<string name="library_rxjava_libraryVersion">2.1.0</string>
+	<!-- OpenSource section -->
+	<string name="library_rxjava_isOpenSource">true</string>
+	<string name="library_rxjava_repositoryLink"></string>
+	<!-- ClassPath for autoDetect section -->
+	<string name="library_rxjava_classPath">io.reactivex.Flowable</string>
+	<!-- License section -->
+	<string name="library_rxjava_licenseId">apache_2_0</string>
+	<!-- Custom variables section -->
+</resources>
