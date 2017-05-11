@@ -279,7 +279,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         });
 
         postListRecyclerView.setHasFixedSize(true);
-        final LinearLayoutManager recyclerViewLayout = new LinearLayoutManager(this);
+        final LinearLayoutManager recyclerViewLayout = new LinearLayoutManager(this) {
+            @Override
+            protected int getExtraLayoutSpace(RecyclerView.State state) {
+                return 1000;
+            }
+        };
         postListRecyclerView.setLayoutManager(recyclerViewLayout);
         postListRecyclerView.setAdapter(feedAdapter);
         postListRecyclerView.setItemViewCacheSize(50);
