@@ -2,6 +2,10 @@ package xyz.parti.catan.data.model;
 
 import org.parceler.Parcel;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Created by dalikim on 2017. 3. 28..
  */
@@ -23,4 +27,10 @@ public class Parti {
     public Boolean is_made_by;
     public Boolean is_made_by_target_user;
     public Share share;
+
+    public Collection<? extends String> getPreloadImageUrls() {
+        List<String> result = new ArrayList<>();
+        result.add(logo_url);
+        return result;
+    }
 }

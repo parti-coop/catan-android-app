@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 @Parcel
-public class Post implements RecyclableModel<Post> {
+public class Post implements RecyclableModel {
     public static final String IS_UPVOTED_BY_ME = "is_upvoted_by_me";
     public static final String PLAYLOAD_LATEST_COMMENT = "latest_comment";
 
@@ -75,6 +75,29 @@ public class Post implements RecyclableModel<Post> {
     @Override
     public boolean isSame(Object other) {
         return other != null && other instanceof Post && id != null && id.equals(((Post)other).id);
+    }
+
+    @Override
+    public List<String> getPreloadImageUrls() {
+        List<String> result = new ArrayList<>();
+        result.addAll(parti.getPreloadImageUrls());
+        if(user != null) {
+            result.addAll(user.getPreloadImageUrls());
+        }
+        if(link_source != null) {
+            result.addAll(link_source.getPreloadImageUrls());
+        }
+        if(latest_comments != null) {
+            for(Comment comment : latest_comments) {
+                result.addAll(comment.getPreloadImageUrls());
+            }
+        }
+        if(file_sources != null) {
+            for(FileSource fileSource : file_sources) {
+                result.addAll(fileSource.getPreloadImageUrls());
+            }
+        }
+        return result;
     }
 
     public void addComment(Comment comment) {

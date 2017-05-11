@@ -3,8 +3,12 @@ package xyz.parti.catan.ui.presenter;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.FutureTarget;
+import com.bumptech.glide.request.target.Target;
 import com.google.gson.JsonNull;
 
 import java.io.File;
@@ -14,6 +18,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import retrofit2.Response;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.FileSource;
@@ -447,6 +452,16 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         if(!isActive()) return;
 
         getView().showUrl(Uri.parse("https://parti.xyz/parties"));
+    }
+
+    public void preloadImage(String url) {
+        if(url == null) {
+            return;
+        }
+        Log.d(Constants.TAG_TEST, "cache download : " + url);
+        Glide.with(getView().getContext())
+                .load(url)
+                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
     }
 
     public interface View {

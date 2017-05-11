@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.ui.binder.CommentBinder;
+import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 30..
@@ -16,6 +17,7 @@ import xyz.parti.catan.ui.binder.CommentBinder;
 
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
     private final LayoutInflater inflater;
+    private CommentFeedPresenter presenter;
 
     public CommentFeedRecyclerViewAdapter(Context context) {
         inflater = LayoutInflater.from(context);
@@ -32,15 +34,27 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
     }
 
     @Override
+    protected void prepareChangedModel(InfinitableModelHolder<Comment> holders) {
+        if(presenter == null) return;
+        for(String url : holders.getPreloadImageUrls()) {
+            presenter.preloadImage(url);
+        }
+    }
+
+    @Override
     boolean isLoadMorePosition(int position) {
         return position <= 0;
     }
 
     @Override
-    void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(getModel(position), position);
     }
 
+    public void setPresenter(CommentFeedPresenter presenter) {
+        this.presenter = presenter;
+    }
+    
     private boolean isLastPosition(int position) {
         return getLastPosition() == position;
     }

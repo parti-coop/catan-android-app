@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -77,6 +78,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         feedAdapter = new CommentFeedRecyclerViewAdapter(this);
         feedAdapter.setLoadMoreListener(() -> listRecyclerView.post(() -> presenter.loadMoreComments()));
         presenter.setCommentFeedRecyclerViewAdapter(feedAdapter);
+        feedAdapter.setPresenter(presenter);
 
         listRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -165,6 +167,11 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     public void showCommentList() {
         noCommentsSignView.setVisibility(View.GONE);
         listWrapperView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     @Override

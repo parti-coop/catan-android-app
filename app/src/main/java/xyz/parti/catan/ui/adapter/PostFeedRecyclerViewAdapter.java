@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
 import java.util.List;
@@ -63,8 +65,16 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
     }
 
     @Override
-    public void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         ((PostFeedRecyclerViewAdapter.PostViewHolder)viewHolder).bindData(getModel(position));
+    }
+
+    @Override
+    public void prepareChangedModel(InfinitableModelHolder<Post> holders) {
+        if(presenter == null) return;
+        for(String url : holders.getPreloadImageUrls()) {
+            presenter.preloadImage(url);
+        }
     }
 
     @Override
@@ -228,7 +238,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
                 groupTitleTextView.setVisibility(android.view.View.VISIBLE);
                 groupTitleTextView.setText(post.parti.group.title);
             }
-            new ImageHelper(partiLogoImageView).loadInto(post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+            new ImageHelper(userImageImageView).loadInto(post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
             userNicknameTextView.setText(post.user.nickname);
             createdAtTextView.setReferenceTime(post.created_at.getTime());
 

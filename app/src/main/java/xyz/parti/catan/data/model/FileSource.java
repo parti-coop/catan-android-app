@@ -2,6 +2,10 @@ package xyz.parti.catan.data.model;
 
 import org.parceler.Parcel;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Created by dalikim on 2017. 3. 28..
  */
@@ -10,6 +14,7 @@ import org.parceler.Parcel;
 public class FileSource {
     public Long id;
     public String attachment_url;
+    public String attachment_sm_url;
     public String attachment_filename;
     public String name;
     public String file_type;
@@ -24,5 +29,11 @@ public class FileSource {
 
     public boolean isDoc() {
         return !isImage();
+    }
+
+    public Collection<? extends String> getPreloadImageUrls() {
+        List<String> result = new ArrayList<>();
+        result.add(attachment_sm_url);
+        return result;
     }
 }

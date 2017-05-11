@@ -2,6 +2,8 @@ package xyz.parti.catan.helper;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -10,6 +12,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 
 /**
@@ -28,23 +31,31 @@ public class ImageHelper {
     }
 
     public Target<GlideDrawable> loadInto(String url, ImageView.ScaleType scaleType) {
-        Context context = imageView.getContext();
-
-        return Glide.with(context)
-                .load(url)
-                .crossFade()
-                .error(R.drawable.ic_image_brand_gray)
-                .into(new ScaleImageViewTarget(imageView, scaleType, ImageView.ScaleType.CENTER_INSIDE));
+        return loadInto(url, scaleType, ImageView.ScaleType.CENTER_INSIDE);
     }
 
     public Target<GlideDrawable> loadInto(String url, ImageView.ScaleType successScaleType, ImageView.ScaleType errorScaleType) {
+        if(url == null) return null;
+
         Context context = imageView.getContext();
 
-        return Glide.with(context)
-                .load(url)
-                .crossFade()
-                .error(R.drawable.ic_image_brand_gray)
-                .into(new ScaleImageViewTarget(imageView, successScaleType, errorScaleType));
+        if(url.startsWith("data:image/png;base64,")) {
+            Log.d(Constants.TAG_TEST, "base64");
+            url = url.replace("data:image/png;base64,","");
+            byte[] imageByteArray = Base64.decode(url, Base64.DEFAULT);
+
+            return Glide.with(context)
+                    .load(imageByteArray)
+                    .crossFade()
+                    .error(R.drawable.ic_image_brand_gray)
+                    .into(new ScaleImageViewTarget(imageView, successScaleType, errorScaleType));
+        } else {
+            return Glide.with(context)
+                    .load(url)
+                    .crossFade()
+                    .error(R.drawable.ic_image_brand_gray)
+                    .into(new ScaleImageViewTarget(imageView, successScaleType, errorScaleType));
+        }
     }
 
     /**

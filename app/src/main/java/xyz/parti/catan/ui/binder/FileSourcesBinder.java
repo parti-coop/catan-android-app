@@ -19,6 +19,7 @@ import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
+import xyz.parti.catan.ui.view.MatchParentWidthImageView;
 
 /**
  * Created by dalikim on 2017. 4. 4..
@@ -61,7 +62,7 @@ public class FileSourcesBinder {
 
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
-                android.view.View imageView = makeImageCell(context, fileSource.attachment_url, imageFileSourcesRow.size(), col);
+                android.view.View imageView = makeImageCell(context, fileSource.attachment_sm_url, imageFileSourcesRow.size(), col);
                 imageView.setOnClickListener(view -> presenter.onClickImageFileSource(post));
                 rowLayout.addView(imageView);
                 col++;
@@ -112,7 +113,7 @@ public class FileSourcesBinder {
     }
 
     private android.view.View makeImageCell(Context context, String url, int col_size, int current_col) {
-        final ImageView imageView = new ImageView(context);
+        final ImageView imageView = (col_size <= 1 ? new MatchParentWidthImageView(context) : new ImageView(context));
         
         int height = 300;
         if(col_size == 1) {
@@ -122,7 +123,7 @@ public class FileSourcesBinder {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         imageView.setLayoutParams(params);
         imageView.setAdjustViewBounds(true);
-        new ImageHelper(imageView).loadInto(url, (col_size <= 1 ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP));
+        new ImageHelper(imageView).loadInto(url, ImageView.ScaleType.CENTER_CROP);
 
         LinearLayout rowBgLayout = new LinearLayout(context);
         rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border));

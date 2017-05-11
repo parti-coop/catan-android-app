@@ -7,14 +7,13 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.RecyclableModel;
 
 /**
  * Created by dalikim on 2017. 4. 30..
  */
 
-public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
+public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
     private static int TYPE_MODEL = 0;
     private static int TYPE_LOAD = 1;
 
@@ -24,7 +23,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
 
     abstract LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateModelViewHolder(ViewGroup parent);
     abstract boolean isLoadMorePosition(int position);
-    abstract void onBildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
+    abstract void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
     abstract LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateLoaderHolder(ViewGroup parent);
 
     LoadMoreRecyclerViewAdapter() {
@@ -36,19 +35,44 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
     }
 
     public void appendModels(List<T> items) {
-        this.holders.addAll(InfinitableModelHolder.from(items));
+        List<InfinitableModelHolder<T>> holders =
+                InfinitableModelHolder.from(items);
+        this.holders.addAll(holders);
+        prepareChangedModels(holders);
         notifyDataSetChanged();
     }
 
     public void appendModel(T item) {
-        this.holders.add(InfinitableModelHolder.forModel(item));
-        notifyItemInserted(holders.size() - 1);
+        InfinitableModelHolder<T> holder = InfinitableModelHolder.forModel(item);
+        this.holders.add(holder);
+        prepareChangedModel(holder);
+        notifyItemInserted(this.holders.size() - 1);
     }
 
     public void prependModels(List<T> items) {
-        this.holders.addAll(0, InfinitableModelHolder.from(items));
+        List<InfinitableModelHolder<T>> holders = InfinitableModelHolder.from(items);
+        this.holders.addAll(0, holders);
+        prepareChangedModels(holders);
         notifyDataPrepended(items.size() + 1);
     }
+
+    public void changeModel(T model, Object payload) {
+        for (int i = 0; i < holders.size(); i++) {
+            if (model != null && model.isSame(getModel(i))) {
+                holders.set(i, InfinitableModelHolder.forModel(model));
+                notifyItemChanged(i, payload);
+            }
+        }
+    }
+
+    private void prepareChangedModels(List<InfinitableModelHolder<T>> holders) {
+        if(holders == null) return;
+        for(InfinitableModelHolder<T> holder : holders) {
+            this.prepareChangedModel(holder);
+        }
+    }
+
+    abstract protected void prepareChangedModel(InfinitableModelHolder<T> holder);
 
     public void appendLoader() {
         holders.add(InfinitableModelHolder.forLoader());
@@ -109,15 +133,13 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
             return onCreateModelViewHolder(parent);
         } else {
             return onCreateLoaderHolder(parent);
-//        LayoutInflater inflater = LayoutInflater.from(context);
-//            return new LoadHolder(inflater.inflate(R.layout.dashboard_load, parent, false));
         }
     }
 
     @Override
     public void onBindViewHolder(LoadMoreRecyclerViewAdapter.BaseViewHolder viewHolder, int position) {
         if(getItemViewType(position) == TYPE_MODEL){
-            onBildModelViewHolder(viewHolder, position);
+            onBuildModelViewHolder(viewHolder, position);
         }
 
         if(isLoadMorePosition(position)){
@@ -127,13 +149,10 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
 
     @Override
     final public int getItemCount() {
-        if(holders == null) {
-            return 0;
-        }
         return holders.size();
     }
 
-    public void notifyDataPrepended(int count) {
+    private void notifyDataPrepended(int count) {
         notifyItemRangeInserted(0, count - 1);
     }
 
@@ -149,7 +168,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
         this.holders.clear();
     }
 
-    public T getModel(int position) {
+    T getModel(int position) {
         InfinitableModelHolder<T> result = getHolder(position);
         if(result == null) {
             return null;
@@ -170,25 +189,8 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel<T>> 
         return getHolder(0);
     }
 
-    public InfinitableModelHolder<T> getHolder(int posistion) {
+    private InfinitableModelHolder<T> getHolder(int posistion) {
         return holders.get(posistion);
-    }
-
-    public void changeModel(T model) {
-        changeModel(model, null);
-    }
-
-    public void changeModel(T model, Object payload) {
-        for (int i = 0; i < holders.size(); i++) {
-            if(model instanceof Post) {
-                Post item = (Post) getModel(i);
-            }
-
-            if (model != null && model.isSame(getModel(i))) {
-                holders.set(i, InfinitableModelHolder.forModel(model));
-                notifyItemChanged(i, payload);
-            }
-        }
     }
 
     public int getLastPosition() {

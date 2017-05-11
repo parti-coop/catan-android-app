@@ -1,6 +1,10 @@
 package xyz.parti.catan.ui.presenter;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -181,9 +185,19 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         return post;
     }
 
+    public void preloadImage(String url) {
+        if(url == null) {
+            return;
+        }
+        Glide.with(getView().getContext())
+                .load(url)
+                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+    }
+
     public interface View {
         void setSendingCommentForm();
         void setCompletedCommentForm();
         void showCommentList();
+        Context getContext();
     }
 }
