@@ -10,33 +10,60 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.facebook.stetho.Stetho;
-
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.helper.IntentHelper;
+import xyz.parti.catan.helper.NetworkHelper;
 
 /**
  * Created by dalikim on 2017. 4. 7..
  */
 
 public class BaseActivity extends AppCompatActivity {
+    boolean isNetworkReceiverRegistered = false;
     public static final String ACTION_LOGOUT = "parti.xyz.catan.session.LogOut";
     public static final String ACTION_NETWORK_DISCONNECT = "parti.xyz.catan.session.NetworkDisconnect";
-    public static final String ACTION_NEW_APP_VERSION_AVAILABLE = "parti.xyz.catan.session.NewAppVersionAvailable";
 
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Stetho.initializeWithDefaults(this);
+        ensureValidNetwork();
         LocalBroadcastManager.getInstance(this).registerReceiver(logOutReceiver, new IntentFilter(ACTION_LOGOUT));
-        LocalBroadcastManager.getInstance(this).registerReceiver(networkDisconnectReceiver, new IntentFilter(ACTION_NETWORK_DISCONNECT));
-        LocalBroadcastManager.getInstance(this).registerReceiver(newAppVersionAvailable, new IntentFilter(ACTION_NEW_APP_VERSION_AVAILABLE));
+    }
+
+    private void ensureValidNetwork() {
+        if(!new NetworkHelper(this).isValidNetwork() && willFinishIfNetworkDisconnect()) {
+            Intent intent = new Intent(this, DisconnectActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+            finish();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ensureValidNetwork();
+        Log.d(Constants.TAG_TEST, "onResume");
+        if (!isNetworkReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(networkDisconnectReceiver, new IntentFilter(ACTION_NETWORK_DISCONNECT));
+            isNetworkReceiverRegistered = true;
+        }
+    }
+
+    protected void onPause(){
+        super.onPause();
+        if (isNetworkReceiverRegistered) {
+            Log.d(Constants.TAG_TEST, "onPause");
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(networkDisconnectReceiver);
+            isNetworkReceiverRegistered = false;
+        }
     }
 
     protected void onDestroy(){
         LocalBroadcastManager.getInstance(this).unregisterReceiver(logOutReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(networkDisconnectReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(newAppVersionAvailable);
         super.onDestroy();
     }
 
@@ -55,22 +82,22 @@ public class BaseActivity extends AppCompatActivity {
     };
 
     private BroadcastReceiver networkDisconnectReceiver = new BroadcastReceiver(){
-        public void onReceive(Context context, Intent intent){
+        public void onReceive(Context context, Intent intent) {
+            Log.d(Constants.TAG_TEST, "networkDisconnectReceiver");
             //In my case the LoginActivity is visible after logout, so i don't finish the Login Activity
-            if(willFinishIfNetworkDisconnect()){
-                if(BuildConfig.DEBUG) {
+            if (willFinishIfNetworkDisconnect()) {
+                if (BuildConfig.DEBUG) {
                     Log.d(Constants.TAG, "Skip destroying after disconnect");
                 }
-            }else{
+            } else {
                 Log.d(Constants.TAG, "Destroying after disconnect");
                 finish();
             }
-        }
-    };
 
-    private BroadcastReceiver newAppVersionAvailable = new BroadcastReceiver(){
-        public void onReceive(final Context context, Intent intent){
-            Snackbar.make(getWindow().getDecorView().getRootView(), "xx", Snackbar.LENGTH_LONG).setAction("확인", view -> new IntentHelper(BaseActivity.this).startPlayStore(context.getPackageName()));
+            Intent intentShowDisconnect = new Intent(context, DisconnectActivity.class);
+            intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intentShowDisconnect);
         }
     };
 

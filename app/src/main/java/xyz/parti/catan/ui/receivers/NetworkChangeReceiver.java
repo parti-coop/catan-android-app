@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.DisconnectActivity;
@@ -16,18 +18,16 @@ import xyz.parti.catan.ui.activity.DisconnectActivity;
 public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(new NetworkHelper(context).isValidNetwork()) {
+        Log.d(Constants.TAG_TEST, "NetworkChangeReceiver");
+        if(new NetworkHelper(context).isValidNetwork() == false) {
+            Log.d(Constants.TAG_TEST, "not isValidNetwork");
             Intent intentCleanUp = new Intent(BaseActivity.ACTION_NETWORK_DISCONNECT);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intentCleanUp);
-
-            Intent intentShowDisconnect = new Intent(context, DisconnectActivity.class);
-            intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intentShowDisconnect.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intentShowDisconnect);
         } else {
             Intent intentCleanUp = new Intent(DisconnectActivity.ACTION_NETWORK_RECONNECT);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intentCleanUp);
         }
     }
+
 
 }

@@ -22,6 +22,6 @@ public class NetworkHelper {
         ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return (null != activeNetwork && (activeNetwork.getType() == TYPE_WIFI || activeNetwork.getType() == TYPE_MOBILE));
+        return (null != activeNetwork && activeNetwork.isConnected() && (activeNetwork.getType() == TYPE_WIFI || activeNetwork.getType() == TYPE_MOBILE));
     }
 }

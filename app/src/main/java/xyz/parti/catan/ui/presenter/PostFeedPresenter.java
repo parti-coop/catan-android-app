@@ -7,7 +7,6 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.target.Target;
 import com.google.gson.JsonNull;
 

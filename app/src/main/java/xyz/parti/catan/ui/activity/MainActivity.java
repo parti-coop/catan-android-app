@@ -59,7 +59,7 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 
-public class MainActivity extends AppCompatActivity implements PostFeedPresenter.View {
+public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
     public static final int REQUEST_NEW_COMMENT = 1;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(ensureValidNetwork()) {
+        if(new NetworkHelper(this).isValidNetwork()) {
             SessionManager session = new SessionManager(this.getApplicationContext());
             session.checkLogin(new SessionManager.OnCheckListener() {
                 @Override
@@ -136,21 +136,6 @@ public class MainActivity extends AppCompatActivity implements PostFeedPresenter
 
     private void checkAppVersion() {
         presenter.checkAppVersion();
-    }
-
-    private boolean ensureValidNetwork() {
-        if(!new NetworkHelper(this).isValidNetwork()) {
-            Intent intent = new Intent(this, DisconnectActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-
-            finish();
-
-            return false;
-        } else {
-            return true;
-        }
     }
 
     private void setUpSwipeRefresh() {
