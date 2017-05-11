@@ -151,12 +151,18 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         disableCommentCreateButton();
         newCommentInputEditText.setEnabled(false);
         newCommentCreateButton.setText("{fa-circle-o-notch spin}");
-        listRecyclerView.postDelayed(() -> {listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());}, 100);
+        if(this.feedAdapter.getItemCount() > 0) {
+            listRecyclerView.postDelayed(() -> {
+                listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
+            }, 100);
+        }
     }
 
     @Override
     public void setCompletedCommentForm() {
-        listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
+        if(this.feedAdapter.getItemCount() > 0) {
+            listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
+        }
         newCommentInputEditText.setText(null);
         newCommentInputEditText.setEnabled(true);
         newCommentCreateButton.setText("{fa-send}");
