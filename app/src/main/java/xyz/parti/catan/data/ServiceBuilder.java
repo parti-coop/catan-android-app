@@ -3,24 +3,16 @@ package xyz.parti.catan.data;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import org.reactivestreams.Publisher;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.Authenticator;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.Route;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -28,7 +20,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.PartiAccessToken;
-import xyz.parti.catan.data.model.Update;
 import xyz.parti.catan.data.services.AuthTokenService;
 
 /**
@@ -60,7 +51,6 @@ public class ServiceBuilder {
         final OkHttpClient.Builder httpClient = getHttpClientBuilder();
 
         oAuthIntercept(httpClient, session);
-        refreshableAuthenticate(httpClient, session);
 
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
@@ -75,88 +65,78 @@ public class ServiceBuilder {
                 .readTimeout(30000, TimeUnit.MILLISECONDS);
     }
 
-    private static void refreshableAuthenticate(OkHttpClient.Builder httpBuilder, final SessionManager session) {
-        final PartiAccessToken currentToken = session.getPartiAccessToken();
-        httpBuilder.authenticator(new Authenticator() {
-            @Override
-            public Request authenticate(Route route, Response response) throws IOException {
-                PartiAccessToken prefToken = session.getPartiAccessToken();
-                if (currentToken == null || prefToken == null) {
-                    throw new AuthFailError();
-                }
-
-                if(!prefToken.access_token.equals(currentToken.access_token)) {
-                    return response.request().newBuilder()
-                            .header("Authorization", prefToken.getValidTokenType() + " " + prefToken.access_token)
-                            .build();
-                }
-
-                if (responseCount(response) >= 2) {
-                    // If both the original call and the call with refreshed token failed,
-                    // it will probably keep failing, so don't try again.
-                    session.logoutUser();
-                    throw new AuthFailError();
-                }
-
-                // We need a new client, since we don't want to make another call using our client with access token
-                AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
-
-                Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(currentToken.refresh_token,
-                        "refresh_token", BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
-
-                try {
-                    retrofit2.Response<PartiAccessToken> tokenResponse = tokenCall.execute();
-                    if (tokenResponse.code() == 200) {
-                        PartiAccessToken newToken = tokenResponse.body();
-                        session.updateAccessToken(newToken);
-                        return response.request().newBuilder()
-                                .header("Authorization", newToken.getValidTokenType() + " " + newToken.access_token)
-                                .build();
-                    } else {
-                        session.logoutUser();
-                        throw new AuthFailError();
-                    }
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
-                    session.logoutUser();
-                    throw new AuthFailError();
-                }
-            }
-        });
-    }
-
     private static void oAuthIntercept(OkHttpClient.Builder httpBuilder, final SessionManager session) {
-        httpBuilder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                PartiAccessToken token = session.getPartiAccessToken();
-                return getResponseWithOAuth(chain, token);
-            }
+        httpBuilder.addInterceptor(chain -> {
+            PartiAccessToken token = session.getPartiAccessToken();
+            return getResponseWithOAuth(chain, token, session);
         });
     }
 
     private static void oAuthIntercept(OkHttpClient.Builder httpBuilder, final PartiAccessToken token) {
-        httpBuilder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                return getResponseWithOAuth(chain, token);
-            }
-        });
+        httpBuilder.addInterceptor(chain -> getResponseWithOAuth(chain, token, null));
     }
 
-    private static Response getResponseWithOAuth(Interceptor.Chain chain, PartiAccessToken token) throws IOException {
+    private static Response getResponseWithOAuth(Interceptor.Chain chain, PartiAccessToken token, SessionManager session) throws IOException {
+        String originalAccessToken = null;
+        if(token != null) {
+            originalAccessToken = token.access_token;
+        }
+
+        // We need a new client, since we don't want to make another call using our client with access token
+        AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
+
         Request original = chain.request();
         Request.Builder requestBuilder = original.newBuilder()
                 .header("Accept", "application/json")
                 .header("Content-type", "application/json");
-        if(token != null) {
-            requestBuilder = requestBuilder.header("Authorization",
-                    token.getValidTokenType() + " " + token.access_token);
-        }
+        setAuthHeader(requestBuilder, token);
         requestBuilder = requestBuilder.method(original.method(), original.body());
-
         Request request = requestBuilder.build();
-        return chain.proceed(request);
+        Response response = chain.proceed(request);
+
+        if (session != null && response.code() == 401 && originalAccessToken != null) {
+            synchronized (retrofitbuilder) { //perform all 401 in sync blocks, to avoid multiply token updates
+                String currentAccessToken = token.access_token; //get currently stored token
+                if(currentAccessToken != null && currentAccessToken.equals(originalAccessToken)) { //compare current token with token that was stored before, if it was not updated - do update
+                    Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(token.refresh_token,
+                            "refresh_token", BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
+                    return getResponseRefreshToken(tokenCall, chain, session, requestBuilder, response);
+                }
+            }
+        }
+
+        return response;
+    }
+
+    private static Response getResponseRefreshToken(Call<PartiAccessToken> tokenCall, Interceptor.Chain chain, SessionManager session,
+                                                    Request.Builder requestBuilder, Response response) throws AuthFailError {
+        try {
+            retrofit2.Response<PartiAccessToken> tokenResponse = tokenCall.execute();
+            if (tokenResponse.isSuccessful()) {
+                PartiAccessToken newToken = tokenResponse.body();
+                if(newToken == null || newToken.access_token == null) {
+                    return response;
+                }
+
+                session.updateAccessToken(newToken);
+                setAuthHeader(requestBuilder, newToken);
+                Request newRequest = requestBuilder.build();
+                return chain.proceed(newRequest); //rep
+            } else {
+                session.logoutUser();
+                throw new AuthFailError();
+            }
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
+            session.logoutUser();
+            throw new AuthFailError();
+        }
+    }
+
+    private static void setAuthHeader(Request.Builder requestBuilder, PartiAccessToken token) {
+        if(token == null || token.access_token == null) return;
+        requestBuilder.header("Authorization",
+                token.getValidTokenType() + " " + token.access_token);
     }
 
     private static int responseCount(Response response) {
