@@ -90,6 +90,10 @@
         <meta-data
             android:name="xyz.parti.catan.data.UnsafeOkHttpGlideModule"
             android:value="GlideModule" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="61fec037830f072a57601a3e9f538a4a0f0d1ac3"
+            />
     </application>
 
 </manifest>
