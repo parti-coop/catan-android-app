@@ -457,7 +457,6 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         if(url == null) {
             return;
         }
-        Log.d(Constants.TAG_TEST, "cache download : " + url);
         Glide.with(getView().getContext())
                 .load(url)
                 .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);

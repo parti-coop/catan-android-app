@@ -14,7 +14,6 @@ abstract class BasePresenter<T> {
     private RxGuardian rxGuardian = new RxGuardian();
 
     public void attachView(T view) {
-        Log.d(Constants.TAG_TEST, "ATTACHED!!");
         this.view = view;
         this.rxGuardian.unsubscribeAll();
     }

@@ -46,7 +46,6 @@ public class SessionManager {
             result.expires_in = pref.getLong(KEY_EXPIRES_IN, 0);
             if(BuildConfig.DEBUG) {
                 Log.d(Constants.TAG, "getPartiAccessToken");
-                Log.d(Constants.TAG, result.access_token);
             }
             return result;
         }
@@ -70,7 +69,6 @@ public class SessionManager {
     public void createLoginSession(User user, PartiAccessToken accessToken){
         if(BuildConfig.DEBUG) {
             Log.d(Constants.TAG, "createLoginSession");
-            Log.d(Constants.TAG, accessToken.access_token);
         }
         editor.putString(KEY_SESSION_VERSION, CURRENT_SESSION_VERSION);
         editor.putBoolean(KEY_IS_LOGIN, true);
@@ -90,7 +88,6 @@ public class SessionManager {
     public void updateAccessToken(PartiAccessToken accessToken){
         if(BuildConfig.DEBUG) {
             Log.d(Constants.TAG, "updateAccessToken");
-            Log.d(Constants.TAG, accessToken.access_token);
         }
         editor.putString(KEY_ACCESS_TOKEN, accessToken.access_token);
         editor.putString(KEY_REFRESH_TOKEN, accessToken.refresh_token);

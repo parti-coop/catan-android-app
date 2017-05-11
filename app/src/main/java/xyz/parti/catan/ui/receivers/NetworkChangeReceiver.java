@@ -18,9 +18,7 @@ import xyz.parti.catan.ui.activity.DisconnectActivity;
 public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(Constants.TAG_TEST, "NetworkChangeReceiver");
         if(new NetworkHelper(context).isValidNetwork() == false) {
-            Log.d(Constants.TAG_TEST, "not isValidNetwork");
             Intent intentCleanUp = new Intent(BaseActivity.ACTION_NETWORK_DISCONNECT);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intentCleanUp);
         } else {

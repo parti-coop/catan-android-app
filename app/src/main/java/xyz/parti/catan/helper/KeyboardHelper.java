@@ -20,7 +20,6 @@ public class KeyboardHelper {
     }
 
     public void hideKey() {
-        Log.d(Constants.TAG_TEST, "키보드 숨겨짐");
         InputMethodManager imm = (InputMethodManager) activity.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();

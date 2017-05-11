@@ -40,7 +40,6 @@ public class ImageHelper {
         Context context = imageView.getContext();
 
         if(url.startsWith("data:image/png;base64,")) {
-            Log.d(Constants.TAG_TEST, "base64");
             url = url.replace("data:image/png;base64,","");
             byte[] imageByteArray = Base64.decode(url, Base64.DEFAULT);
 

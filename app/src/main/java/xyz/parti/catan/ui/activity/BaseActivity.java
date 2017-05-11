@@ -46,7 +46,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         ensureValidNetwork();
-        Log.d(Constants.TAG_TEST, "onResume");
         if (!isNetworkReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(networkDisconnectReceiver, new IntentFilter(ACTION_NETWORK_DISCONNECT));
             isNetworkReceiverRegistered = true;
@@ -56,7 +55,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         if (isNetworkReceiverRegistered) {
-            Log.d(Constants.TAG_TEST, "onPause");
             LocalBroadcastManager.getInstance(this).unregisterReceiver(networkDisconnectReceiver);
             isNetworkReceiverRegistered = false;
         }
@@ -83,7 +81,6 @@ public class BaseActivity extends AppCompatActivity {
 
     private BroadcastReceiver networkDisconnectReceiver = new BroadcastReceiver(){
         public void onReceive(Context context, Intent intent) {
-            Log.d(Constants.TAG_TEST, "networkDisconnectReceiver");
             //In my case the LoginActivity is visible after logout, so i don't finish the Login Activity
             if (willFinishIfNetworkDisconnect()) {
                 if (BuildConfig.DEBUG) {
