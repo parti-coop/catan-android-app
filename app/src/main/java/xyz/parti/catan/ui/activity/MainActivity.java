@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fabric.sdk.android.Fabric;
 import mehdi.sakout.fancybuttons.FancyButton;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
@@ -104,6 +106,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         if(new NetworkHelper(this).isValidNetwork()) {
