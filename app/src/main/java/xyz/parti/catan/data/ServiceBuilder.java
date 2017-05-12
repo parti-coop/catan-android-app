@@ -128,7 +128,6 @@ public class ServiceBuilder {
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
-            session.logoutUser();
             throw new AuthFailError();
         }
     }
@@ -137,14 +136,6 @@ public class ServiceBuilder {
         if(token == null || token.access_token == null) return;
         requestBuilder.header("Authorization",
                 token.getValidTokenType() + " " + token.access_token);
-    }
-
-    private static int responseCount(Response response) {
-        int result = 1;
-        while ((response = response.priorResponse()) != null) {
-            result++;
-        }
-        return result;
     }
 
     private static Retrofit.Builder createDefaultBuilder() {
