@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,6 +19,7 @@ import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
+import xyz.parti.catan.ui.view.CropTopImageView;
 import xyz.parti.catan.ui.view.MatchParentWidthImageView;
 
 /**
@@ -63,7 +63,7 @@ public class FileSourcesBinder {
 
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
-                android.view.View imageView = makeImageCell(context, fileSource.attachment_sm_url, imageFileSourcesRow.size(), col);
+                android.view.View imageView = makeImageCell(context, fileSource.attachment_md_url, fileSource.attachment_sm_url, imageFileSourcesRow.size(), col);
                 imageView.setOnClickListener(view -> presenter.onClickImageFileSource(post));
                 rowLayout.addView(imageView);
                 col++;
@@ -76,6 +76,8 @@ public class FileSourcesBinder {
     }
 
     private List<List<FileSource>> splitImageFileSources(List<FileSource> imageFileSources) {
+        final int DEFAULT_COL_COUNT = 2;
+
         List<List<FileSource>> imageFileSourcesRows = new ArrayList<>();
         if(imageFileSources.size() <= 2) {
             imageFileSourcesRows.add(imageFileSources);
@@ -83,38 +85,38 @@ public class FileSourcesBinder {
             int index = 0;
             boolean nextRow = true;
             List<FileSource> currentRow = null;
+            int currentRowNum = 0;
             for(FileSource fileSource: imageFileSources) {
                 if(nextRow) {
                     currentRow = new ArrayList<>();
                     imageFileSourcesRows.add(currentRow);
+                    currentRowNum++;
                 }
-                nextRow = false;
 
-                int remainCount = imageFileSources.size() - index;
-                if(index == 0) {
+                currentRow.add(fileSource);
+
+                nextRow = false;
+                if(currentRowNum == 1) {
                     nextRow = true;
-                } else if(remainCount <= 2) {
                 } else {
-                    int previousCount = imageFileSourcesRows.get(imageFileSourcesRows.size() - 2).size();
-                    if(previousCount == 3) {
-                        if(currentRow.size() >= 1) {
-                            nextRow = true;
-                        }
-                    } else {
-                        if(currentRow.size() >= 2) {
-                            nextRow = true;
-                        }
+                    int currentColCount = imageFileSourcesRows.get(currentRowNum - 1).size();
+                    if(currentColCount >= DEFAULT_COL_COUNT) {
+                        nextRow = true;
                     }
                 }
-                currentRow.add(fileSource);
+
                 index++;
+                int remainCount = imageFileSources.size() - index;
+                if(remainCount <= 1) {
+                    nextRow = false;
+                }
             }
         }
         return imageFileSourcesRows;
     }
 
-    private android.view.View makeImageCell(Context context, String url, int col_size, int current_col) {
-        final ImageView imageView = (col_size <= 1 ? new MatchParentWidthImageView(context) : new ImageView(context));
+    private android.view.View makeImageCell(Context context, String md_url, String sm_url, int col_size, int current_col) {
+        final ImageView imageView = (col_size <= 1 ? new MatchParentWidthImageView(context) : new CropTopImageView(context));
         
         int height = 300;
         if(col_size == 1) {
@@ -124,7 +126,11 @@ public class FileSourcesBinder {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         imageView.setLayoutParams(params);
         imageView.setAdjustViewBounds(true);
-        new ImageHelper(imageView).loadInto(url, ImageView.ScaleType.CENTER_CROP);
+        if(col_size == 1) {
+            new ImageHelper(imageView).loadInto(md_url, ImageView.ScaleType.CENTER_CROP);
+        } else {
+            new ImageHelper(imageView).loadInto(sm_url, ImageView.ScaleType.MATRIX);
+        }
 
         LinearLayout rowBgLayout = new LinearLayout(context);
         rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border));
