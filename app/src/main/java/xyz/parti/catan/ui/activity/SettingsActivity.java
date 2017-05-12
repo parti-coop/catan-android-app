@@ -150,10 +150,6 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void logOutTwitter() {
-        if (!Fabric.isInitialized()) {
-            TwitterAuthConfig authConfig = new TwitterAuthConfig(BuildConfig.TWITTER_KEY, BuildConfig.TWITTER_SECRET);
-            Fabric.with(this, new Twitter(authConfig));
-        }
         TwitterSession twitterSession = Twitter.getSessionManager().getActiveSession();
         if (twitterSession != null) {
             Twitter.getSessionManager().clearActiveSession();

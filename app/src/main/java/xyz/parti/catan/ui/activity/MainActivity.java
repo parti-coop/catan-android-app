@@ -35,6 +35,8 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import org.parceler.Parcels;
 
@@ -106,7 +108,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         if(new NetworkHelper(this).isValidNetwork()) {

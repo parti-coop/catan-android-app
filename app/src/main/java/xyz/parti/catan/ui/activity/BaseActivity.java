@@ -10,6 +10,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+
+import io.fabric.sdk.android.Fabric;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.helper.IntentHelper;
@@ -25,6 +30,11 @@ public class BaseActivity extends AppCompatActivity {
     public static final String ACTION_NETWORK_DISCONNECT = "parti.xyz.catan.session.NetworkDisconnect";
 
     protected void onCreate(Bundle savedInstanceState) {
+        if (!Fabric.isInitialized()) {
+            TwitterAuthConfig authConfig = new TwitterAuthConfig(BuildConfig.TWITTER_KEY, BuildConfig.TWITTER_SECRET);
+            Fabric.with(this, new Crashlytics(), new Twitter(authConfig));
+        }
+
         super.onCreate(savedInstanceState);
         //Stetho.initializeWithDefaults(this);
         ensureValidNetwork();

@@ -256,8 +256,6 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
     private TwitterAuthClient initTwitter() {
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(BuildConfig.TWITTER_KEY, BuildConfig.TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
         return new TwitterAuthClient();
     }
 
