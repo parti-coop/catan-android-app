@@ -4,8 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 
+import java.io.File;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
@@ -191,7 +194,11 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         }
         Glide.with(getView().getContext())
                 .load(url)
-                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                .downloadOnly(new SimpleTarget<File>() {
+                    @Override
+                    public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
+                    }
+                });
     }
 
     public interface View {
