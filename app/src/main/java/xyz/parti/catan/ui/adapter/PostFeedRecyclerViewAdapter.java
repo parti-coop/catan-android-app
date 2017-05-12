@@ -166,7 +166,6 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             bindLinkSources(post);
             bindPoll(post);
             bindSurvey(post);
-            bindComments(post);
         }
 
         private void resetReferences() {

@@ -7,6 +7,8 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.google.gson.JsonNull;
 
@@ -139,6 +141,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     feedAdapter.setLoadFinished();
                     getView().ensureExpendedAppBar();
                     getView().stopAndEnableSwipeRefreshing();
+                    getView().showEmpty(true);
                 });
     }
 
@@ -187,6 +190,7 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                     if(!isActive()) {
                         return;
                     }
+                    feedAdapter.removeLastMoldelHolder();
                     feedAdapter.setLoadFinished();
                     feedAdapter.setMoreDataAvailable(false);
                     getView().reportError(error);
@@ -459,7 +463,12 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         }
         Glide.with(getView().getContext())
                 .load(url)
-                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                .downloadOnly(new SimpleTarget<File>() {
+                    @Override
+                    public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
+                        //OK
+                    }
+                });
     }
 
     public interface View {
