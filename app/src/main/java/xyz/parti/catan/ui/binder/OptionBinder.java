@@ -41,12 +41,7 @@ class OptionBinder {
     public void bindData(final Post post, final Option option) {
         bodyTextView.setText(option.body);
         if(post.survey.is_open) {
-            bodyTextView.setOnClickListener(new android.view.View.OnClickListener() {
-                @Override
-                public void onClick(android.view.View view) {
-                    checkBox.setChecked(!checkBox.isChecked());
-                }
-            });
+            bodyTextView.setOnClickListener(view -> checkBox.setChecked(!checkBox.isChecked()));
         }
 
         if(post.survey.is_open) {

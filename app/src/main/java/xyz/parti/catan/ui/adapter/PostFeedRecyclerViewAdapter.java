@@ -195,6 +195,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         private void bindPoll(final Post post) {
             if(post.poll != null) {
                 LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, referencesLayout, true);
+                pollLayout.setOnClickListener(null);
                 new PollBinder(presenter, pollLayout).bindData(post);
                 referencesLayout.setVisibility(ViewGroup.VISIBLE);
             }

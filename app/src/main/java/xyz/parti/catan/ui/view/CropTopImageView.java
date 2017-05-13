@@ -3,7 +3,6 @@ package xyz.parti.catan.ui.view;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
 
 /**
  * Created by dalikim on 2017. 5. 12..
