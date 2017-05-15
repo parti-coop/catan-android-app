@@ -5,12 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.gson.JsonObject;
-
 import io.reactivex.disposables.Disposable;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.services.AppVersionService;

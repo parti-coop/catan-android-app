@@ -5,31 +5,28 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
-import com.google.gson.JsonElement;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonObject;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 import io.reactivex.disposables.Disposable;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import xyz.parti.catan.BuildConfig;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.services.DeviceTokenService;
 import xyz.parti.catan.data.services.SettingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.ReportHelper;
@@ -48,6 +45,7 @@ public class SettingsActivity extends BaseActivity {
     private JsonObject setting;
     private RxGuardian rxGuardian;
     private Disposable settingPublisher;
+    private Disposable removeDeviceTokenPublisher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,13 +139,27 @@ public class SettingsActivity extends BaseActivity {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
-    @OnClick(R.id.textview_logout)
-    public void logOut(View view) {
+    private void realLogout(View view) {
         logOutFacebook();
         logOutTwitter();
         session.logoutUser();
         clearCookies();
     }
+
+    @OnClick(R.id.textview_logout)
+    public void logOut(View view) {
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
+        DeviceTokenService service = ServiceBuilder.createNoRefreshService(DeviceTokenService.class, session.getPartiAccessToken());
+        removeDeviceTokenPublisher = rxGuardian.subscribe(removeDeviceTokenPublisher, service.destroy(refreshedToken), response -> {
+            Log.d(Constants.TAG, "Destroy Instance ID");
+            realLogout(view);
+        }, error -> {
+            Log.e(Constants.TAG, "Error to destroy Instance ID", error);
+            realLogout(view);
+        });
+    }
+
 
     private void logOutTwitter() {
         TwitterSession twitterSession = Twitter.getSessionManager().getActiveSession();

@@ -1,12 +1,9 @@
 package xyz.parti.catan.ui.adapter;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.RecyclableModel;
 
 /**

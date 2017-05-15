@@ -1,6 +1,5 @@
 package xyz.parti.catan.ui.task;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -29,14 +28,14 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     private final static long RESUT_NO_DATA = -2L;
     private final static long RESUT_ERROR = -3L;
 
-    private PostFeedPresenter presenter;
+    private PostDownloadablePresenter presenter;
     private final PartiAccessToken partiAccessToken;
     private final long postId;
     private final long fileSourceId;
     private final String fileName;
     private File outputFile;
 
-    public DownloadFilesTask(PostFeedPresenter presenter, long postId, long fileSourceId, String fileName) {
+    public DownloadFilesTask(PostDownloadablePresenter presenter, long postId, long fileSourceId, String fileName) {
         this.presenter = presenter;
         this.partiAccessToken = presenter.getPartiAccessToken();
         this.postId = postId;
@@ -78,27 +77,33 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         outputFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
         OutputStream output = new FileOutputStream(outputFile);
 
-        long downloadedSize = 0;
-        while ((count = bis.read(data)) != -1) {
-            //사용자가 BACK 버튼 누르면 취소가능
-            if (this.isCancelled()) {
+        try {
+            long downloadedSize = 0;
+            while ((count = bis.read(data)) != -1) {
+                //사용자가 BACK 버튼 누르면 취소가능
+                if (this.isCancelled()) {
+                    bis.close();
+                    return RESUT_CANCEL;
+                }
+
+                downloadedSize += count;
+                if (fileSize > 0) {
+                    float percentage = ((float) downloadedSize / fileSize) * 100;
+                    String message = "다운로드 " + downloadedSize + "KB / " + fileSize + "KB (" + (int) percentage + "%)";
+                    publishProgress("" + (int) ((downloadedSize * 100) / fileSize), message);
+                }
+                output.write(data, 0, count);
+            }
+            return downloadedSize;
+        } finally {
+            try {
+                output.flush();
+                output.close();
+            } catch (Exception ignore) {}
+            try {
                 bis.close();
-                return RESUT_CANCEL;
-            }
-
-            downloadedSize += count;
-            if (fileSize > 0) {
-                float percentage = ((float) downloadedSize / fileSize) * 100;
-                String message = "다운로드 " + downloadedSize + "KB / " + fileSize + "KB (" + (int)percentage + "%)";
-                publishProgress("" + (int) ((downloadedSize * 100) / fileSize), message);
-            }
-            output.write(data, 0, count);
+            } catch (Exception ignore) {}
         }
-        output.flush();
-        output.close();
-        bis.close();
-
-        return downloadedSize;
     }
 
     //다운로드 중 프로그레스바 업데이트
@@ -137,4 +142,12 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         }
     }
 
+    public interface PostDownloadablePresenter {
+        PartiAccessToken getPartiAccessToken();
+        void onPreDownloadDocFileSource(DownloadFilesTask task);
+        void onProgressUpdateDownloadDocFileSource(int progress, String message);
+        void onPostDownloadDocFileSource();
+        void onFailDownloadDocFileSource(String message);
+        void onSuccessDownloadDocFileSource(File outputFile, String fileName);
+    }
 }

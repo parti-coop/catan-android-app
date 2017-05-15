@@ -3,7 +3,6 @@ package xyz.parti.catan.data.services;
 import com.google.gson.JsonNull;
 
 import io.reactivex.Flowable;
-import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;

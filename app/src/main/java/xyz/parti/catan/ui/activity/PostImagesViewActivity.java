@@ -46,7 +46,15 @@ public class PostImagesViewActivity extends BaseActivity {
         setContentView(R.layout.activity_post_images_view);
         ButterKnife.bind(PostImagesViewActivity.this);
 
+        if(getIntent() == null) {
+            finish();
+            return;
+        }
         this.post = Parcels.unwrap(getIntent().getParcelableExtra("post"));
+        if(this.post == null) {
+            finish();
+            return;
+        }
 
         ImageFragmentPagerAdapter imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager(), post.getImageFileSources());
         viewPager.setAdapter(imageFragmentPagerAdapter);

@@ -2,11 +2,8 @@ package xyz.parti.catan.helper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import xyz.parti.catan.Constants;
 
 /**
  * Created by dalikim on 2017. 5. 9..

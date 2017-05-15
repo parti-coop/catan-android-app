@@ -3,13 +3,14 @@ package xyz.parti.catan.ui.presenter;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonNull;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import retrofit2.Response;
 import xyz.parti.catan.Constants;
+import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.FileSource;
@@ -27,9 +29,11 @@ import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.FeedbacksService;
 import xyz.parti.catan.data.services.PostsService;
+import xyz.parti.catan.data.services.DeviceTokenService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
@@ -37,6 +41,7 @@ import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.helper.RxHelper;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 
@@ -46,12 +51,9 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  * Created by dalikim on 2017. 5. 3..
  */
 
-public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
+public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresenter.View> implements PostBinder.PostBindablePresenter {
     private SessionManager session;
     private final PostsService postsService;
-    private final VotingsService votingsService;
-    private final UpvotesService upvotesService;
-    private final FeedbacksService feedbacksService;
     private PostFeedRecyclerViewAdapter feedAdapter;
     private Date lastStrockedAtOfNewPostCheck = null;
     private long lastLoadFirstPostsAtMillis = -1;
@@ -59,19 +61,14 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
     private Disposable loadFirstPostsPublisher;
     private Disposable loadMorePostsPublisher;
     private Disposable checkNewPostsPublisher;
-    private Disposable reloadPostPublisher;
-    private Disposable onClickSurveyOptionPublisher;
-    private Disposable onClickLikePublisher;
-    private Disposable onClickPollAgreePublisher;
-    private Disposable onClickPollDisgreePublisher;
+    private Disposable ceateTokenPublisher;
+    private Disposable receivePushMessageForPostPublisher;
     private AppVersionCheckTask appVersionCheckTaks;
 
     public PostFeedPresenter(SessionManager session) {
+        super(session);
         this.session = session;
         postsService = ServiceBuilder.createService(PostsService.class, session);
-        feedbacksService = ServiceBuilder.createService(FeedbacksService.class, session);
-        votingsService = ServiceBuilder.createService(VotingsService.class, session);
-        upvotesService = ServiceBuilder.createService(UpvotesService.class, session);
     }
 
     @Override
@@ -264,146 +261,9 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
         feedAdapter.changeModel(post, playload);
     }
 
-    private void reloadPostSurvey(final Post post) {
-        RxHelper.unsubscribe(reloadPostPublisher);
-        reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
-                postsService.getPost(post.id),
-                response -> {
-                    if(!isActive()) return;
-                    if(response.isSuccessful()) {
-                        post.survey = response.body().survey;
-                        feedAdapter.changeModel(post, post.survey);
-                    } else {
-                        getView().reportError("Rebind survey error : " + response.code());
-                    }
-                }, error -> getView().reportError(error));
-    }
-
-    public void onClickLinkSource(Post post) {
-        if(post.link_source == null) {
-            return;
-        }
-
-        if(post.link_source.is_video && post.link_source.video_app_url != null) {
-            getView().showVideo(Uri.parse(post.link_source.url), Uri.parse(post.link_source.video_app_url));
-        } else {
-            getView().showUrl(Uri.parse(post.link_source.url));
-        }
-    }
-
-    public void onClickDocFileSource(final Post post, final FileSource docFileSource) {
-        getView().downloadFile(post, docFileSource);
-    }
-
-    public void onClickImageFileSource(Post post) {
-        getView().showImageFileSource(post);
-    }
-
-    public void onClickLike(final Post post) {
-        Flowable<Response<JsonNull>> call =  ( post.is_upvoted_by_me ?
-                upvotesService.destroy("Post", post.id) : upvotesService.create("Post", post.id)
-        );
-        onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
-                call,
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.toggleUpvoting();
-                        changePost(post, Post.IS_UPVOTED_BY_ME);
-                    } else {
-                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
-                    }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
-        );
-    }
-
-    public void onClickMoreComments(Post post) {
-        getView().showAllComments(post);
-    }
-
-    public void onClickNewComment(Post post) {
-        getView().showNewCommentForm(post);
-    }
-
-    public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
-        onClickSurveyOptionPublisher = getRxGuardian().subscribe(onClickSurveyOptionPublisher,
-                feedbacksService.feedback(option.id, isChecked),
-                response -> {
-                    if(response.isSuccessful()) {
-                        reloadPostSurvey(post);
-                    } else {
-                        ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
-                    }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
-        );
-    }
-
-    public void onClickPollAgree(final Post post) {
-        final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
-        onClickPollAgreePublisher = getRxGuardian().subscribe(onClickPollAgreePublisher,
-                votingsService.voting(post.poll.id, newChoice),
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.poll.updateChoice(getCurrentUser(), newChoice);
-                        changePost(post, post.poll);
-                    } else {
-                        ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
-                    }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
-        );
-    }
-
-    public void onClickPollDisgree(final Post post) {
-        final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
-        onClickPollDisgreePublisher = getRxGuardian().subscribe(onClickPollDisgreePublisher,
-                votingsService.voting(post.poll.id, newChoice),
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.poll.updateChoice(getCurrentUser(), newChoice);
-                        changePost(post, post.poll);
-                    } else {
-                        ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
-                    }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
-        );
-    }
-
-    public void onPreDownloadDocFileSource(final DownloadFilesTask task) {
-        if(!isActive()) return;
-        getView().showDownloadDocFileSourceProgress(task);
-    }
-
-    public void onProgressUpdateDownloadDocFileSource(int percentage, String message) {
-        if(!isActive()) return;
-        getView().updateDownloadDocFileSourceProgress(percentage, message);
-    }
-
-    public void onPostDownloadDocFileSource() {
-        if(!isActive()) return;
-        getView().hideDownloadDocFileSourceProgress();
-    }
-
-    public void onSuccessDownloadDocFileSource(File outputFile, String fileName) {
-        if(!isActive()) return;
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
-        String mimeType = myMime.getMimeTypeFromExtension(getExtension(fileName));
-        getView().showDownloadedFile(outputFile, mimeType);
-    }
-
-    private String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-    }
-
-    public void onFailDownloadDocFileSource(String message) {
-        if(!isActive()) return;
-        getView().reportError(message);
-    }
-
-    public User getCurrentUser() {
-        return session.getCurrentUser();
-    }
-
-    public PartiAccessToken getPartiAccessToken() {
-        return session.getPartiAccessToken();
+    @Override
+    protected void changeSurvey(Post post) {
+        feedAdapter.changeModel(post, post.survey);
     }
 
     public void onResume() {
@@ -471,29 +331,60 @@ public class PostFeedPresenter extends BasePresenter<PostFeedPresenter.View> {
                 });
     }
 
-    public interface View {
+    public void receivePushMessage(PushMessage pushMessage) {
+        if(pushMessage == null) {
+            Log.d(Constants.TAG_TEST, "NULL pushMessage");
+            return;
+        }
+        if(!isActive()) {
+            Log.d(Constants.TAG_TEST, "NOT active");
+            return;
+        }
+        if(pushMessage.user_id != session.getCurrentUser().id) {
+            Log.d(Constants.TAG_TEST, "ANOTHER USER");
+            return;
+        }
+
+        if("post".equals(pushMessage.type) && pushMessage.param != null) {
+            long postId = Long.parseLong(pushMessage.param);
+            if(postId <= 0) {
+                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                return;
+            }
+            receivePushMessageForPostPublisher = getRxGuardian().subscribe(receivePushMessageForPostPublisher, postsService.getPost(postId),
+                    response -> {
+                        if(response.isSuccessful()) {
+                            getView().showPost(response.body());
+                        } else {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                        }
+                    }, error -> getView().reportError(error)
+            );
+        } else if (pushMessage.url != null && !TextUtils.isEmpty(pushMessage.url)) {
+            getView().showUrl(Uri.parse(pushMessage.url));
+        }
+    }
+
+    public void saveDeviceToken() {
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
+        DeviceTokenService service = ServiceBuilder.createNoRefreshService(DeviceTokenService.class, session.getPartiAccessToken());
+        ceateTokenPublisher = getRxGuardian().subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> Log.d(Constants.TAG, "Reset Instance ID"), error -> Log.e(Constants.TAG, "Error to reset Instance ID", error));
+    }
+
+    public interface View extends BasePostBindablePresenter.View {
         void stopAndEnableSwipeRefreshing();
         boolean isVisibleNewPostsSign();
         void showNewPostsSign();
-        void showUrl(Uri parse);
-        void showVideo(Uri webUrl, Uri appUrl);
-        void downloadFile(Post post, FileSource docFileSource);
-        void showImageFileSource(Post post);
-        void showAllComments(Post post);
-        void showNewCommentForm(Post post);
-        void showDownloadDocFileSourceProgress(DownloadFilesTask task);
-        void updateDownloadDocFileSourceProgress(int percentage, String message);
-        void hideDownloadDocFileSourceProgress();
-        void showDownloadedFile(File file, String mimeType);
         void ensureToPostListDemoIsGone();
         void showPostListDemo();
         void ensureExpendedAppBar();
         void showSettings();
         Context getContext();
         void showNewVersionMessage(String newVersion);
-        void reportError(Throwable error);
-        void reportError(String message);
+        void showMessage(String message);
         void showEmpty(boolean isError);
         void readyToRetry();
+        void showPost(Post post);
     }
 }

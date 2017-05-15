@@ -2,8 +2,6 @@ package xyz.parti.catan.ui.view;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by dalikim on 2017. 5. 11..

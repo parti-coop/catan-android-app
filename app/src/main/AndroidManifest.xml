@@ -4,6 +4,7 @@
     package="xyz.parti.catan">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -62,6 +63,13 @@
             android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.activity.PostActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_post"
+            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.activity.DisconnectActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -81,6 +89,20 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".ui.service.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".ui.service.FirebaseInstanceIDService" >
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <meta-data
             android:name="io.fabric.ApiKey"

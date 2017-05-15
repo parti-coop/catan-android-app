@@ -6,7 +6,6 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
 import java.util.List;
@@ -14,12 +13,12 @@ import java.util.List;
 import io.reactivex.disposables.Disposable;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
-import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.services.CommentsService;
-import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 
 import static com.facebook.FacebookSdk.getApplicationContext;

@@ -20,7 +20,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -31,12 +30,9 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import org.parceler.Parcels;
 
@@ -46,7 +42,6 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 import mehdi.sakout.fancybuttons.FancyButton;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
@@ -54,9 +49,9 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
-import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.DrawerNavigationHeaderBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
@@ -67,6 +62,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
     public static final int REQUEST_NEW_COMMENT = 1;
+    public static final int REQUEST_PUSH_MESSAGE = 20000;
 
     @BindView(R.id.toolbar_app)
     Toolbar appToolbar;
@@ -128,6 +124,10 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     setUpCheckNewPost();
                     setUpDrawerBar();
                     setUpSwipeRefresh();
+
+                    presenter.saveDeviceToken();
+
+                    receivePushMessageIntent(getIntent());
                 }
 
                 @Override
@@ -191,6 +191,31 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        SessionManager session = new SessionManager(this.getApplicationContext());
+        session.checkLogin(new SessionManager.OnCheckListener() {
+            @Override
+            public void onLoggedIn() {
+                receivePushMessageIntent(intent);
+            }
+
+            @Override
+            public void onLoggedOut() {
+                finish();
+            }
+        });
+    }
+
+    private void receivePushMessageIntent(Intent intent) {
+        if(intent == null) {
+            return;
+        }
+        PushMessage pushMessage = Parcels.unwrap(intent.getParcelableExtra("pushMessage"));
+        presenter.receivePushMessage(pushMessage);
     }
 
     private void setUpCheckNewPost() {
@@ -331,7 +356,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_NEW_COMMENT){
+            if(data == null) {
+                return;
+            }
             Post post = Parcels.unwrap(data.getParcelableExtra("post"));
+            if(post == null) {
+                return;
+            }
             if(this.presenter != null) {
                 presenter.changePost(post, Post.PLAYLOAD_LATEST_COMMENT);
             }
@@ -385,6 +416,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         noPostSignLayout.setVisibility(View.GONE);
         retryButton.setVisibility(View.GONE);
         goToPartiesButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showPost(Post post) {
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        startActivityForResult(intent, REQUEST_NEW_COMMENT);
     }
 
     @Override
@@ -479,16 +517,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 .setAction(R.string.ok,
                     view -> new IntentHelper(this).startPlayStore(getPackageName()))
                 .show();
-    }
-
-    @Override
-    public void reportError(Throwable error) {
-        ReportHelper.wtf(this, error);
-    }
-
-    @Override
-    public void reportError(String message) {
-        ReportHelper.wtf(this, message);
     }
 
     @Override

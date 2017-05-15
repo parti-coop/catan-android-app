@@ -30,11 +30,11 @@ public class LatestCommentsBinder {
     @BindView(R.id.textview_new_comment_input)
     TextView newCommentInputTextView;
 
-    private final PostFeedPresenter presenter;
+    private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
     private LayoutInflater inflater;
 
-    public LatestCommentsBinder(PostFeedPresenter presenter, ViewGroup view) {
+    public LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
         this.inflater =  LayoutInflater.from(view.getContext());

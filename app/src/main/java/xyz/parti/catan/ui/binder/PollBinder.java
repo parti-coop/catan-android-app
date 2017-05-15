@@ -30,10 +30,10 @@ public class PollBinder {
     @BindView(R.id.button_disagree)
     IconButton disagreeButton;
 
-    private final PostFeedPresenter presenter;
+    private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
 
-    public PollBinder(PostFeedPresenter presenter, ViewGroup view) {
+    public PollBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
         ButterKnife.bind(this, view);

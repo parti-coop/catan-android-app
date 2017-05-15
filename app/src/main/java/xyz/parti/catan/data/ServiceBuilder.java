@@ -27,7 +27,7 @@ import xyz.parti.catan.data.services.AuthTokenService;
  */
 
 public class ServiceBuilder {
-    private static Retrofit.Builder retrofitbuilder = createDefaultBuilder();
+    private static final Retrofit.Builder retrofitbuilder = createDefaultBuilder();
 
     public static <S> S createUnsignedService(Class<S> serviceClass) {
         OkHttpClient.Builder httpClient = getHttpClientBuilder();

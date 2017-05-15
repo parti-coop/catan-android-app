@@ -1,9 +1,10 @@
 package xyz.parti.catan.ui.task;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.util.Pair;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
@@ -16,8 +17,8 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.AuthTokenService;
+import xyz.parti.catan.data.services.DeviceTokenService;
 import xyz.parti.catan.data.services.UsersService;
-import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.helper.RxGuardian;
 
@@ -32,6 +33,7 @@ public class LoginTask {
     private SessionManager session;
     private final RxGuardian rxGuardian;
     private Disposable loginDisposable;
+    private Disposable ceateTokenPublisher;
 
     public LoginTask(Context context, LoginTask.After afterLogin) {
         this.context = context;
@@ -96,6 +98,8 @@ public class LoginTask {
                         Log.d(Constants.TAG, user.nickname + "(으)로 로그인");
                     }
                     afterLogin.onSuccess();
+
+                    saveDeviceToken();
                 }, error -> {
                     if(error instanceof NotFoundUserError) {
                         afterLogin.onNotFoundUser();
@@ -104,6 +108,15 @@ public class LoginTask {
                         afterLogin.onError();
                     }
                 });
+    }
+
+    private void saveDeviceToken() {
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
+        DeviceTokenService service = ServiceBuilder.createNoRefreshService(DeviceTokenService.class, session.getPartiAccessToken());
+        ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> {
+            Log.d(Constants.TAG, "Reset Instance ID");
+        }, error -> Log.e(Constants.TAG, "Error to reset Instance ID", error));
     }
 
     public static class NotFoundUserError extends Throwable {}

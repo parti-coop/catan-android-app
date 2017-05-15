@@ -1,8 +1,6 @@
 package xyz.parti.catan.ui.presenter;
 
-import android.util.Log;
-
-import xyz.parti.catan.Constants;
+import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.helper.RxGuardian;
 
 /**
@@ -38,6 +36,7 @@ abstract class BasePresenter<T> {
     void checkViewAttached() {
         if (!isViewAttached()) throw new ViewNotAttachedException();
     }
+
 
 
     private static class ViewNotAttachedException extends RuntimeException {

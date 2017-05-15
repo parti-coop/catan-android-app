@@ -1,7 +1,5 @@
 package xyz.parti.catan.data.model;
 
-import android.content.Context;
-
 import java.util.List;
 
 /**

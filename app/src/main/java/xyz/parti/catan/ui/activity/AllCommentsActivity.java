@@ -53,7 +53,15 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         ButterKnife.bind(AllCommentsActivity.this);
 
         SessionManager session = new SessionManager(getApplicationContext());
+        if(getIntent() == null) {
+            finish();
+            return;
+        }
         Post post = Parcels.unwrap(getIntent().getParcelableExtra("post"));
+        if(post == null) {
+            finish();
+            return;
+        }
         boolean focusInput = getIntent().getBooleanExtra("focusInput", false);
 
         presenter = new CommentFeedPresenter(post, session);

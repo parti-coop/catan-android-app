@@ -22,10 +22,10 @@ public class SurveyBinder {
     @BindView(R.id.textview_footnote)
     TextView footnoteTextView;
 
-    private PostFeedPresenter presenter;
+    private PostBinder.PostBindablePresenter presenter;
     private LayoutInflater inflater;
 
-    public SurveyBinder(PostFeedPresenter presenter, ViewGroup view) {
+    public SurveyBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.inflater =  LayoutInflater.from(view.getContext());
         ButterKnife.bind(this, view);

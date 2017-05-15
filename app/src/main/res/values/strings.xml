@@ -71,4 +71,7 @@
     <string name="no_posts">게시글이 없습니다. 관심가는 빠띠에 가입해 보세요.</string>
     <string name="go_to_parties_button">빠띠 찾기</string>
     <string name="retry_button">다시 시도합니다</string>
+    <string name="title_activity_push_message">알림</string>
+    <string name="not_found_post">게시물을 찾을 수 없습니다.</string>
+    <string name="title_activity_post">게시글</string>
 </resources>

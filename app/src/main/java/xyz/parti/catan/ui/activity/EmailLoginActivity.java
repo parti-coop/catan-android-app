@@ -17,7 +17,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.KeyboardHelper;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;

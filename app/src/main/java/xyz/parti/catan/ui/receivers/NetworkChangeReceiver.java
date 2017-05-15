@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.DisconnectActivity;

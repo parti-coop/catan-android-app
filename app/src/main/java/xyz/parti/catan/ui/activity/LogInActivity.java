@@ -22,7 +22,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -31,11 +30,11 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import java.util.Collections;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
@@ -125,7 +124,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void onNotFoundUser() {
                 progressToggler.toggle(false);
-                Snackbar.make(panelLayout, String.format(getResources().getString(R.string.login_social_not_found_user)), 10 * 1000)
+                Snackbar.make(panelLayout, String.format(Locale.getDefault(), getResources().getString(R.string.login_social_not_found_user)), 10 * 1000)
                         .setAction(R.string.ok,
                                 view -> {
                                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));

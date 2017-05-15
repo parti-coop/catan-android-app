@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import xyz.parti.catan.CatanApplication;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.NetworkHelper;
 

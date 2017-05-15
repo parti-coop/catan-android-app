@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
@@ -17,8 +17,8 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import io.fabric.sdk.android.Fabric;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
+import xyz.parti.catan.helper.ReportHelper;
 
 /**
  * Created by dalikim on 2017. 4. 7..
@@ -115,4 +115,15 @@ public class BaseActivity extends AppCompatActivity {
         return true;
     }
 
+    public void reportError(String message) {
+        ReportHelper.wtf(this.getApplicationContext(), message);
+    }
+
+    public void showMessage(String message) {
+        Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void reportError(Throwable error) {
+        ReportHelper.wtf(this.getApplicationContext(), error);
+    }
 }

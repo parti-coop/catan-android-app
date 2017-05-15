@@ -31,9 +31,9 @@ class OptionBinder {
     @BindView(R.id.textview_selected_sign)
     IconTextView selectedSignTextView;
 
-    private final PostFeedPresenter presenter;
+    private final PostBinder.PostBindablePresenter presenter;
 
-    OptionBinder(PostFeedPresenter presenter, ViewGroup view) {
+    OptionBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         ButterKnife.bind(this, view);
     }

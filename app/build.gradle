@@ -17,6 +17,7 @@ android {
 
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
+
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io' }
@@ -32,6 +33,7 @@ android {
             enabled true
             additionalParameters("jack.incremental": "true")
         }
+        multiDexEnabled true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -71,6 +73,7 @@ android {
 dependencies {
     final SUPPORT_LIBRARY_VERSION = '25.3.1'
     final RETROFIT_VERSION = '2.2.0'
+    final GOOLGE_VERSION = '10.2.4'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -92,7 +95,12 @@ dependencies {
     compile('com.twitter.sdk.android:twitter:2.3.2@aar') {
         transitive = true;
     }
-    compile 'com.google.android.gms:play-services-auth:9.8.0'
+    compile "com.google.android.gms:play-services-base:$GOOLGE_VERSION"
+    compile "com.google.android.gms:play-services-auth:$GOOLGE_VERSION"
+    compile "com.google.android.gms:play-services-gcm:$GOOLGE_VERSION"
+    compile "com.google.firebase:firebase-core:$GOOLGE_VERSION"
+    compile "com.google.firebase:firebase-messaging:$GOOLGE_VERSION"
+
     compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
     compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
     compile "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
@@ -112,6 +120,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
+    compile "com.android.support:multidex:1.0.1"
     annotationProcessor 'org.parceler:parceler:1.1.6'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'

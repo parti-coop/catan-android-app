@@ -18,7 +18,6 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.view.CropTopImageView;
 import xyz.parti.catan.ui.view.MatchParentWidthImageView;
 
@@ -28,7 +27,7 @@ import xyz.parti.catan.ui.view.MatchParentWidthImageView;
 
 public class FileSourcesBinder {
     private final static int HALF_IMAGE_SPACE = 5;
-    private final PostFeedPresenter presenter;
+    private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
 
     @BindView(R.id.layout_docs)
@@ -36,7 +35,7 @@ public class FileSourcesBinder {
     @BindView(R.id.layout_images)
     ViewGroup imagesLayout;
 
-    public FileSourcesBinder(PostFeedPresenter presenter, ViewGroup view) {
+    public FileSourcesBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
         ButterKnife.bind(this, view);
