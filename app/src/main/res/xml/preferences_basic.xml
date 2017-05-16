@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.preference.Preference
+        android:key="pref_show_profile"
+        android:summary="프로필 정보를 확인하고 설정합니다"
+        android:title="내 프로필" />
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="pref_receive_push_message"
+        android:summaryOff="@string/pref_receive_push_message_off"
+        android:summaryOn="@string/pref_receive_push_message_on"
+        android:title="알림" />
+</android.support.v7.preference.PreferenceScreen>

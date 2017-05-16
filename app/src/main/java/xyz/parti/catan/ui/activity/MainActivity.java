@@ -125,9 +125,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     setUpDrawerBar();
                     setUpSwipeRefresh();
 
-                    presenter.saveDeviceToken();
-
                     receivePushMessageIntent(getIntent());
+                    checkReceivablePushMessage();
                 }
 
                 @Override
@@ -140,6 +139,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     private void checkAppVersion() {
         presenter.checkAppVersion();
+    }
+    private void checkReceivablePushMessage() {
+        presenter.checkReceivablePushMessage();
     }
 
     private void setUpSwipeRefresh() {

@@ -62,6 +62,7 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     protected void onPause(){
         super.onPause();
         if (isNetworkReceiverRegistered) {
@@ -70,6 +71,7 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     protected void onDestroy(){
         LocalBroadcastManager.getInstance(this).unregisterReceiver(logOutReceiver);
         super.onDestroy();

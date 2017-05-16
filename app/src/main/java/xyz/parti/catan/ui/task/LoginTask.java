@@ -17,7 +17,7 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.AuthTokenService;
-import xyz.parti.catan.data.services.DeviceTokenService;
+import xyz.parti.catan.data.services.DeviceTokensService;
 import xyz.parti.catan.data.services.UsersService;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.helper.RxGuardian;
@@ -113,7 +113,7 @@ public class LoginTask {
     private void saveDeviceToken() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
-        DeviceTokenService service = ServiceBuilder.createNoRefreshService(DeviceTokenService.class, session.getPartiAccessToken());
+        DeviceTokensService service = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
         ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> {
             Log.d(Constants.TAG, "Reset Instance ID");
         }, error -> Log.e(Constants.TAG, "Error to reset Instance ID", error));

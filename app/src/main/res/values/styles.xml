@@ -19,4 +19,8 @@
         <item name="android:textColorHint">#fff</item>
     </style>
 
+    <style name="SettingsTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
+
 </resources>

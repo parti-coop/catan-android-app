@@ -5,47 +5,31 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.gson.JsonNull;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
-import xyz.parti.catan.data.model.FileSource;
-import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Page;
-import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
-import xyz.parti.catan.data.model.User;
-import xyz.parti.catan.data.services.FeedbacksService;
 import xyz.parti.catan.data.services.PostsService;
-import xyz.parti.catan.data.services.DeviceTokenService;
-import xyz.parti.catan.data.services.UpvotesService;
-import xyz.parti.catan.data.services.VotingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
-import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.helper.RxHelper;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
-import xyz.parti.catan.ui.task.DownloadFilesTask;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
+import xyz.parti.catan.ui.task.ReceivablePushMessageCheckTask;
 
 /**
  * Created by dalikim on 2017. 5. 3..
@@ -61,9 +45,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Disposable loadFirstPostsPublisher;
     private Disposable loadMorePostsPublisher;
     private Disposable checkNewPostsPublisher;
-    private Disposable ceateTokenPublisher;
     private Disposable receivePushMessageForPostPublisher;
-    private AppVersionCheckTask appVersionCheckTaks;
+    private AppVersionCheckTask appVersionCheckTask;
+    private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
 
     public PostFeedPresenter(SessionManager session) {
         super(session);
@@ -74,7 +58,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     @Override
     public void attachView(PostFeedPresenter.View view) {
         super.attachView(view);
-        appVersionCheckTaks = new AppVersionCheckTask(new AppVersionHelper(getView().getContext()).getCurrentVerion(), getView().getContext());
+        appVersionCheckTask = new AppVersionCheckTask(new AppVersionHelper(getView().getContext()).getCurrentVerion(), getView().getContext());
+        receivablePushMessageCheckTask = new ReceivablePushMessageCheckTask(getView().getContext(), session);
     }
 
     @Override
@@ -82,8 +67,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         super.detachView();
         session = null;
         feedAdapter = null;
-        if(appVersionCheckTaks != null) {
-            appVersionCheckTaks.cancel();
+        if(appVersionCheckTask != null) {
+            appVersionCheckTask.cancel();
+        }
+        if(receivablePushMessageCheckTask != null) {
+            receivablePushMessageCheckTask.cancel();
         }
     }
 
@@ -295,11 +283,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     }
 
     public void checkAppVersion() {
-        if(this.appVersionCheckTaks == null) {
+        if(this.appVersionCheckTask == null) {
             return;
         }
 
-        this.appVersionCheckTaks.check(newVersion -> {
+        this.appVersionCheckTask.check(newVersion -> {
             if(isActive()) getView().showNewVersionMessage(newVersion);
         });
     }
@@ -365,11 +353,10 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
     }
 
-    public void saveDeviceToken() {
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
-        DeviceTokenService service = ServiceBuilder.createNoRefreshService(DeviceTokenService.class, session.getPartiAccessToken());
-        ceateTokenPublisher = getRxGuardian().subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> Log.d(Constants.TAG, "Reset Instance ID"), error -> Log.e(Constants.TAG, "Error to reset Instance ID", error));
+    public void checkReceivablePushMessage() {
+        if(!isActive()) return;
+        if(receivablePushMessageCheckTask == null) return;
+        receivablePushMessageCheckTask.check();
     }
 
     public interface View extends BasePostBindablePresenter.View {

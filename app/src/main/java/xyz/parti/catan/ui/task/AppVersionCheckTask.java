@@ -16,8 +16,8 @@ import xyz.parti.catan.helper.RxGuardian;
  */
 
 public class AppVersionCheckTask {
-    private static final String PREF_NAME = "VERSION_CHECKER";
-    private static final String KEY_LAST_CHECKED_AT_MILLS = "last_checked_at_mills";
+    private static final String PREF_NAME = "xyz.parti.catan.VERSION_CHECKER";
+    private static final String KEY_LAST_CHECKED_AT_MILLS = "app_version_last_checked_at_mills";
     private static final long CHECK_INTERVAL_MILLS = 48 * 60 * 60 * 1000;
     private final RxGuardian rxGuardian;
 

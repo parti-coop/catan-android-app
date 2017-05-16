@@ -8,4 +8,5 @@ public class Constants {
     public static final String TAG = "Catan";
     public static final String TAG_TEST = "Catan-Local";
 
+    public static final String KEY_PREF_RECEIVE_PUSH_MESSAGE = "pref_receive_push_message";
 }

@@ -1,6 +1,5 @@
 package xyz.parti.catan.ui.presenter;
 
-import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.helper.RxGuardian;
 
 /**

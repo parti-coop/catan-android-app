@@ -17,7 +17,6 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.services.PostsService;
-import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 25..

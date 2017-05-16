@@ -36,7 +36,6 @@ public class EmailLoginActivity extends BaseActivity {
 
     private LoginTask partiLoginTask;
     private ProgressToggler progressToggler;
-    private View decorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

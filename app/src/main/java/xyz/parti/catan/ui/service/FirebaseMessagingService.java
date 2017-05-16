@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
@@ -26,6 +27,7 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PushMessage;
+import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.ui.activity.MainActivity;
 
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
@@ -61,6 +63,12 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Log.d(Constants.TAG, "Message : User NOT match");
             return;
         }
+
+        if(!PrefPushMessage.isReceivable(this)) {
+            Log.d(Constants.TAG, "Message : Disable by user");
+            return;
+        }
+
         addNotification(pushMessage);
     }
 
@@ -70,26 +78,26 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         if(isForeground) {
             Log.d(Constants.TAG_TEST, "isForeground");
             if(! "post".equals(pushMessage.type)) {
-                notify(pushMessage, false);
+                notify(pushMessage);
             } else {
                 if ("high".equals(pushMessage.priority)) {
-                    notify(pushMessage, true);
+                    notify(pushMessage);
                 }
             }
         }
         // 홈 런쳐가 실행 중인 경우
         else if(isUserIsOnHomeScreen()) {
             Log.d(Constants.TAG_TEST, "isUserIsOnHomeScreen");
-            notify(pushMessage, true);
+            notify(pushMessage);
         }
         // 다른 앱이 실행 중인 경우
         else {
             Log.d(Constants.TAG_TEST, "elseelseelseelse");
-            notify(pushMessage, true);
+            notify(pushMessage);
         }
     }
 
-    private void notify(PushMessage pushMessage, boolean heightPriority) {
+    private void notify(PushMessage pushMessage) {
         Intent intent = buildIntentForNotification(pushMessage);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, MainActivity.REQUEST_PUSH_MESSAGE /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -105,13 +113,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setVisibility(VISIBILITY_PRIVATE)
                 .setSound(defaultSoundUri)
                 .setAutoCancel(true)
-                .setLights(173, 500, 2000);
+                .setLights(173, 500, 2000)
+                .setContentIntent(pendingIntent);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && heightPriority) {
-            notificationBuilder.setFullScreenIntent(pendingIntent, true);
-        } else {
-            notificationBuilder.setContentIntent(pendingIntent);
-        }
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(makeNotificationID(), notificationBuilder.build());
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.preference.PreferenceCategory android:title="정보">
+        <android.support.v7.preference.Preference
+            android:key="pref_version"
+            android:title="버전" />
+        <android.support.v7.preference.Preference
+            android:key="pref_license"
+            android:title="라이센스" />
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

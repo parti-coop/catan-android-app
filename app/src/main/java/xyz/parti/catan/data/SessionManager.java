@@ -20,11 +20,11 @@ import xyz.parti.catan.ui.activity.LogInActivity;
  */
 
 public class SessionManager {
-    private static final String CURRENT_SESSION_VERSION = "1";
-    private static final String PREF_NAME = "SESSION";
+    private static final String CURRENT_SESSION_VERSION = "3";
+    private static final String PREF_NAME = "xyz.parti.catan.SESSION";
 
     private static final String KEY_SESSION_VERSION = "session_version";
-    private static final String KEY_IS_LOGIN = "IsLoggedIn";
+    private static final String KEY_IS_LOGIN = "is_logged_in";
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER = "user";
     private static final String KEY_USER_NICKNAME = "user_nickname";
