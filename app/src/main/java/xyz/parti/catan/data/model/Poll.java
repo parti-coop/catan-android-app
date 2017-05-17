@@ -75,7 +75,8 @@ public class Poll {
         List<User> userList = new ArrayList<>(Arrays.asList(users));
         Iterator<User> i = userList.iterator();
         while(i.hasNext()) {
-            if(i.next().id == someone.id) {
+            User next = i.next();
+            if(next != null && next.id != null && next.id.equals(someone.id)) {
                 i.remove();
             }
         }
@@ -84,9 +85,8 @@ public class Poll {
 
     private User[] addUser(User[] users, User someone) {
         List<User> userList = new ArrayList<>(Arrays.asList(users));
-        Iterator<User> i = userList.iterator();
-        while(i.hasNext()) {
-            if(i.next().id == someone.id) {
+        for (User next : userList) {
+            if (next != null && next.id != null && next.id.equals(someone.id)) {
                 return users;
             }
         }
