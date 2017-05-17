@@ -6,26 +6,31 @@
     android:layout_marginTop="3dp"
     android:layout_marginBottom="3dp"
     android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <CheckBox
             android:id="@+id/checkbox"
-            android:layout_marginLeft="-5dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-5dp" />
+
         <com.joanzapata.iconify.widget.IconTextView
             android:id="@+id/textview_selected_sign"
-            android:text="{fa-check}"
-            android:layout_marginRight="5dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="{fa-check}" />
+
         <TextView
             android:id="@+id/textview_body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:paddingBottom="10dp" />
     </LinearLayout>
 
     <TextView
