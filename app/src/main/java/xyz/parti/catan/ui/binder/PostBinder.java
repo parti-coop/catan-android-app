@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Poll;
@@ -82,11 +83,11 @@ public class PostBinder {
         bindReferences(post);
     }
 
-    public void bindComments(Post post) {
+    private void bindComments(Post post) {
         new LatestCommentsBinder(presenter, commentsSectionLayout).bindData(post);
     }
 
-    public void bindReferences(Post post) {
+    private void bindReferences(Post post) {
         resetReferences();
 
         bindFileSources(post);
@@ -136,7 +137,7 @@ public class PostBinder {
         }
     }
 
-    public void bindLike(final Post post) {
+    private void bindLike(final Post post) {
         if(post.is_upvoted_by_me) {
             likeButton.setTypeface(null, Typeface.BOLD);
             likeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
@@ -203,6 +204,7 @@ public class PostBinder {
     public interface PostBindablePresenter {
         void onClickLinkSource(Post post);
         void onClickNewComment(Post post);
+        void onClickNewComment(Post post, Comment comment);
         void onClickLike(Post post);
         void onClickSurveyOption(Post post, Option option, boolean b);
         void onClickPollAgree(Post post);

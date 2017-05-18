@@ -3,6 +3,7 @@ package xyz.parti.catan.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,10 +19,13 @@ import com.joanzapata.iconify.widget.IconButton;
 
 import org.parceler.Parcels;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
@@ -62,6 +66,11 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
             finish();
             return;
         }
+        Comment comment = null;
+        Parcelable commentObject = getIntent().getParcelableExtra("comment");
+        if(commentObject != null) {
+            comment = Parcels.unwrap(commentObject);
+        }
         boolean focusInput = getIntent().getBooleanExtra("focusInput", false);
 
         presenter = new CommentFeedPresenter(post, session);
@@ -73,7 +82,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
             noCommentsSignView.setVisibility(View.VISIBLE);
             listWrapperView.setVisibility(View.GONE);
         }
-        setUpComments(focusInput);
+        setUpComments(focusInput, post, comment);
         setUpCommentForm();
 
         ActionBar actionBar = getSupportActionBar();
@@ -82,8 +91,8 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         }
     }
 
-    private void setUpComments(boolean focusInput) {
-        feedAdapter = new CommentFeedRecyclerViewAdapter(this);
+    private void setUpComments(boolean focusInput, Post post, Comment comment) {
+        feedAdapter = new CommentFeedRecyclerViewAdapter(this, post);
         feedAdapter.setLoadMoreListener(() -> listRecyclerView.post(() -> presenter.loadMoreComments()));
         presenter.setCommentFeedRecyclerViewAdapter(feedAdapter);
         feedAdapter.setPresenter(presenter);
@@ -107,6 +116,11 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
                 newCommentInputEditText.setFocusableInTouchMode(true);
                 newCommentInputEditText.requestFocus();
             });
+            if(comment != null) {
+                String defaultComment = String.format(Locale.getDefault(), "@%s ", comment.user.nickname);
+                newCommentInputEditText.setText(defaultComment);
+                newCommentInputEditText.setSelection(defaultComment.length());
+            }
         }
     }
 

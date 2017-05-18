@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.binder.PostBinder;
@@ -142,6 +143,15 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     public void showNewCommentForm(Post post) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
+        intent.putExtra("focusInput", true);
+        startActivityForResult(intent, MainActivity.REQUEST_NEW_COMMENT);
+    }
+
+    @Override
+    public void showNewCommentForm(Post post, Comment comment) {
+        Intent intent = new Intent(this, AllCommentsActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        intent.putExtra("comment", Parcels.wrap(post));
         intent.putExtra("focusInput", true);
         startActivityForResult(intent, MainActivity.REQUEST_NEW_COMMENT);
     }

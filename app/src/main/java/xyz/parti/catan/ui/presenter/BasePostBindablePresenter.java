@@ -12,6 +12,7 @@ import io.reactivex.disposables.Disposable;
 import retrofit2.Response;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.PartiAccessToken;
@@ -72,6 +73,11 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     @Override
     public void onClickNewComment(Post post) {
         getView().showNewCommentForm(post);
+    }
+
+    @Override
+    public void onClickNewComment(Post post, Comment comment) {
+        getView().showNewCommentForm(post, comment);
     }
 
     @Override
@@ -219,6 +225,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void showUrl(Uri url);
         void showVideo(Uri parse, Uri parse1);
         void showNewCommentForm(Post post);
+        void showNewCommentForm(Post post, Comment comment);
         void reportError(String message);
         void reportError(Throwable error);
         void showAllComments(Post post);

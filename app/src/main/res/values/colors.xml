@@ -2,6 +2,7 @@
 <resources>
     <color name="brand_gray_darker">#212121</color>
     <color name="brand_gray_dark">#777777</color>
+    <color name="brand_gray_less_dark">#b0b0b0</color>
     <color name="brand_gray">#ccc</color>
     <color name="brand_gray_light">#efefef</color>
 
@@ -18,6 +19,7 @@
     <color name="comments_border">@color/brand_gray</color>
     <color name="comment_edittext_highlight">@color/brand_gray_light</color>
     <color name="post_button_text">@color/brand_gray_dark</color>
+    <color name="comment_button_text">@color/brand_gray_less_dark</color>
 
     <color name="vote_agree_button">#59baa3</color>
     <color name="vote_disagree_button">#c0575d</color>

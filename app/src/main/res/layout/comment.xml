@@ -36,11 +36,51 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
+                <Button
+                    android:id="@+id/button_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:paddingRight="0dp"
+                    android:paddingLeft="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/comment_button_text"
+                    android:background="@android:color/transparent"
+                    android:textSize="14dp"
+                    android:text="@string/like" />
+                <Button
+                    android:id="@+id/button_new_comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/comment_button_text"
+                    android:background="@android:color/transparent"
+                    android:textSize="14dp"
+                    android:text="@string/new_comment" />
                 <com.github.curioustechizen.ago.RelativeTimeTextView
                     android:id="@+id/textview_created_at"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:textColor="@color/comment_button_text" />
+                <com.joanzapata.iconify.widget.IconButton
+                    android:id="@+id/button_show_likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/style_color_accent"
+                    android:textSize="14dp"
+                    android:background="@android:color/transparent" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

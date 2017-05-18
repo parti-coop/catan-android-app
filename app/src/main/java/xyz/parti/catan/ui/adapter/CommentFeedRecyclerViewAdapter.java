@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
+import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.binder.CommentBinder;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
+import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 30..
@@ -17,10 +19,12 @@ import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
 
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
     private final LayoutInflater inflater;
+    private final Post post;
     private CommentFeedPresenter presenter;
 
-    public CommentFeedRecyclerViewAdapter(Context context) {
+    public CommentFeedRecyclerViewAdapter(Context context, Post post) {
         inflater = LayoutInflater.from(context);
+        this.post = post;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
     @Override
     void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(getModel(position), position);
+        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(post, getModel(position), position);
     }
 
     public void setPresenter(CommentFeedPresenter presenter) {
@@ -62,6 +66,7 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
     private static class CommentViewHolder extends ModelViewHolder {
         private View view;
         private CommentFeedRecyclerViewAdapter adapter;
+        private PostFeedPresenter presenter;
 
         CommentViewHolder(View view, CommentFeedRecyclerViewAdapter adapter) {
             super(view);
@@ -74,9 +79,13 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
             return false;
         }
 
-        public void bindData(Comment comment, int position) {
+        public void setPresenter(PostFeedPresenter presenter) {
+            this.presenter = presenter;
+        }
+
+        public void bindData(Post post, Comment comment, int position) {
             boolean isLineVisible = !adapter.isLastPosition(position);
-            new CommentBinder(view).bindData(comment, isLineVisible);
+            new CommentBinder(view, presenter).bindData(post, comment, isLineVisible);
         }
     }
 }

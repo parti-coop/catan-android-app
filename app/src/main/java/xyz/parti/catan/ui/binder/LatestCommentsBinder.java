@@ -51,7 +51,7 @@ public class LatestCommentsBinder {
         }
 
         listLayout.removeAllViews();
-        for(Comment comment: post.latest_comments) bindComment(comment);
+        for(Comment comment: post.latest_comments) bindComment(post, comment);
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
 
@@ -60,9 +60,9 @@ public class LatestCommentsBinder {
 
 
 
-    private void bindComment(Comment comment) {
+    private void bindComment(Post post, Comment comment) {
         LinearLayout commentLayout = (LinearLayout) inflater.inflate(R.layout.comment, listLayout, false);
-        new CommentBinder(commentLayout).bindData(comment);
+        new CommentBinder(commentLayout, presenter).bindData(post, comment);
         listLayout.addView(commentLayout);
     }
 }
