@@ -62,7 +62,7 @@
                     android:background="@android:color/transparent"
                     android:textSize="14dp"
                     android:text="@string/new_comment" />
-                <com.github.curioustechizen.ago.RelativeTimeTextView
+                <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
                     android:id="@+id/textview_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

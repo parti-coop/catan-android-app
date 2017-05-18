@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.curioustechizen.ago.RelativeTimeTextView;
-
 import org.parceler.Parcels;
 
 import java.util.List;
@@ -24,6 +22,7 @@ import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
+import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 
 /**
  * Created by dalikim on 2017. 4. 13..
@@ -34,7 +33,7 @@ public class PostImagesViewActivity extends BaseActivity {
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.textview_post_created_at)
-    RelativeTimeTextView postCreatedAtTextView;
+    LooselyRelativeTimeTextView postCreatedAtTextView;
     @BindView(R.id.textview_post_desc)
     TextView postDescTextView;
     @BindView(R.id.textview_user_nickname)

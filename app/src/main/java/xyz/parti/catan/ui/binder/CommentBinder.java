@@ -9,8 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.curioustechizen.ago.RelativeTimeTextView;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -20,6 +18,7 @@ import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
+import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 
 /**
  * Created by dalikim on 2017. 4. 29..
@@ -33,7 +32,7 @@ public class CommentBinder {
     @BindView(R.id.textview_body)
     TextView bodyTextView;
     @BindView(R.id.textview_created_at)
-    RelativeTimeTextView createdAtTextView;
+    LooselyRelativeTimeTextView createdAtTextView;
     @BindView(R.id.button_new_comment)
     Button newCommentButton;
     @BindView(R.id.view_divider)

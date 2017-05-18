@@ -28,6 +28,7 @@ import xyz.parti.catan.data.model.Survey;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
+import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 
 /**
  * Created by dalikim on 2017. 5. 15..
@@ -49,7 +50,7 @@ public class PostBinder {
     @BindView(R.id.imageview_user_image)
     CircleImageView userImageImageView;
     @BindView(R.id.textview_created_at)
-    RelativeTimeTextView createdAtTextView;
+    LooselyRelativeTimeTextView createdAtTextView;
     @BindView(R.id.textview_body)
     TextView bodyTextView;
     @BindView(R.id.textview_title)
