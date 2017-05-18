@@ -8,10 +8,8 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.NotificationCompat;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;

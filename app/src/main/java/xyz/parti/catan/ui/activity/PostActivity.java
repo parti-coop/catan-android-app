@@ -59,7 +59,6 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
             finish();
             return;
         }
-
         presenter = new PostPresenter(post, session);
         presenter.attachView(this);
 
@@ -91,7 +90,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == MainActivity.REQUEST_NEW_COMMENT){
+        if(requestCode == MainActivity.REQUEST_UPDATE_POST){
             if(data == null) {
                 return;
             }
@@ -100,7 +99,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
                 return;
             }
             if(this.presenter != null) {
-                presenter.changePost(post, Post.PLAYLOAD_LATEST_COMMENT);
+                presenter.changePost(post);
             }
         }
     }
@@ -121,7 +120,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     private void setUpNewCommentsResult() {
         Intent intent = new Intent();
         intent.putExtra("post", Parcels.wrap(presenter.getPost()));
-        setResult(MainActivity.REQUEST_NEW_COMMENT, intent);
+        setResult(MainActivity.REQUEST_UPDATE_POST, intent);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
         intent.putExtra("focusInput", true);
-        startActivityForResult(intent, MainActivity.REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
     }
 
     @Override
@@ -153,14 +152,14 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         intent.putExtra("post", Parcels.wrap(post));
         intent.putExtra("comment", Parcels.wrap(post));
         intent.putExtra("focusInput", true);
-        startActivityForResult(intent, MainActivity.REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
     }
 
     @Override
     public void showAllComments(Post post) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
-        startActivityForResult(intent, MainActivity.REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
     }
 
     @Override
@@ -228,12 +227,12 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     }
 
     @Override
-    public void changePost(Post post, Object payload) {
-        this.postBinder.bindPartialData(post, payload);
+    public void showPost(Post post) {
+        // do nothing
     }
 
     @Override
-    public void changeSurvey(Post post) {
-        this.postBinder.bindPartialData(post, post.survey);
+    public void changePost(Post post, Object payload) {
+        this.postBinder.rebindData(post, payload);
     }
 }

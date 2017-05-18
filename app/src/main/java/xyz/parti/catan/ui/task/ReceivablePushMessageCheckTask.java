@@ -3,7 +3,6 @@ package xyz.parti.catan.ui.task;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -13,7 +12,6 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
-import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.services.DeviceTokensService;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.helper.RxGuardian;

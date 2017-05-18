@@ -6,11 +6,14 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.JsonNull;
 
 import java.io.File;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
@@ -18,8 +21,10 @@ import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.services.CommentsService;
+import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.binder.CommentBinder;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -27,17 +32,20 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  * Created by dalikim on 2017. 5. 3..
  */
 
-public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> {
+public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> implements CommentBinder.CommentLikablePresenter {
     private final Post post;
     private final CommentsService commentsService;
+    private final UpvotesService upvotesService;
     private CommentFeedRecyclerViewAdapter feedAdapter;
     private Disposable firstCommentsPublisher;
     private Disposable moreCommentsPublisher;
     private Disposable createCommentPublisher;
+    private Disposable onClickLikePublisher;
 
     public CommentFeedPresenter(Post post, SessionManager session) {
         this.post = post;
         commentsService = ServiceBuilder.createService(CommentsService.class, session);
+        upvotesService = ServiceBuilder.createService(UpvotesService.class, session);
     }
 
     @Override
@@ -200,10 +208,42 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                 });
     }
 
+    @Override
+    public void onClickLike(Post post, Comment comment) {
+        if(!isActive()) return;
+
+        feedAdapter.changeModel(comment, Comment.IS_UPVOTED_BY_ME);
+        Flowable<Response<JsonNull>> call =  ( comment.is_upvoted_by_me ?
+                upvotesService.destroy("Comment", comment.id) : upvotesService.create("Comment", comment.id)
+        );
+        onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
+                call,
+                response -> {
+                    if(response.isSuccessful()) {
+                        post.toggleCommentUpvoting(comment);
+                        changeComment(comment, Comment.IS_UPVOTED_BY_ME);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
+    }
+
+    private void changeComment(Comment comment, Object payload) {
+        if(!isActive()) return;
+        feedAdapter.changeModel(comment, payload);
+    }
+
+    @Override
+    public void onClickNewComment(Post post, Comment comment) {
+        getView().showNewCommentForm(comment);
+    }
+
     public interface View {
         void setSendingCommentForm();
         void setCompletedCommentForm();
         void showCommentList();
+        void showNewCommentForm(Comment comment);
         Context getContext();
     }
 }

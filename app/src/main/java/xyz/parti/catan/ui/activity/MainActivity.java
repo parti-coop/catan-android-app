@@ -62,7 +62,7 @@ import xyz.parti.catan.ui.view.NewPostSignAnimator;
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
-    public static final int REQUEST_NEW_COMMENT = 1;
+    public static final int REQUEST_UPDATE_POST = 1;
     public static final int REQUEST_PUSH_MESSAGE = 20000;
 
     @BindView(R.id.toolbar_app)
@@ -358,7 +358,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_NEW_COMMENT){
+        if(requestCode == REQUEST_UPDATE_POST){
             if(data == null) {
                 return;
             }
@@ -367,7 +367,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 return;
             }
             if(this.presenter != null) {
-                presenter.changePost(post, Post.PLAYLOAD_LATEST_COMMENT);
+                Log.d(Constants.TAG_TEST, "onActivityResult at: " + post.toString());
+                presenter.changePost(post);
             }
         }
     }
@@ -376,7 +377,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void showAllComments(Post post) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
-        startActivityForResult(intent, REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, REQUEST_UPDATE_POST);
     }
 
     @Override
@@ -384,7 +385,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
         intent.putExtra("focusInput", true);
-        startActivityForResult(intent, REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, REQUEST_UPDATE_POST);
     }
 
     @Override
@@ -393,7 +394,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         intent.putExtra("post", Parcels.wrap(post));
         intent.putExtra("comment", Parcels.wrap(comment));
         intent.putExtra("focusInput", true);
-        startActivityForResult(intent, REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, REQUEST_UPDATE_POST);
     }
 
     @Override
@@ -434,7 +435,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void showPost(Post post) {
         Intent intent = new Intent(this, PostActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
-        startActivityForResult(intent, REQUEST_NEW_COMMENT);
+        startActivityForResult(intent, REQUEST_UPDATE_POST);
     }
 
     @Override

@@ -26,7 +26,6 @@ public class Post implements RecyclableModel {
     public User user;
     public Date created_at;
     public Date last_stroked_at;
-    public Boolean is_upvotable;
     public Boolean is_upvoted_by_me;
     public Long upvotes_count;
     public Long comments_count;
@@ -115,5 +114,21 @@ public class Post implements RecyclableModel {
             this.upvotes_count++;
             this.is_upvoted_by_me = true;
         }
+    }
+
+    public void toggleCommentUpvoting(Comment comment) {
+        comment.toggleUpvoting();
+        for(Comment currentComment : latest_comments) {
+            if(comment != null && comment.id != null && comment.id.equals(currentComment.id)) {
+                if(currentComment != comment) {
+                    currentComment.toggleUpvoting();
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " - post id : " + id;
     }
 }

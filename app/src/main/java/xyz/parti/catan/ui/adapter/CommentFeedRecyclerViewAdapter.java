@@ -6,12 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.binder.CommentBinder;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
-import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 /**
  * Created by dalikim on 2017. 4. 30..
@@ -29,7 +30,7 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
     @Override
     LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateModelViewHolder(ViewGroup parent) {
-        return new CommentFeedRecyclerViewAdapter.CommentViewHolder(inflater.inflate(R.layout.comment, parent, false), this);
+        return new CommentFeedRecyclerViewAdapter.CommentViewHolder(inflater.inflate(R.layout.comment, parent, false), this, presenter);
     }
 
     @Override
@@ -55,6 +56,19 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
         ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(post, getModel(position), position);
     }
 
+    @Override
+    public void onBindViewHolder(PostFeedRecyclerViewAdapter.BaseViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            for (Object payload : payloads) {
+                if (holder instanceof CommentViewHolder) {
+                    ((CommentViewHolder)holder).getCommentBinder().rebindData(post, getModel(position), payload);
+                }
+            }
+        }
+    }
+
     public void setPresenter(CommentFeedPresenter presenter) {
         this.presenter = presenter;
     }
@@ -64,14 +78,13 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
     }
 
     private static class CommentViewHolder extends ModelViewHolder {
-        private View view;
+        private final CommentBinder commentBinder;
         private CommentFeedRecyclerViewAdapter adapter;
-        private PostFeedPresenter presenter;
 
-        CommentViewHolder(View view, CommentFeedRecyclerViewAdapter adapter) {
+        CommentViewHolder(View view, CommentFeedRecyclerViewAdapter adapter, CommentBinder.CommentLikablePresenter presenter) {
             super(view);
-            this.view = view;
             this.adapter = adapter;
+            this.commentBinder = new CommentBinder(view, presenter);
         }
 
         @Override
@@ -79,13 +92,13 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
             return false;
         }
 
-        public void setPresenter(PostFeedPresenter presenter) {
-            this.presenter = presenter;
-        }
-
         public void bindData(Post post, Comment comment, int position) {
             boolean isLineVisible = !adapter.isLastPosition(position);
-            new CommentBinder(view, presenter).bindData(post, comment, isLineVisible);
+            commentBinder.bindData(post, comment, isLineVisible);
+        }
+
+        CommentBinder getCommentBinder() {
+            return commentBinder;
         }
     }
 }

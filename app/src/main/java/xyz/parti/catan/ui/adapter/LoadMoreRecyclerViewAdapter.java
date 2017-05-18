@@ -1,12 +1,14 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.RecyclableModel;
 
 /**
@@ -57,12 +59,16 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public void changeModel(T model, Object payload) {
+        if(model == null) return;
+
         for (int i = 0; i < holders.size(); i++) {
-            if (model != null && model.isSame(getModel(i))) {
+            if (model.isSame(getModel(i))) {
                 holders.set(i, InfinitableModelHolder.forModel(model));
                 notifyItemChanged(i, payload);
+                return;
             }
         }
+        Log.d(Constants.TAG, "Not found model in LoadMoreRecyclerView : " + model.toString());
     }
 
     private void prepareChangedModels(List<InfinitableModelHolder<T>> holders) {
@@ -189,8 +195,8 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         return getHolder(0);
     }
 
-    private InfinitableModelHolder<T> getHolder(int posistion) {
-        return holders.get(posistion);
+    private InfinitableModelHolder<T> getHolder(int position) {
+        return holders.get(position);
     }
 
     public int getLastPosition() {
@@ -201,7 +207,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         BaseViewHolder(View itemView) {
             super(itemView);
         }
-
         abstract boolean isLoader();
     }
 

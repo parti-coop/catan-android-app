@@ -20,7 +20,6 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Poll;
@@ -169,6 +168,7 @@ public class PostBinder {
         new ImageHelper(userImageImageView).loadInto(post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(post.user.nickname);
         createdAtTextView.setReferenceTime(post.created_at.getTime());
+        createdAtTextView.setOnClickListener(view -> presenter.onClickCreatedAt(post));
 
         if(TextUtils.isEmpty(post.parsed_title)) {
             titleTextView.setVisibility(android.view.View.GONE);
@@ -187,7 +187,8 @@ public class PostBinder {
         newCommentButton.setOnClickListener(view -> presenter.onClickNewComment(post));
     }
 
-    public void bindPartialData(Post post, Object payload) {
+    public void rebindData(Post post, Object payload) {
+        Log.d(Constants.TAG_TEST, "rebindData " +  payload.toString());
         if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
             this.bindComments(post);
         } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
@@ -196,15 +197,16 @@ public class PostBinder {
             this.bindReferences(post);
         } else if(payload instanceof Poll) {
             this.bindReferences(post);
+        } else if(payload instanceof LatestCommentsBinder.CommentDiff) {
+            new LatestCommentsBinder(presenter, commentsSectionLayout).rebindComment(post, (LatestCommentsBinder.CommentDiff) payload);
         } else {
             Log.d(Constants.TAG, "PostFeedRecyclerView bind : invalid playload");
         }
     }
 
-    public interface PostBindablePresenter {
+    public interface PostBindablePresenter extends CommentBinder.CommentLikablePresenter {
         void onClickLinkSource(Post post);
         void onClickNewComment(Post post);
-        void onClickNewComment(Post post, Comment comment);
         void onClickLike(Post post);
         void onClickSurveyOption(Post post, Option option, boolean b);
         void onClickPollAgree(Post post);
@@ -212,6 +214,7 @@ public class PostBinder {
         void onClickMoreComments(Post post);
         void onClickImageFileSource(Post post);
         void onClickDocFileSource(Post post, FileSource docFileSource);
+        void onClickCreatedAt(Post post);
         User getCurrentUser();
     }
 }

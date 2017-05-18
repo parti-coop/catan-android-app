@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import xyz.parti.catan.R;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
@@ -26,7 +27,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
     @Override
     public PostFeedRecyclerViewAdapter.BaseViewHolder onCreateModelViewHolder(ViewGroup parent) {
-        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.dashboard_post, parent, false), presenter);
+        return new PostFeedRecyclerViewAdapter.PostViewHolder(inflater.inflate(R.layout.post, parent, false), presenter);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             }
             for (Object payload : payloads) {
                 PostViewHolder postViewHolder = (PostViewHolder) holder;
-                postViewHolder.getPostBinder().bindPartialData(getModel(position), payload);
+                postViewHolder.getPostBinder().rebindData(getModel(position), payload);
             }
         }
     }

@@ -166,10 +166,10 @@
             android:id="@+id/layout_comments_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:background="@color/comments_background"
             android:paddingLeft="@dimen/post_card_padding"
-            android:paddingRight="@dimen/post_card_padding"
-            android:orientation="vertical">
+            android:paddingRight="@dimen/post_card_padding" >
             <TextView
                 android:id="@+id/textview_comments_load_more"
                 android:text="@string/load_more_comments"
@@ -196,6 +196,7 @@
                 <TextView
                     android:id="@+id/textview_new_comment_input"
                     android:text="@string/comment_form_placeholer"
+                    android:textColor="@color/comment_form_placeholer"
                     android:background="@drawable/edittext_bg_comment"
                     android:padding="5dp"
                     android:layout_width="match_parent"

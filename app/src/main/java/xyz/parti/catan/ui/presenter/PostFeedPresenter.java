@@ -19,12 +19,12 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.helper.AppVersionHelper;
-import xyz.parti.catan.helper.RxHelper;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.PostBinder;
@@ -195,7 +195,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         final Date lastStrockedAt = getLastStrockedAtForNewPostCheck();
         if (lastStrockedAt == null) return;
 
-        RxHelper.unsubscribe(checkNewPostsPublisher);
         checkNewPostsPublisher = getRxGuardian().subscribe(checkNewPostsPublisher,
                 postsService.hasUpdated(lastStrockedAt),
                 response -> {
@@ -245,13 +244,16 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
     }
 
-    public void changePost(final Post post, Object playload) {
+    @Override
+    public void changePost(Post post, Object playload) {
+        if(!isActive()) return;
+
         feedAdapter.changeModel(post, playload);
     }
 
     @Override
-    protected void changeSurvey(Post post) {
-        feedAdapter.changeModel(post, post.survey);
+    public void onClickCreatedAt(Post post) {
+        getView().showPost(post);
     }
 
     public void onResume() {
@@ -372,6 +374,5 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showMessage(String message);
         void showEmpty(boolean isError);
         void readyToRetry();
-        void showPost(Post post);
     }
 }

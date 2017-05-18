@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.joanzapata.iconify.widget.IconButton;
@@ -112,15 +114,23 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         presenter.loadFirstComments();
 
         if(focusInput) {
+            focusForm(comment);
+        }
+    }
+
+    private void focusForm(Comment comment) {
+        newCommentInputEditText.post(() -> {
+            newCommentInputEditText.setFocusableInTouchMode(true);
+            newCommentInputEditText.requestFocus();
             newCommentInputEditText.post(() -> {
-                newCommentInputEditText.setFocusableInTouchMode(true);
-                newCommentInputEditText.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.showSoftInput(newCommentInputEditText, 0);
             });
-            if(comment != null) {
-                String defaultComment = String.format(Locale.getDefault(), "@%s ", comment.user.nickname);
-                newCommentInputEditText.setText(defaultComment);
-                newCommentInputEditText.setSelection(defaultComment.length());
-            }
+        });
+        if(comment != null) {
+            String defaultComment = String.format(Locale.getDefault(), "@%s ", comment.user.nickname);
+            newCommentInputEditText.setText(defaultComment);
+            newCommentInputEditText.setSelection(defaultComment.length());
         }
     }
 
@@ -198,6 +208,11 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     }
 
     @Override
+    public void showNewCommentForm(Comment comment) {
+        focusForm(comment);
+    }
+
+    @Override
     public Context getContext() {
         return this;
     }
@@ -218,6 +233,6 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     private void setUpNewCommentsResult() {
         Intent intent = new Intent();
         intent.putExtra("post", Parcels.wrap(presenter.getPost()));
-        setResult(MainActivity.REQUEST_NEW_COMMENT, intent);
+        setResult(MainActivity.REQUEST_UPDATE_POST, intent);
     }
 }

@@ -82,4 +82,6 @@
     <string name="no">아니오</string>
     <string name="receivable_push_message_confirm_title">알림</string>
     <string name="receivable_push_message_confirm_message">빠띠의 최근 소식 알림을 받으시겠습니까?</string>
+    <string name="tag_latest_comment_binder">tag_latest_comment_binder</string>
+    <string name="tag_latest_comment">tag_latest_comment</string>
 </resources>

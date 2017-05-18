@@ -32,16 +32,14 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
 
     @Override
     public void changePost(Post post, Object playload) {
-        this.post = post;
         if(!isActive()) return;
+        this.post = post;
         getView().changePost(post, playload);
     }
 
     @Override
-    protected void changeSurvey(Post post) {
-        this.post.survey = post.survey;
-        if(!isActive()) return;
-        getView().changeSurvey(post);
+    public void onClickCreatedAt(Post post) {
+        getView().showPost(post);
     }
 
     public Post getPost() {
@@ -50,6 +48,5 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
 
     public interface View extends BasePostBindablePresenter.View {
         void changePost(Post post, Object payload);
-        void changeSurvey(Post post);
     }
 }

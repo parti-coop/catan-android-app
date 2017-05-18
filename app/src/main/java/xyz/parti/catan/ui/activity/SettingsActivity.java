@@ -176,7 +176,6 @@ public class SettingsActivity extends BaseActivity {
 
         private String getFirebaseInstanceToken() {
             String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-            Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
             return refreshedToken;
         }
 
@@ -357,7 +356,6 @@ public class SettingsActivity extends BaseActivity {
 
         private String getFirebaseInstanceToken() {
             String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-            Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
             return refreshedToken;
         }
     }

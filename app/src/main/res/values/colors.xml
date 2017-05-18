@@ -25,4 +25,5 @@
     <color name="vote_disagree_button">#c0575d</color>
     <color name="selected_vote_button">#fff</color>
     <color name="drawer_item_text">@color/brand_gray_dark</color>
+    <color name="comment_form_placeholer">@color/brand_gray</color>
 </resources>

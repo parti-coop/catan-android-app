@@ -23,7 +23,8 @@ import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.helper.RxHelper;
+import xyz.parti.catan.ui.binder.CommentBinder;
+import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 
@@ -33,7 +34,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  * Created by dalikim on 2017. 5. 15..
  */
 
-abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter {
+abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter, CommentBinder.CommentLikablePresenter {
     private final UpvotesService upvotesService;
     private final FeedbacksService feedbacksService;
     private final VotingsService votingsService;
@@ -55,7 +56,10 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     }
 
     protected abstract void changePost(Post post, Object playload);
-    protected abstract void changeSurvey(Post post);
+
+    public void changePost(Post post) {
+        changePost(post, null);
+    }
 
     @Override
     public void onClickLinkSource(Post post) {
@@ -81,7 +85,6 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     }
 
     @Override
-
     public void onClickLike(final Post post) {
         Flowable<Response<JsonNull>> call =  ( post.is_upvoted_by_me ?
                 upvotesService.destroy("Post", post.id) : upvotesService.create("Post", post.id)
@@ -92,6 +95,24 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                     if(response.isSuccessful()) {
                         post.toggleUpvoting();
                         changePost(post, Post.IS_UPVOTED_BY_ME);
+                    } else {
+                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                    }
+                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+        );
+    }
+
+    @Override
+    public void onClickLike(final Post post, final Comment comment) {
+        Flowable<Response<JsonNull>> call =  ( comment.is_upvoted_by_me ?
+                upvotesService.destroy("Comment", comment.id) : upvotesService.create("Comment", comment.id)
+        );
+        onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
+                call,
+                response -> {
+                    if(response.isSuccessful()) {
+                        post.toggleCommentUpvoting(comment);
+                        changePost(post, new LatestCommentsBinder.CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
                     } else {
                         ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
                     }
@@ -114,14 +135,13 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     }
 
     private void reloadPostSurvey(final Post post) {
-        RxHelper.unsubscribe(reloadPostPublisher);
         reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
                 postsService.getPost(post.id),
                 response -> {
                     if(getView() == null) return;
                     if(response.isSuccessful()) {
                         post.survey = response.body().survey;
-                        changeSurvey(post);
+                        changePost(post, post.survey);
                     } else {
                         getView().reportError("Rebind survey error : " + response.code());
                     }
@@ -235,5 +255,6 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void updateDownloadDocFileSourceProgress(int percentage, String message);
         void hideDownloadDocFileSourceProgress();
         void showDownloadedFile(File outputFile, String mimeType);
+        void showPost(Post post);
     }
 }

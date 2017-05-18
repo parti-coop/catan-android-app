@@ -205,7 +205,6 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
     private void googleActivityResult(GoogleSignInResult result) {
-        Log.d(Constants.TAG_TEST, result.getStatus().toString());
         if(result.getSignInAccount() == null) {
             Log.d(Constants.TAG, "구글 인증 정보 없음");
         }
@@ -238,7 +237,6 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             @Override
             public void onCancel() {
-                Log.d(Constants.TAG_TEST, "취소");
                 progressToggler.toggle(false);
                 Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
             }
@@ -246,7 +244,6 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void onError(FacebookException error) {
                 progressToggler.toggle(false);
-                Log.d(Constants.TAG_TEST, "취소2");
                 Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
                 Log.e(Constants.TAG, error.getMessage(), error);
             }
