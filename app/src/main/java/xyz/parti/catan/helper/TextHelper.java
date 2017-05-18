@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.parti.catan.R;
+import xyz.parti.catan.ui.view.GlideImageGetter;
 
 /**
  * Created by dalikim on 2017. 3. 31..
@@ -42,11 +43,15 @@ public class TextHelper {
     }
 
     public Spanned converToHtml(String txt) {
+        return converToHtml(txt, null);
+    }
+
+    public Spanned converToHtml(String txt, Html.ImageGetter getter) {
         Spanned result;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            result = Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY);
+            result = Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY, getter, null);
         } else {
-            result = Html.fromHtml(txt);
+            result = Html.fromHtml(txt, getter, null);
         }
         return result;
     }
@@ -61,7 +66,7 @@ public class TextHelper {
     }
 
     public void setTextViewHTML(TextView text, String html) {
-        CharSequence sequence = trimTrailingWhitespace(converToHtml(html));
+        CharSequence sequence = trimTrailingWhitespace(converToHtml(html, new GlideImageGetter(context, text)));
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
 
         processLinks(sequence, strBuilder);
