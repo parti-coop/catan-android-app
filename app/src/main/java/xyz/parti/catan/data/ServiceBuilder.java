@@ -32,6 +32,8 @@ public class ServiceBuilder {
     public static <S> S createUnsignedService(Class<S> serviceClass) {
         OkHttpClient.Builder httpClient = getHttpClientBuilder();
 
+        oauthIntercept(httpClient);
+
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
         return retrofit.create(serviceClass);
@@ -40,7 +42,7 @@ public class ServiceBuilder {
     public static <S> S createNoRefreshService(Class<S> serviceClass, PartiAccessToken token) {
         final OkHttpClient.Builder httpClient = getHttpClientBuilder();
 
-        oAuthIntercept(httpClient, token);
+        oauthIntercept(httpClient, token);
 
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
@@ -50,7 +52,7 @@ public class ServiceBuilder {
     public static <S> S createService(Class<S> serviceClass, @NonNull final SessionManager session) {
         final OkHttpClient.Builder httpClient = getHttpClientBuilder();
 
-        oAuthIntercept(httpClient, session);
+        oauthIntercept(httpClient, session);
 
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = retrofitbuilder.client(client).build();
@@ -65,14 +67,20 @@ public class ServiceBuilder {
                 .readTimeout(30000, TimeUnit.MILLISECONDS);
     }
 
-    private static void oAuthIntercept(OkHttpClient.Builder httpBuilder, final SessionManager session) {
+    private static void oauthIntercept(OkHttpClient.Builder httpBuilder) {
+        httpBuilder.addInterceptor(chain -> {
+            return getResponseWithOAuth(chain, null, null);
+        });
+    }
+
+    private static void oauthIntercept(OkHttpClient.Builder httpBuilder, final SessionManager session) {
         httpBuilder.addInterceptor(chain -> {
             PartiAccessToken token = session.getPartiAccessToken();
             return getResponseWithOAuth(chain, token, session);
         });
     }
 
-    private static void oAuthIntercept(OkHttpClient.Builder httpBuilder, final PartiAccessToken token) {
+    private static void oauthIntercept(OkHttpClient.Builder httpBuilder, final PartiAccessToken token) {
         httpBuilder.addInterceptor(chain -> getResponseWithOAuth(chain, token, null));
     }
 
@@ -81,9 +89,6 @@ public class ServiceBuilder {
         if(token != null) {
             originalAccessToken = token.access_token;
         }
-
-        // We need a new client, since we don't want to make another call using our client with access token
-        AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
 
         Request original = chain.request();
         Request.Builder requestBuilder = original.newBuilder()
@@ -94,17 +99,31 @@ public class ServiceBuilder {
         Request request = requestBuilder.build();
         Response response = chain.proceed(request);
 
-        if (session != null && response.code() == 401 && originalAccessToken != null) {
+        if (response.code() != 401) {
+            return response;
+        }
+
+        if (session != null && originalAccessToken != null) {
             synchronized (retrofitbuilder) { //perform all 401 in sync blocks, to avoid multiply token updates
-                String currentAccessToken = token.access_token; //get currently stored token
-                if(currentAccessToken != null && currentAccessToken.equals(originalAccessToken)) { //compare current token with token that was stored before, if it was not updated - do update
-                    Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(token.refresh_token,
+                // We need a new client, since we don't want to make another call using our client with access token
+                AuthTokenService tokenService = createUnsignedService(AuthTokenService.class);
+
+                PartiAccessToken currentToken = session.getPartiAccessToken();
+                String currentAccessToken = currentToken.access_token; //get currently stored token
+                if(currentAccessToken == null) {
+                    Log.e(Constants.TAG, "Response Error 004");
+                    return response;
+                } else if(currentAccessToken.equals(originalAccessToken)) { //compare current token with token that was stored before, if it was not updated - do update
+                    Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(currentToken.refresh_token,
                             "refresh_token", BuildConfig.PARTI_APP_ID, BuildConfig.PARTI_SECRET_KEY);
                     return getResponseRefreshToken(tokenCall, chain, session, requestBuilder, response);
+                } else {
+                    setAuthHeader(requestBuilder, currentToken);
+                    Request newRequest = requestBuilder.build();
+                    return chain.proceed(newRequest);
                 }
             }
         }
-
         return response;
     }
 
@@ -127,7 +146,7 @@ public class ServiceBuilder {
                 throw new AuthFailError();
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Response Error 004 " + e.getMessage(), e);
+            Log.e(Constants.TAG, "Response Error 005 " + e.getMessage(), e);
             throw new AuthFailError();
         }
     }
