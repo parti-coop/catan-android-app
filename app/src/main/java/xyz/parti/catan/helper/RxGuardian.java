@@ -24,7 +24,6 @@ public class RxGuardian {
 
     public void unsubscribeAll() {
         for(Disposable subscription : subscriptions) {
-            Log.d(Constants.TAG_TEST, "unsubscribing!!");
             RxHelper.unsubscribe(subscription);
         }
         this.subscriptions = new ArrayList<>();

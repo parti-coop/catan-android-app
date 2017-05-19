@@ -189,7 +189,6 @@ public class PostBinder {
     }
 
     public void rebindData(Post post, Object payload) {
-        Log.d(Constants.TAG_TEST, "rebindData " +  payload.toString());
         if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
             this.bindComments(post);
         } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {

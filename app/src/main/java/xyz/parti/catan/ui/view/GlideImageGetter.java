@@ -56,8 +56,6 @@ public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateCha
      */
     @Override
     public Drawable getDrawable(String url) {
-        Log.d(Constants.TAG_TEST, "XXXXXXX");
-        Log.d(Constants.TAG_TEST, url);
         UrlDrawable urlDrawable = new UrlDrawable();
 
         ImageGetterViewTarget imageGetterViewTarget = new ImageGetterViewTarget(mTextView,

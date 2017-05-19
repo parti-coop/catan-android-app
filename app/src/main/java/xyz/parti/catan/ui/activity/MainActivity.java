@@ -367,7 +367,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 return;
             }
             if(this.presenter != null) {
-                Log.d(Constants.TAG_TEST, "onActivityResult at: " + post.toString());
                 presenter.changePost(post);
             }
         }
