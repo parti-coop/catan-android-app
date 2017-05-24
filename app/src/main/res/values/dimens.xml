@@ -5,6 +5,8 @@
 
     <dimen name="feed_item_parti_logo">25dp</dimen>
     <dimen name="feed_item_user_image">40sp</dimen>
+    <dimen name="post_form_parti_logo">25dp</dimen>
+    <dimen name="post_form_user_image">40sp</dimen>
     <dimen name="comment_user_image">30sp</dimen>
     <dimen name="feed_item_user_nickname">15dp</dimen>
     <dimen name="feed_item_post_created_at">15dp</dimen>
@@ -14,6 +16,8 @@
 
     <dimen name="navigation_header_padding">10dp</dimen>
 
+    <dimen name="default_space">10dp</dimen>
     <dimen name="post_card_padding">10dp</dimen>
+    <dimen name="parti_list_padding">10dp</dimen>
     <dimen name="comment_send_button">12sp</dimen>
 </resources>

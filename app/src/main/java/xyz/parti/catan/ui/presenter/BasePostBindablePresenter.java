@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.presenter;
 
+import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
@@ -27,8 +28,6 @@ import xyz.parti.catan.ui.binder.CommentBinder;
 import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by dalikim on 2017. 5. 15..
@@ -96,9 +95,9 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         post.toggleUpvoting();
                         changePost(post, Post.IS_UPVOTED_BY_ME);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
                     }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+                }, error -> ReportHelper.wtf(getView().getContext(), error)
         );
     }
 
@@ -114,9 +113,9 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         post.toggleCommentUpvoting(comment);
                         changePost(post, new LatestCommentsBinder.CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
                     }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+                }, error -> ReportHelper.wtf(getView().getContext(), error)
         );
     }
 
@@ -128,9 +127,9 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                     if(response.isSuccessful()) {
                         reloadPostSurvey(post);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Feedback error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Feedback error : " + response.code());
                     }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+                }, error -> ReportHelper.wtf(getView().getContext(), error)
         );
     }
 
@@ -158,9 +157,9 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         post.poll.updateChoice(getCurrentUser(), newChoice);
                         changePost(post, post.poll);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Agree error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Agree error : " + response.code());
                     }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+                }, error -> ReportHelper.wtf(getView().getContext(), error)
         );
     }
 
@@ -174,9 +173,9 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         post.poll.updateChoice(getCurrentUser(), newChoice);
                         changePost(post, post.poll);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Disagree error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Disagree error : " + response.code());
                     }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+                }, error -> ReportHelper.wtf(getView().getContext(), error)
         );
     }
 
@@ -256,5 +255,6 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void hideDownloadDocFileSourceProgress();
         void showDownloadedFile(File outputFile, String mimeType);
         void showPost(Post post);
+        Context getContext();
     }
 }

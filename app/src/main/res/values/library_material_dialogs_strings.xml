@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="define_int_material_dialogs"></string>
+	<!-- Author section -->
+	<string name="library_material_dialogs_author">Aidan Follestad</string>
+	<string name="library_material_dialogs_authorWebsite">https://aidanfollestad.com</string>
+	<!-- Library section -->
+	<string name="library_material_dialogs_libraryName">material-dialogs</string>
+	<string name="library_material_dialogs_libraryDescription">A beautiful, fluid, and customizable dialogs API</string>
+	<string name="library_material_dialogs_libraryWebsite">https://github.com/afollestad/material-dialogs</string>
+	<string name="library_material_dialogs_libraryVersion">5.9.6</string>
+	<!-- OpenSource section -->
+	<string name="library_material_dialogs_isOpenSource">true</string>
+	<string name="library_material_dialogs_repositoryLink">https://github.com/afollestad/material-dialogs</string>
+	<!-- ClassPath for autoDetect section -->
+	<string name="library_material_dialogs_classPath">com.afollestad.materialdialogs.MaterialDialog</string>
+	<!-- License section -->
+	<string name="library_material_dialogs_licenseId">mit</string>
+	<!-- Custom variables section -->
+</resources>

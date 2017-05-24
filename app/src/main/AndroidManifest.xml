@@ -63,6 +63,13 @@
             android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.activity.PostFormActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_post_form"
+            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.activity.PostActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"

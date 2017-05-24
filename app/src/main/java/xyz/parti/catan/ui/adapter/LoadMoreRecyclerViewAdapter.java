@@ -55,7 +55,14 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         List<InfinitableModelHolder<T>> holders = InfinitableModelHolder.from(items);
         this.holders.addAll(0, holders);
         prepareChangedModels(holders);
-        notifyDataPrepended(items.size() + 1);
+        notifyDataPrepended(items.size());
+    }
+
+    public void prependModel(T item) {
+        InfinitableModelHolder<T> holder = InfinitableModelHolder.forModel(item);
+        this.holders.add(0, holder);
+        prepareChangedModel(holder);
+        notifyDataPrepended(1);
     }
 
     public void changeModel(T model, Object payload) {
@@ -159,7 +166,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     private void notifyDataPrepended(int count) {
-        notifyItemRangeInserted(0, count - 1);
+        notifyItemRangeInserted(0, count);
     }
 
     public void setLoadFinished() {

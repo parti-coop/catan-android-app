@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="define_int_fastadapter"></string>
+	<!-- Author section -->
+	<string name="library_fastadapter_author">Mike Penz</string>
+	<string name="library_fastadapter_authorWebsite">http://mikepenz.com</string>
+	<!-- Library section -->
+	<string name="library_fastadapter_libraryName">FastAdapter</string>
+	<string name="library_fastadapter_libraryDescription">The FastAdapter is here to simplify this process. You don\'t have to worry about the adapter anymore. Just write the logic for how your view/item should look like, and you are done. This library has a fast and highly optimized core which provides core functionality, most apps require. It also prevents common mistakes by taking away those steps from the devs. Beside being blazing fast, minimizing the code you need to write, it is also really easy to extend. Just provide another adapter implementation, hook into the adapter chain, custom select / deselection behaviors. Everything is possible.</string>
+	<string name="library_fastadapter_libraryWebsite">https://github.com/mikepenz/FastAdapter</string>
+	<string name="library_fastadapter_libraryVersion">2.5.2</string>
+	<!-- OpenSource section -->
+	<string name="library_fastadapter_isOpenSource">true</string>
+	<string name="library_fastadapter_repositoryLink">https://github.com/mikepenz/FastAdapter</string>
+	<!-- ClassPath for autoDetect section -->
+	<string name="library_fastadapter_classPath">com.mikepenz.fastadapter.commons.adapters.FastItemAdapter</string>
+	<!-- License section -->
+	<string name="library_fastadapter_licenseId">apache_2_0</string>
+	<!-- Custom variables section -->
+</resources>

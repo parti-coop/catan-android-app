@@ -24,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -49,6 +50,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
+import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.helper.IntentHelper;
@@ -62,8 +64,9 @@ import xyz.parti.catan.ui.view.NewPostSignAnimator;
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
-    public static final int REQUEST_UPDATE_POST = 1;
-    public static final int REQUEST_PUSH_MESSAGE = 20000;
+    public static final int REQUEST_UPDATE_POST = 1999;
+    public static final int REQUEST_PUSH_MESSAGE = 2000;
+    public static final int REQUEST_NEW_POST = 2001;
 
     @BindView(R.id.toolbar_app)
     Toolbar appToolbar;
@@ -101,6 +104,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
+    private MenuItem newPostMenuItem;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -181,13 +185,18 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_new_post:
+                presenter.showPostForm();
+                return true;
+            default:
+                // Pass the event to ActionBarDrawerToggle, if it returns
+                // true, then it has handled the app icon touch event
+                if (drawerToggle.onOptionsItemSelected(item)) {
+                    return true;
+                }
+                return super.onOptionsItemSelected(item);
         }
-        // Handle your other action bar items...
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -358,17 +367,25 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_UPDATE_POST){
-            if(data == null) {
-                return;
-            }
-            Post post = Parcels.unwrap(data.getParcelableExtra("post"));
-            if(post == null) {
-                return;
-            }
-            if(this.presenter != null) {
+        switch (requestCode) {
+            case REQUEST_UPDATE_POST:
+                if(data == null) return;
+                if(this.presenter == null) return;
+
+                Post post = Parcels.unwrap(data.getParcelableExtra("post"));
+                if(post == null) return;
                 presenter.changePost(post);
-            }
+                return;
+            case REQUEST_NEW_POST:
+                if(data == null) return;
+                if(this.presenter == null) return;
+
+                Parti parti = Parcels.unwrap(data.getParcelableExtra("parti"));
+                String body = data.getStringExtra("body");
+                presenter.savePost(parti, body);
+                return;
+            default:
+                return;
         }
     }
 
@@ -428,6 +445,27 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         noPostSignLayout.setVisibility(View.GONE);
         retryButton.setVisibility(View.GONE);
         goToPartiesButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showPostForm() {
+        Intent intent = new Intent(this, PostFormActivity.class);
+        startActivityForResult(intent, REQUEST_NEW_POST);
+    }
+
+    @Override
+    public void showPostForm(Parti parti, String body) {
+        Intent intent = new Intent(this, PostFormActivity.class);
+        intent.putExtra("parti", Parcels.wrap(parti));
+        intent.putExtra("body", body);
+        startActivityForResult(intent, REQUEST_NEW_POST);
+    }
+
+    @Override
+    public void scrollToTop() {
+        if(postListRecyclerView != null && postListRecyclerView.getVisibility() == View.VISIBLE) {
+            postListRecyclerView.scrollToPosition(0);
+        }
     }
 
     @Override
@@ -575,5 +613,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             if(presenter == null) return;
             presenter.checkNewPosts();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        newPostMenuItem = menu.findItem(R.id.action_new_post);
+        return true;
     }
 }

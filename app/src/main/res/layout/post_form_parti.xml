@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/parti_list_padding"
+    android:layout_marginRight="@dimen/parti_list_padding">
+
+    <ImageView
+        android:id="@+id/imageview_parti_logo"
+        android:layout_width="@dimen/post_form_parti_logo"
+        android:layout_height="@dimen/post_form_parti_logo"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/parti_list_padding"
+        android:layout_marginRight="5dp"
+        android:gravity="left"
+        android:scaleType="centerInside"
+        android:src="@drawable/img_sample_parti_logo" />
+
+    <TextView
+        android:id="@+id/textview_parti_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/imageview_parti_logo"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="ddd" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignLeft="@+id/imageview_parti_logo"
+        android:layout_below="@+id/imageview_parti_logo"
+        android:layout_marginTop="@dimen/parti_list_padding"
+        android:background="@color/brand_gray_light" />
+</RelativeLayout>

@@ -41,7 +41,7 @@ public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateCha
         this.mContext = context;
         this.mTextView = textView;
 
-        // save Drawable.Callback in TextView
+        // savePost Drawable.Callback in TextView
         // and get back when finish fetching image
         // see https://github.com/goofyz/testGlide/pull/1 for more details
         mTextView.setTag(R.id.drawable_callback_tag, this);

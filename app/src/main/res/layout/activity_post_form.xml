@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/default_space"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/layout_parti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/default_space">
+
+        <ImageView
+            android:id="@+id/imageview_parti_logo"
+            android:layout_width="@dimen/post_form_parti_logo"
+            android:layout_height="@dimen/post_form_parti_logo"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="@dimen/parti_list_padding"
+            android:layout_marginRight="5dp"
+            android:gravity="left"
+            android:scaleType="centerInside"
+            android:src="@drawable/img_sample_parti_logo" />
+
+        <TextView
+            android:id="@+id/textview_parti_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/imageview_parti_logo"
+            android:layout_marginRight="@dimen/default_space"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="ddd" />
+
+        <com.joanzapata.iconify.widget.IconTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/textview_parti_title"
+            android:text="{fa-angle-down}" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignLeft="@+id/imageview_parti_logo"
+            android:layout_below="@+id/imageview_parti_logo"
+            android:layout_marginTop="@dimen/parti_list_padding"
+            android:background="@color/brand_gray_light" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/edittext_body"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/default_space"
+        android:layout_weight="1"
+        android:gravity="top"
+        app:backgroundTint="@color/brand_gray_light"
+        tools:text="xxxx" />
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="10dp"
+        fancy:fb_borderColor="#FFFFFF"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/style_color_primary"
+        fancy:fb_focusColor="@color/style_color_primary_dark"
+        fancy:fb_radius="30dp"
+        fancy:fb_text="@string/save"
+        fancy:fb_textColor="#FFFFFF" />
+</LinearLayout>

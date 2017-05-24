@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="drawable_callback_tag" type="id" />
+    <item name="post_form_parti" type="id">xyz.parti.catan.PostFormParti</item>
+    <item name="post_form_group" type="id">post_form_group</item>
 </resources>

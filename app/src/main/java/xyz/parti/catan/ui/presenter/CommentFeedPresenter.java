@@ -26,8 +26,6 @@ import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.CommentBinder;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 /**
  * Created by dalikim on 2017. 5. 3..
  */
@@ -85,7 +83,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         feedAdapter.appendModels(page.items);
                         feedAdapter.setMoreDataAvailable(page.has_more_item);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "AllComments load first error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "AllComments load first error : " + response.code());
                         feedAdapter.setMoreDataAvailable(false);
                     }
                     feedAdapter.setLoadFinished();
@@ -94,7 +92,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         return;
                     }
 
-                    ReportHelper.wtf(getApplicationContext(), error);
+                    ReportHelper.wtf(getView().getContext(), error);
                     feedAdapter.setLoadFinished();
                 });
     }
@@ -136,7 +134,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                     }
                 } else {
                     feedAdapter.setMoreDataAvailable(false);
-                    ReportHelper.wtf(getApplicationContext(), "AllComments load more error : " + response.code());
+                    ReportHelper.wtf(getView().getContext(), "AllComments load more error : " + response.code());
                 }
                 feedAdapter.setLoadFinished();
             }, error -> {
@@ -146,7 +144,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
                 feedAdapter.setMoreDataAvailable(false);
                 feedAdapter.setLoadFinished();
-                ReportHelper.wtf(getApplicationContext(), error);
+                ReportHelper.wtf(getView().getContext(), error);
             });
     }
 
@@ -175,7 +173,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         }
                         post.addComment(comment);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Create comment error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Create comment error : " + response.code());
                     }
                     getView().setCompletedCommentForm();
                     feedAdapter.setLoadFinished();
@@ -187,7 +185,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                     getView().setCompletedCommentForm();
                     feedAdapter.setLoadFinished();
 
-                    ReportHelper.wtf(getApplicationContext(), error);
+                    ReportHelper.wtf(getView().getContext(), error);
                 });
     }
 
@@ -223,9 +221,9 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         post.toggleCommentUpvoting(comment);
                         changeComment(comment, Comment.IS_UPVOTED_BY_ME);
                     } else {
-                        ReportHelper.wtf(getApplicationContext(), "Like error : " + response.code());
+                        ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
                     }
-                }, error -> ReportHelper.wtf(getApplicationContext(), error)
+                }, error -> ReportHelper.wtf(getView().getContext(), error)
         );
     }
 

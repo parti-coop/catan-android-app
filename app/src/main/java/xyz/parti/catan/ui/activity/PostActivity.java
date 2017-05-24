@@ -2,6 +2,7 @@ package xyz.parti.catan.ui.activity;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -229,6 +230,11 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     @Override
     public void showPost(Post post) {
         // do nothing
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     @Override

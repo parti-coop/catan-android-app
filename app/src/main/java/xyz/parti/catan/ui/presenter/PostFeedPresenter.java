@@ -19,8 +19,8 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
-import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Page;
+import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.services.PostsService;
@@ -46,6 +46,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Disposable loadMorePostsPublisher;
     private Disposable checkNewPostsPublisher;
     private Disposable receivePushMessageForPostPublisher;
+    private Disposable savePost;
     private AppVersionCheckTask appVersionCheckTask;
     private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
 
@@ -361,6 +362,35 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         receivablePushMessageCheckTask.check();
     }
 
+    public void showPostForm() {
+        getView().showPostForm();
+    }
+
+    public void savePost(Parti parti, String body) {
+        if(!isActive()) return;
+
+        getView().scrollToTop();
+        feedAdapter.prependLoader();
+        savePost = getRxGuardian().subscribe(savePost,
+                postsService.createPost(parti.id, body),
+                response -> {
+                    if(!isActive()) return;
+                    feedAdapter.removeFirstMoldelHolder();
+                    if(response.isSuccessful())  {
+                        feedAdapter.prependModel(response.body());
+                        getView().scrollToTop();
+                    } else {
+                        getView().reportError("savePost error : " + response.code());
+                        getView().showPostForm(parti, body);
+                    }
+                }, error -> {
+                    if(!isActive()) return;
+                    feedAdapter.removeFirstMoldelHolder();
+                    getView().reportError(error);
+                    getView().showPostForm(parti, body);
+                });
+    }
+
     public interface View extends BasePostBindablePresenter.View {
         void stopAndEnableSwipeRefreshing();
         boolean isVisibleNewPostsSign();
@@ -374,5 +404,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showMessage(String message);
         void showEmpty(boolean isError);
         void readyToRetry();
+        void showPostForm();
+        void showPostForm(Parti parti, String body);
+        void scrollToTop();
     }
 }
