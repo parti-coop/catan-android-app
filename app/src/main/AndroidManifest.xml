@@ -118,6 +118,16 @@
         <meta-data
             android:name="xyz.parti.catan.data.UnsafeOkHttpGlideModule"
             android:value="GlideModule" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="xyz.parti.catan.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

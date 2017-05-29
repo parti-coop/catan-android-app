@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':matisse'
+project(':matisse').projectDir = new File('Matisse/matisse')

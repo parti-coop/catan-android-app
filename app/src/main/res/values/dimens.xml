@@ -20,4 +20,5 @@
     <dimen name="post_card_padding">10dp</dimen>
     <dimen name="parti_list_padding">10dp</dimen>
     <dimen name="comment_send_button">12sp</dimen>
+    <dimen name="grid_expected_size">120dp</dimen>
 </resources>

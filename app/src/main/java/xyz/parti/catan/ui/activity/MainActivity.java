@@ -58,6 +58,7 @@ import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.DrawerNavigationHeaderBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
+import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 
@@ -382,7 +383,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
                 Parti parti = Parcels.unwrap(data.getParcelableExtra("parti"));
                 String body = data.getStringExtra("body");
-                presenter.savePost(parti, body);
+                ArrayList<SelectedImage> fileSourceAttachmentUris = Parcels.unwrap(data.getParcelableExtra("fileSourceAttachmentImages"));
+                presenter.savePost(parti, body, fileSourceAttachmentUris);
                 return;
             default:
                 return;

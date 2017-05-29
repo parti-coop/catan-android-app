@@ -36,6 +36,8 @@
 
     <string name="doc_file_source_download_permission_rationale">다운로드 하기 위한 저장소에 접근할 수 있는 권한이 필요합니다</string>
     <string name="doc_file_source_download_permission_denied">다운로드 하기 위한 권한이 필요합니다.\n[설정] > [권한] 에서 저장소에 접근할 수 있는 권한을 허용할 수 있습니다.</string>
+    <string name="image_pick_permission_rationale">이미지를 선택하기 위해 저장소에 접근할 수 있는 권한이 필요합니다</string>
+    <string name="image_pick_permission_denied">이미지를 선택하기 위해 저장소에 접근할 수 있는 권한이 필요합니다.\n[설정] > [권한] 에서 저장소에 접근할 수 있는 권한을 허용할 수 있습니다.</string>
 
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_google_login">로그인이 취소되었습니다.\n [설정]에서 구글 계정을 다시 확인해 주세요.</string>
@@ -88,4 +90,7 @@
     <string name="title_activity_post_form">게시글 등록</string>
     <string name="dialog_title_choice_parti_on_post_form">빠띠 선택</string>
     <string name="save">올리기</string>
+    <string name="error_gif">파일 용량이 너무 큽니다. %1$sM 이하의 파일을 선택해 주세요</string>
+    <string name="new_post_hint">무슨 이야기를 나누실래요?</string>
+    <string name="title_activity_image_picker">사진 선택</string>
 </resources>

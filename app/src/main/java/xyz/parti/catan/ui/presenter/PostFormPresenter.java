@@ -1,24 +1,19 @@
 package xyz.parti.catan.ui.presenter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-
-import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
-import com.mikepenz.fastadapter.items.AbstractItem;
+import android.net.Uri;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 import io.reactivex.disposables.Disposable;
-import retrofit2.Response;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
-import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.services.PartiesService;
-import xyz.parti.catan.ui.adapter.PostFormGroupItem;
-import xyz.parti.catan.ui.adapter.PostFormPartiItem;
 
 /**
  * Created by dalikim on 2017. 5. 24..
@@ -27,7 +22,8 @@ import xyz.parti.catan.ui.adapter.PostFormPartiItem;
 public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
     private final PartiesService partiesService;
     private Disposable loadJoinedParties;
-    private List<AbstractItem> items = new ArrayList<>();
+    private List<Parti> joindedParties = new ArrayList<>();
+    private ArrayList<SelectedImage> selectedImages = new ArrayList<>();
     private Parti selectedParti;
 
     public PostFormPresenter(SessionManager session) {
@@ -35,12 +31,11 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
         partiesService = ServiceBuilder.createService(PartiesService.class, session);
     }
 
-    public void loadJoinedParties(FastItemAdapter<AbstractItem> fastAdapter) {
+    public void loadJoinedParties() {
         if(!isActive()) return;
 
-        fastAdapter.clear();
-        if(items.size() > 0) {
-            fastAdapter.add(items);
+        if(joindedParties.size() > 0) {
+            getView().resetPartiChoiceList(joindedParties);
             return;
         }
 
@@ -50,41 +45,15 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
                 response -> {
                     if(!isActive()) return;
                     if(response.isSuccessful()) {
-                        TreeMap<Group, List<PostFormPartiItem>> result = getGroupList(response);
-
-                        items.clear();
-                        for(Group group: result.keySet()) {
-                            if(group.isIndie()) {
-                                items.add(0, new PostFormGroupItem(group));
-                                items.addAll(1, result.get(group));
-                            } else {
-                                items.add(new PostFormGroupItem(group));
-                                items.addAll(result.get(group));
-                            }
-                        }
-
-                        fastAdapter.clear();
-                        fastAdapter.add(items);
+                        joindedParties.clear();
+                        joindedParties.addAll(Arrays.asList(response.body()));
+                        getView().resetPartiChoiceList(joindedParties);
                     }
                     getView().hidePartiChoiceProgressBar();
                 }, error -> {
                     getView().reportError(error);
                     getView().hidePartiChoiceProgressBar();
                 });
-    }
-
-    @NonNull
-    private TreeMap<Group, List<PostFormPartiItem>> getGroupList(Response<Parti[]> response) {
-        TreeMap<Group, List<PostFormPartiItem>> result = new TreeMap<>();
-        for(Parti parti : response.body()) {
-            List<PostFormPartiItem> parties = result.get(parti.group);
-            if(parties == null) {
-                parties = new ArrayList<>();
-            }
-            parties.add(new PostFormPartiItem(parti));
-            result.put(parti.group, parties);
-        }
-        return result;
     }
 
     public void selectParti(Parti parti) {
@@ -106,7 +75,7 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
         if(selectedParti == null) {
             getView().cancelNewPost();
         } else {
-            getView().closePartiChoiceDialog();
+            getView().hidePartiChoice();
             getView().setParti(selectedParti);
         }
     }
@@ -117,11 +86,22 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
         getView().showPartiChoice();
     }
 
+    public void showPartiChoiceIfNeed() {
+        if(!isActive()) return;
+
+        if(selectedParti == null) {
+            getView().showPartiChoice();
+        } else {
+            getView().hidePartiChoice();
+        }
+    }
+
     public void savePost() {
         if(!isActive()) return;
 
         String body = getView().getBody();
-        getView().finishAndReturn(selectedParti, body);
+        if(TextUtils.isEmpty(body)) return;
+        getView().finishAndReturn(selectedParti, body, selectedImages);
     }
 
     public void setDefaultParti(Parti parti) {
@@ -131,8 +111,41 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
         getView().setParti(parti);
     }
 
+    public void showImagePicker() {
+        if(!isActive()) return;
+        
+        getView().showImagePicker(selectedImageUris());
+    }
+
+    public void removeImage(Uri uri) {
+        if(!isActive()) return;
+
+        Iterator<SelectedImage> i = selectedImages.iterator();
+        while(i.hasNext()) {
+            SelectedImage next = i.next();
+            if(next != null && next.uri != null && next.uri.equals(uri)) {
+                i.remove();
+                break;
+            }
+        }
+        getView().removePreviewImage(uri);
+    }
+
+    public void resetImages(List<Uri> uris, List<String> pathes) {
+        if(!isActive()) return;
+
+        selectedImages.clear();
+        for(int i = 0; i < uris.size(); i++) {
+            SelectedImage selected = new SelectedImage();
+            selected.path = pathes.get(i);
+            selected.uri = uris.get(i);
+            selectedImages.add(selected);
+        }
+        getView().resetPreviewImages(selectedImageUris());
+    }
+
     public interface View {
-        void closePartiChoiceDialog();
+        void hidePartiChoice();
         void cancelNewPost();
         void setParti(Parti selectedParti);
         void showPartiChoice();
@@ -141,10 +154,30 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
         void reportError(Throwable error);
         String getBody();
         Context getContext();
-        void finishAndReturn(Parti selectedParti, String body);
+        void finishAndReturn(Parti selectedParti, String body, ArrayList<SelectedImage> fileSourceAttachmentsImages);
+        void showImagePicker(ArrayList<Uri> selected);
+        void resetPartiChoiceList(List<Parti> joindedParties);
+        void resetPreviewImages(List<Uri> imagesUris);
+        void removePreviewImage(Uri uri);
     }
 
     private boolean isActive() {
         return getView() != null;
+    }
+
+    private List<String> selectedImagePathes() {
+        List<String> result =  new ArrayList<>();
+        for(SelectedImage selected : selectedImages) {
+            result.add(selected.path);
+        }
+        return result;
+    }
+
+    private ArrayList<Uri> selectedImageUris() {
+        ArrayList<Uri> result =  new ArrayList<>();
+        for(SelectedImage selected : selectedImages) {
+            result.add(selected.uri);
+        }
+        return result;
     }
 }

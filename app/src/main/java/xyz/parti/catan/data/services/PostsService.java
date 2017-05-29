@@ -1,15 +1,18 @@
 package xyz.parti.catan.data.services;
 
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Flowable;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Streaming;
@@ -42,7 +45,13 @@ public interface PostsService {
     @GET("/api/v1/posts/{id}")
     Flowable<Response<Post>> getPost(@Path(value = "id") Long id);
 
-    @FormUrlEncoded
+//    @FormUrlEncoded
+//    @POST("/api/v1/posts")
+//    Flowable<Response<Post>> createPost(@Field(value= "post[parti_id]") Long partiId, @Field(value="post[body]") String body);
+    @Multipart
     @POST("/api/v1/posts")
-    Flowable<Response<Post>> createPost(@Field(value= "post[parti_id]") Long partiId, @Field(value="post[body]") String body);
+    Flowable<Response<Post>> createPost(
+            @Part("post[parti_id]") RequestBody partiId,
+            @Part("post[body]") RequestBody body,
+            @Part List<MultipartBody.Part> file_sources_attachments);
 }

@@ -128,6 +128,7 @@ dependencies {
     }
     compile 'com.mikepenz:fastadapter-commons:2.5.2@aar'
     compile 'com.mikepenz:materialize:1.0.1@aar'
+    compile project(':matisse')
     annotationProcessor 'org.parceler:parceler:1.1.6'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'

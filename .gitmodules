@@ -1,0 +1,3 @@
+[submodule "Matisse"]
+	path = Matisse
+	url = git@github.com:parti-xyz/Matisse.git

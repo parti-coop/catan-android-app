@@ -11,10 +11,14 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
@@ -366,13 +370,24 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showPostForm();
     }
 
-    public void savePost(Parti parti, String body) {
+    public void savePost(Parti parti, String body, List<SelectedImage> fileSourcesAttachmentImages) {
         if(!isActive()) return;
 
         getView().scrollToTop();
         feedAdapter.prependLoader();
+
+        RequestBody partiIdReq = RequestBody.create(okhttp3.MultipartBody.FORM, parti.id.toString());
+        RequestBody bodyReq = RequestBody.create(okhttp3.MultipartBody.FORM, body);
+
+        List<MultipartBody.Part> filesReq = new ArrayList<>();
+        for(SelectedImage image : fileSourcesAttachmentImages) {
+            MultipartBody.Part request = buildFileSourceAttachmentRequest(image);
+            if(request == null) continue;
+            filesReq.add(request);
+        }
+
         savePost = getRxGuardian().subscribe(savePost,
-                postsService.createPost(parti.id, body),
+                postsService.createPost(partiIdReq, bodyReq, filesReq),
                 response -> {
                     if(!isActive()) return;
                     feedAdapter.removeFirstMoldelHolder();
@@ -389,6 +404,18 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     getView().reportError(error);
                     getView().showPostForm(parti, body);
                 });
+    }
+
+    private MultipartBody.Part buildFileSourceAttachmentRequest(SelectedImage image) {
+        if(image == null) return null;
+
+        File file = new File(image.path);
+        if(!file.exists()) {
+            Log.d(Constants.TAG, "Not found file : " + image.path);
+            return null;
+        }
+        RequestBody requestFile = RequestBody.create(MediaType.parse(getView().getContext().getContentResolver().getType(image.uri)), file);
+        return MultipartBody.Part.createFormData("post[file_sources_attributes][][attachment]", file.getName(), requestFile);
     }
 
     public interface View extends BasePostBindablePresenter.View {
