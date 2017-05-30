@@ -36,7 +36,6 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
-import com.zhihu.matisse.internal.model.SelectedItemCollection;
 
 import org.parceler.Parcels;
 
@@ -310,7 +309,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
                                 .choose(MimeType.of(MimeType.GIF, MimeType.PNG, MimeType.JPEG))
                                 .capture(true)
                                 .captureInList(false)
-                                .captureStrategy(new CaptureStrategy(true, "xyz.parti.catan.fileprovider", "Parti"))
+                                .captureStrategy(new CaptureStrategy(true, Constants.STORAGE_PROVIDER_AUTHORITY, "Parti"))
                                 .countable(true)
                                 .maxSelectable(9)
                                 .addFilter(new SizeFilter(10 * Filter.K * Filter.K))

@@ -9,5 +9,5 @@ public class Constants {
     public static final String TAG_TEST = "Catan-Local";
 
     public static final String KEY_PREF_RECEIVE_PUSH_MESSAGE = "pref_receive_push_message";
-    public static final String LOCAL_STORAGE_PROVIDER_AUTHORITY = "xyz.parti.catan.fileprovider";
+    public static final String STORAGE_PROVIDER_AUTHORITY = "xyz.parti.catan.fileprovider";
 }

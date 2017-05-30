@@ -2,6 +2,8 @@ package xyz.parti.catan.ui.presenter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonNull;
@@ -218,11 +220,12 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     
 
     @Override
-    public void onSuccessDownloadDocFileSource(File outputFile, String fileName) {
+    public void onSuccessDownloadDocFileSource(File outputFile, String fileName, String authorities) {
         if(getView() == null) return;
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         String mimeType = myMime.getMimeTypeFromExtension(getExtension(fileName));
-        getView().showDownloadedFile(outputFile, mimeType);
+        Uri uri = FileProvider.getUriForFile(getView().getContext(), authorities, outputFile);
+        getView().showDownloadedFile(uri, mimeType);
     }
 
     private String getExtension(String fileName) {
@@ -253,7 +256,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void showDownloadDocFileSourceProgress(DownloadFilesTask task);
         void updateDownloadDocFileSourceProgress(int percentage, String message);
         void hideDownloadDocFileSourceProgress();
-        void showDownloadedFile(File outputFile, String mimeType);
+        void showDownloadedFile(Uri uri, String mimeType);
         void showPost(Post post);
         Context getContext();
     }

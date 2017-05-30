@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -18,6 +20,7 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -216,10 +219,16 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     }
 
     @Override
-    public void showDownloadedFile(File file, String mimeType) {
+    public void showDownloadedFile(Uri uri, String mimeType) {
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        newIntent.setDataAndType(Uri.fromFile(file), mimeType);
+        newIntent.setDataAndType(uri, mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        List<ResolveInfo> resolvedInfoActivities = getPackageManager().queryIntentActivities(newIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo ri : resolvedInfoActivities) {
+            grantUriPermission(ri.activityInfo.packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+
         try {
             startActivity(newIntent);
         } catch (ActivityNotFoundException e) {

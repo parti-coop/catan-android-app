@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <files-path path="Downloads/" name="downloads" />
+    <external-path path="Download/Parti" name="downloads" />
     <external-path path="Pictures/Parti" name="capture" />
 </paths>

@@ -2,6 +2,7 @@ package xyz.parti.catan.ui.task;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.os.EnvironmentCompat;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -42,7 +43,6 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         this.fileName = fileName;
     }
 
-
     //파일 다운로드를 시작하기 전에 프로그레스바를 화면에 보여줍니다.
     @Override
     protected void onPreExecute() { //2
@@ -73,12 +73,16 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         byte data[] = new byte[1024 * 4];
         long fileSize = body.contentLength();
         InputStream bis = new BufferedInputStream(body.byteStream(), 1024 * 8);
-        outputFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+        outputFile = createDownloadFile(fileName);
+        if(outputFile == null) {
+            return RESUT_CANCEL;
+        }
         OutputStream output = new FileOutputStream(outputFile);
 
         try {
             long downloadedSize = 0;
             while ((count = bis.read(data)) != -1) {
+
                 //사용자가 BACK 버튼 누르면 취소가능
                 if (this.isCancelled()) {
                     bis.close();
@@ -94,6 +98,9 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
                 output.write(data, 0, count);
             }
             return downloadedSize;
+        } catch(Throwable e) {
+            Log.e(Constants.TAG_TEST, e.getMessage(), e);
+            throw e;
         } finally {
             try {
                 output.flush();
@@ -103,6 +110,34 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
                 bis.close();
             } catch (Exception ignore) {}
         }
+    }
+
+    private File createDownloadFile(String fileName) throws IOException {
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        // Handle the situation that user's external storage is not ready
+        if (!Environment.MEDIA_MOUNTED.equals(EnvironmentCompat.getStorageState(storageDir))) {
+            Log.d(Constants.TAG, "External storage is not ready");
+            return null;
+        }
+
+        storageDir = new File(storageDir, "Parti");
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+
+        String extension = "";
+        String name = "";
+
+        int idxOfDot = fileName.lastIndexOf('.');   //Get the last index of . to separate extension
+        extension = fileName.substring(idxOfDot + 1);
+        name = fileName.substring(0, idxOfDot);
+
+        int counter = 1;
+        while(new File(storageDir, fileName).exists()){
+            fileName = name + "(" +counter + ")." + extension;
+            counter++;
+        }
+        return new File(storageDir, fileName);
     }
 
     //다운로드 중 프로그레스바 업데이트
@@ -137,7 +172,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
             }
             presenter.onFailDownloadDocFileSource(message);
         } else {
-            presenter.onSuccessDownloadDocFileSource(outputFile, fileName);
+            presenter.onSuccessDownloadDocFileSource(outputFile, fileName, Constants.STORAGE_PROVIDER_AUTHORITY);
         }
     }
 
@@ -147,6 +182,6 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         void onProgressUpdateDownloadDocFileSource(int progress, String message);
         void onPostDownloadDocFileSource();
         void onFailDownloadDocFileSource(String message);
-        void onSuccessDownloadDocFileSource(File outputFile, String fileName);
+        void onSuccessDownloadDocFileSource(File outputFile, String fileName, String authorities);
     }
 }

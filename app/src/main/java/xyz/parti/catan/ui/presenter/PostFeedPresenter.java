@@ -426,6 +426,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showPostListDemo();
         void ensureExpendedAppBar();
         void showSettings();
+
         Context getContext();
         void showNewVersionMessage(String newVersion);
         void showMessage(String message);

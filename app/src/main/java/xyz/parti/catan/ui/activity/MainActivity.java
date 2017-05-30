@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -310,7 +313,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     private void setUpFeed() {
-        downloadProgressDialog = new ProgressDialog(this);
+        downloadProgressDialog = new ProgressDialog(this, R.style.AppAlertDialog);
 
         PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this);
         feedAdapter.setPresenter(presenter);
@@ -523,10 +526,16 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void showDownloadedFile(File file, String mimeType) {
+    public void showDownloadedFile(Uri uri, String mimeType) {
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        newIntent.setDataAndType(Uri.fromFile(file), mimeType);
+        newIntent.setDataAndType(uri, mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        List<ResolveInfo> resolvedInfoActivities = getPackageManager().queryIntentActivities(newIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo ri : resolvedInfoActivities) {
+            grantUriPermission(ri.activityInfo.packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+
         try {
             startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
