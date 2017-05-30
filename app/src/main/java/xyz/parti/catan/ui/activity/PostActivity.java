@@ -248,6 +248,10 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
 
     @Override
     public void changePost(Post post, Object payload) {
-        this.postBinder.rebindData(post, payload);
+        if(payload == null) {
+            this.postBinder.bindData(post);
+        } else {
+            this.postBinder.rebindData(post, payload);
+        }
     }
 }
