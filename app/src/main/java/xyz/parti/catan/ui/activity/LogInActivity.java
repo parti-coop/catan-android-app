@@ -214,8 +214,6 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             }
             String token = result.getSignInAccount().getIdToken();
             partiLoginTask.loginSocial("google_oauth2", token);
-
-            Auth.GoogleSignInApi.revokeAccess(googleApiClient).setResultCallback(status -> Log.d(Constants.TAG_TEST, "REVOKE"));
         } else {
             Log.d(Constants.TAG, result.getStatus().toString());
             progressToggler.toggle(false);
