@@ -3,7 +3,9 @@ package xyz.parti.catan.data;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -21,7 +23,6 @@ import xyz.parti.catan.ui.activity.LogInActivity;
 
 public class SessionManager {
     private static final String CURRENT_SESSION_VERSION = "3";
-    private static final String PREF_NAME = "xyz.parti.catan.SESSION";
 
     private static final String KEY_SESSION_VERSION = "session_version";
     private static final String KEY_IS_LOGIN = "is_logged_in";
@@ -59,7 +60,7 @@ public class SessionManager {
 
     public SessionManager(Context context){
         this.context = context;
-        pref = this.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        pref = this.context.getSharedPreferences(Constants.PREF_NAME_SESSION, Context.MODE_PRIVATE);
         this.editor = pref.edit();
     }
 
@@ -130,11 +131,38 @@ public class SessionManager {
         LocalBroadcastManager.getInstance(this.context).sendBroadcast(broadcast);
     }
 
-    public void clear() {
+    private void clear() {
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
+        removeDefaultPreferences(this.context);
+        removePreferences(this.context, Constants.PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER);
+        removePreferences(this.context, Constants.PREF_NAME_VERSION_CHECKER);
     }
+
+    private void removePreferences(Context context, String name) {
+        try {
+            SharedPreferences preferences = context.getSharedPreferences(name, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.commit();
+        } catch (Exception e) {
+            Log.e(Constants.TAG, e.getMessage(), e);
+        }
+    }
+
+    void removeDefaultPreferences(Context context) {
+        try {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.commit();
+        } catch (Exception e) {
+            Log.e(Constants.TAG, e.getMessage(), e);
+        }
+    }
+
 
     public void startLogin() {
         Intent i = new Intent(this.context, LogInActivity.class);

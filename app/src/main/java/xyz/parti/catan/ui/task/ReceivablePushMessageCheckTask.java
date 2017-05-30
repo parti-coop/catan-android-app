@@ -21,7 +21,6 @@ import xyz.parti.catan.helper.RxGuardian;
  */
 
 public class ReceivablePushMessageCheckTask {
-    private static final String PREF_NAME = "xyz.parti.catan.RECEIVABLE_PUSH_MESSAGE_CHECKER";
     private static final String KEY_LAST_CHECKED_AT_MILLS = "app_version_last_checked_at_mills";
     private final RxGuardian rxGuardian;
     private final DeviceTokensService deviceTokensService;
@@ -31,7 +30,7 @@ public class ReceivablePushMessageCheckTask {
     private Disposable createDeviceTokenPublisher;
 
     public ReceivablePushMessageCheckTask(Context context, SessionManager session) {
-        pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        pref = context.getSharedPreferences(Constants.PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER, Context.MODE_PRIVATE);
         this.context = context;
         deviceTokensService = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
         this.rxGuardian = new RxGuardian();

@@ -159,7 +159,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         private void setUpReceivePushMessageAction() {
-            Preference pref = findPreference(Constants.KEY_PREF_RECEIVE_PUSH_MESSAGE);
+            Preference pref = findPreference(Constants.PREF_VALUE_KEY_RECEIVE_PUSH_MESSAGE);
             pref.setOnPreferenceChangeListener((preference, newValue) -> {
                 if((Boolean) newValue) {
                     String refreshedToken = getFirebaseInstanceToken();
