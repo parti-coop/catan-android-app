@@ -27,6 +27,7 @@ import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
+import xyz.parti.catan.data.repository.NotificationsRepository;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
@@ -326,13 +327,20 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 });
     }
 
-    public void receivePushMessage(PushMessage pushMessage) {
-        if(pushMessage == null) {
-            Log.d(Constants.TAG_TEST, "NULL pushMessage");
-            return;
-        }
+    public void receivePushMessage(int notificatiionId, PushMessage pushMessage) {
         if(!isActive()) {
             Log.d(Constants.TAG_TEST, "NOT active");
+            return;
+        }
+
+        if(notificatiionId != -1) {
+            Log.d(Constants.TAG_TEST, "MAIN notificatiionId" + notificatiionId);
+            NotificationsRepository repository = new NotificationsRepository(getView().getContext().getSharedPreferences(Constants.PREF_NAME_NOTIFICATIONS, Context.MODE_PRIVATE));
+            repository.destroy(notificatiionId);
+        }
+
+        if(pushMessage == null) {
+            Log.d(Constants.TAG_TEST, "NULL pushMessage");
             return;
         }
         if(pushMessage.user_id != session.getCurrentUser().id) {

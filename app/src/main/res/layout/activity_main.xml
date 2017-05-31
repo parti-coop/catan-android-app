@@ -48,6 +48,7 @@
                                 android:scaleType="fitCenter"
                                 android:src="@drawable/ic_empty_box_brand_gray" />
                             <TextView
+                                android:id="@+id/textview_no_posts_sign"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/no_posts" />

@@ -1,7 +1,5 @@
 package xyz.parti.catan.ui.service;
 
-import android.app.ActivityManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -16,17 +15,21 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.parceler.Parcels;
 
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import xyz.parti.catan.CatanApplication;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PushMessage;
+import xyz.parti.catan.data.repository.NotificationsRepository;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.ui.activity.MainActivity;
+import xyz.parti.catan.ui.receivers.CancelNotificationReceiver;
 
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
 
@@ -35,10 +38,18 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
  */
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
+    private static final int MAX_SIZE = 3;
+    private NotificationManagerCompat notificationManager;
+    private NotificationsRepository notificationsRepository;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();
         PushMessage pushMessage = new PushMessage();
+        String idData = data.get("id");
+        if(idData != null) {
+            pushMessage.id = Long.parseLong(idData);
+        }
         pushMessage.title = data.get("title");
         pushMessage.body = data.get("body");
         pushMessage.type = data.get("type");
@@ -49,6 +60,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         if(userIdData != null) {
             pushMessage.user_id = Long.parseLong(userIdData);
         }
+
+        Log.d(Constants.TAG_TEST, "Received id : " + data.get("id"));
         Log.d(Constants.TAG_TEST, "Received title : " + data.get("title"));
         Log.d(Constants.TAG_TEST, "Received body : " + data.get("body"));
         Log.d(Constants.TAG_TEST, "Received priority : " + data.get("priority"));
@@ -67,38 +80,27 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             return;
         }
 
-        addNotification(pushMessage);
+        updateNotifications(pushMessage);
     }
 
-    private void addNotification(PushMessage pushMessage) {
-        // 빠띠 앱이 실행 중인 경우
-        boolean isForeground = getApplication() instanceof CatanApplication && ((CatanApplication) getApplication()).isForground();
-        if(isForeground) {
-            Log.d(Constants.TAG_TEST, "isForeground");
-            if(! "post".equals(pushMessage.type)) {
-                notify(pushMessage);
-            } else {
-                if ("high".equals(pushMessage.priority)) {
-                    notify(pushMessage);
-                }
+    private void updateNotifications(PushMessage newPushMessage) {
+        HashMap<Integer, List<PushMessage>> currentNotifications = getNotificationsRepository().fetchAllSingles();
+        if(currentNotifications.size() + 1 >= MAX_SIZE) {
+            makeMergedNotification(newPushMessage);
+            getNotificationsRepository().mergeAll(newPushMessage);
+
+            for(Integer id : getNotificationsRepository().fetchAllSingles().keySet()) {
+                getNotificationManager().cancel(id);
             }
-        }
-        // 홈 런쳐가 실행 중인 경우
-        else if(isUserIsOnHomeScreen()) {
-            Log.d(Constants.TAG_TEST, "isUserIsOnHomeScreen");
-            notify(pushMessage);
-        }
-        // 다른 앱이 실행 중인 경우
-        else {
-            Log.d(Constants.TAG_TEST, "elseelseelseelse");
-            notify(pushMessage);
+            getNotificationsRepository().destroyAllSingles();
+        } else {
+            int id = makeNotification(newPushMessage);
+            getNotificationsRepository().addSingle(id, newPushMessage);
         }
     }
 
-    private void notify(PushMessage pushMessage) {
-        Intent intent = buildIntentForNotification(pushMessage);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, MainActivity.REQUEST_PUSH_MESSAGE /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+    private int makeNotification(PushMessage pushMessage) {
+        int id = makeNotificationID(pushMessage);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         android.support.v4.app.NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -110,37 +112,103 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setAutoCancel(true)
                 .setVisibility(VISIBILITY_PRIVATE)
                 .setSound(defaultSoundUri)
-                .setAutoCancel(true)
                 .setLights(173, 500, 2000)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(buildIntentForNotification(id, pushMessage))
+                .setDeleteIntent(buildIntentForCancel(pushMessage));
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(makeNotificationID(), notificationBuilder.build());
+        getNotificationManager().notify(id, notificationBuilder.build());
+        return id;
+    }
+
+    private void makeMergedNotification(PushMessage newPushMessage) {
+        List<PushMessage> pushMessages = getNotificationsRepository().fetchAllPushMessages();
+        pushMessages.add(newPushMessage);
+        Collections.sort(pushMessages, (pushMessageOne, pushMessageTwo) -> (int)(pushMessageTwo.id - pushMessageOne.id));
+
+        String title = String.format(Locale.getDefault(), getResources().getString(R.string.merged_notification_title), pushMessages.size());
+        NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+
+        int index = 0;
+        for(PushMessage pushMessage : pushMessages) {
+            inbox.addLine(pushMessage.title + " " + pushMessage.body);
+            if(++index >= 10) {
+                break;
+            }
+        }
+        inbox.setBigContentTitle(title);
+        inbox.setSummaryText("민주적 일상 커뮤니티 빠띠");
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setContentTitle(title)
+                .setSubText("민주적 일상 커뮤니티 빠띠")
+                .setNumber(pushMessages.size())
+                .setTicker(title)
+                .setAutoCancel(true)
+                .setVisibility(VISIBILITY_PRIVATE)
+                .setSound(defaultSoundUri)
+                .setLights(173, 500, 2000)
+                .setStyle(inbox)
+                .setContentIntent(buildIntentForMergedNotification(Constants.MERGED_NOTIFICATION_ID))
+                .setDeleteIntent(buildIntentForCancelAll());
+
+        getNotificationManager().notify(Constants.MERGED_NOTIFICATION_ID, notificationBuilder.build());
+    }
+
+    private PendingIntent buildIntentForMergedNotification(int notificationId) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("notificationId", notificationId);
+
+        return PendingIntent.getActivity(this, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @NonNull
-    private Intent buildIntentForNotification(PushMessage pushMessage) {
+    private PendingIntent buildIntentForNotification(int notificationId, PushMessage pushMessage) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("pushMessage", Parcels.wrap(pushMessage));
-        return intent;
+        intent.putExtra("notificationId", notificationId);
+
+        return PendingIntent.getActivity(this, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    public boolean isUserIsOnHomeScreen() {
-        ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> processes = manager.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo process : processes) {
-            return process.pkgList[0].equalsIgnoreCase("com.android.launcher");
+    private PendingIntent buildIntentForCancel(PushMessage pushMessage) {
+        int notificationID = makeNotificationID(pushMessage);
+
+        Intent onCancelNotificationReceiver = new Intent(this, CancelNotificationReceiver.class);
+        onCancelNotificationReceiver.putExtra(CancelNotificationReceiver.EXTRA_KEY_NOTIFICATION_ID, notificationID);
+        return PendingIntent.getBroadcast(this.getApplicationContext(), notificationID,
+                onCancelNotificationReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent buildIntentForCancelAll() {
+        Intent onCancelNotificationReceiver = new Intent(this, CancelNotificationReceiver.class);
+        onCancelNotificationReceiver.putExtra(CancelNotificationReceiver.EXTRA_KEY_NOTIFICATION_ID, Constants.MERGED_NOTIFICATION_ID);
+        return PendingIntent.getBroadcast(this.getApplicationContext(), Constants.MERGED_NOTIFICATION_ID,
+                onCancelNotificationReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+    private NotificationManagerCompat getNotificationManager() {
+        if(notificationManager == null) {
+            notificationManager = NotificationManagerCompat.from(getApplicationContext());
         }
-        return false;
+        return notificationManager;
     }
 
-    private int makeNotificationID() {
-        long time = new Date().getTime();
-        String tmpStr = String.valueOf(time);
-        String last4Str = tmpStr.substring(tmpStr.length() - 5);
-        return Integer.valueOf(last4Str);
+    private int makeNotificationID(PushMessage pushMessage) {
+        return (int)(pushMessage.id % (Integer.MAX_VALUE - 1));
+    }
+
+    private NotificationsRepository getNotificationsRepository() {
+        if(notificationsRepository == null) {
+            notificationsRepository = new NotificationsRepository(getApplicationContext().getSharedPreferences(Constants.PREF_NAME_NOTIFICATIONS, Context.MODE_PRIVATE));
+        }
+        return notificationsRepository;
     }
 }

@@ -8,6 +8,7 @@ import org.parceler.Parcel;
 
 @Parcel
 public class PushMessage {
+    public long id;
     public String title;
     public String body;
     public String type;

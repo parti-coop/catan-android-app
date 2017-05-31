@@ -96,7 +96,10 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-
+        <receiver
+            android:name=".ui.receivers.CancelNotificationReceiver"
+            android:label="CancelNotificationReceiver">
+        </receiver>
         <service
             android:name=".ui.service.FirebaseMessagingService">
             <intent-filter>

@@ -3,6 +3,7 @@ package xyz.parti.catan.data;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.PreferenceManager;
@@ -138,6 +139,8 @@ public class SessionManager {
         removeDefaultPreferences(this.context);
         removePreferences(this.context, Constants.PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER);
         removePreferences(this.context, Constants.PREF_NAME_VERSION_CHECKER);
+        removePreferences(this.context, Constants.PREF_NAME_NOTIFICATIONS);
+        NotificationManagerCompat.from(this.context.getApplicationContext()).cancelAll();
     }
 
     private void removePreferences(Context context, String name) {

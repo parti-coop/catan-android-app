@@ -11,8 +11,12 @@ public class Constants {
     public static final String STORAGE_PROVIDER_AUTHORITY = "xyz.parti.catan.fileprovider";
 
     public static final String PREF_VALUE_KEY_RECEIVE_PUSH_MESSAGE = "pref_receive_push_message";
+    public static final String PREF_VALUE_KEY_NOTIFICATION_MAP = "pref_notification_map";
+    public static final String PREF_VALUE_KEY_NOTIFICATION_MERGED = "pref_notification_merged";
 
     public static final String PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER = "xyz.parti.catan.RECEIVABLE_PUSH_MESSAGE_CHECKER";
     public static final String PREF_NAME_SESSION = "xyz.parti.catan.SESSION";
     public static final String PREF_NAME_VERSION_CHECKER = "xyz.parti.catan.VERSION_CHECKER";
+    public static final String PREF_NAME_NOTIFICATIONS = "xyz.parti.catan.NOTIFICATIONS";
+    public static final int MERGED_NOTIFICATION_ID = 0;
 }

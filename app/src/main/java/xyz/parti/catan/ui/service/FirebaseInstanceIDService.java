@@ -25,7 +25,7 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(Constants.TAG, "Refreshed token: " + refreshedToken);
+        Log.d(Constants.TAG, "FirebaseInstanceIDService - Refreshed token: " + refreshedToken);
 
         sendRegistrationToServer(refreshedToken);
     }
@@ -35,8 +35,8 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
         if(session.isLoggedIn() && PrefPushMessage.isReceivable(this)) {
             DeviceTokensService service = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
             ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> {
-                Log.d(Constants.TAG, "Reset Instance ID");
-            }, error -> Log.e(Constants.TAG, "Error to reset Instance ID", error));
+                Log.d(Constants.TAG, "FirebaseInstanceIDService - Reset Instance ID");
+            }, error -> Log.e(Constants.TAG, "FirebaseInstanceIDService - Error to reset Instance ID", error));
         }
     }
 }

@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -38,6 +39,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
 import org.parceler.Parcels;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -94,6 +96,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     ShimmerFrameLayout postListDemoLayout;
     @BindView(R.id.layout_no_posts_sign)
     RelativeLayout noPostSignLayout;
+    @BindView(R.id.textview_no_posts_sign)
+    TextView noPostSignTextView;
     @BindView(R.id.button_go_to_parties)
     FancyButton goToPartiesButton;
     @BindView(R.id.button_retry)
@@ -231,7 +235,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             return;
         }
         PushMessage pushMessage = Parcels.unwrap(intent.getParcelableExtra("pushMessage"));
-        presenter.receivePushMessage(pushMessage);
+        int notificatiionId = intent.getIntExtra("notificationId", -1);
+
+        presenter.receivePushMessage(notificatiionId, pushMessage);
     }
 
     private void setUpCheckNewPost() {
@@ -426,9 +432,11 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
         if(isError) {
             retryButton.setVisibility(View.VISIBLE);
+            noPostSignTextView.setText(getResources().getText(R.string.error_any));
             goToPartiesButton.setVisibility(View.GONE);
         } else {
             retryButton.setVisibility(View.GONE);
+            noPostSignTextView.setText(getResources().getText(R.string.no_posts));
             goToPartiesButton.setVisibility(View.VISIBLE);
         }
     }
