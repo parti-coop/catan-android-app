@@ -175,7 +175,7 @@ public class PostBinder {
             titleTextView.setVisibility(android.view.View.GONE);
         } else {
             titleTextView.setVisibility(android.view.View.VISIBLE);
-            new TextHelper(context).setTextViewHTML(titleTextView, post.parsed_title, post.truncated_parsed_body);
+            new TextHelper(context).setTextViewHTML(titleTextView, post.parsed_title);
         }
 
         if(TextUtils.isEmpty(post.parsed_body)) {

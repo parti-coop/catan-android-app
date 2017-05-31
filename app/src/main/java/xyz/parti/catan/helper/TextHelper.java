@@ -68,6 +68,10 @@ public class TextHelper {
         strBuilder.removeSpan(span);
     }
 
+    public void setTextViewHTML(TextView textView, String html) {
+        setTextViewHTML(textView, html, null);
+    }
+
     public void setTextViewHTML(TextView textView, String html, String truncatedHtml) {
         CharSequence originSequence = trimTrailingWhitespace(converToHtml(html, new GlideImageGetter(context, textView)));
         if(!TextUtils.isEmpty(truncatedHtml)) {
@@ -80,12 +84,6 @@ public class TextHelper {
             textView.setText(getSmartSpannableStringBuilder(originSequence, null));
         }
         textView.setMovementMethod(LinkMovementMethod.getInstance());
-
-//        if(maxLine <= 0) return;
-
-//        String expandText = context.getResources().getString(R.string.view_more);
-//        String collapseText = context.getResources().getString(R.string.view_less);
-//        makeTextViewResizable(textView, maxLine, expandText, collapseText, true);
     }
 
     @NonNull
