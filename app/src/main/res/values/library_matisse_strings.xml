@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="define_int_matisse"></string>
+	<!-- Author section -->
+	<string name="library_matisse_author">Zhihu</string>
+	<string name="library_matisse_authorWebsite">https://github.com/zhihu/Matisse</string>
+	<!-- Library section -->
+	<string name="library_matisse_libraryName">Matisse</string>
+	<string name="library_matisse_libraryDescription">A well-designed local image and video selector for Android</string>
+	<string name="library_matisse_libraryWebsite"></string>
+	<string name="library_matisse_libraryVersion">0.4.3</string>
+	<!-- OpenSource section -->
+	<string name="library_matisse_isOpenSource">true</string>
+	<string name="library_matisse_repositoryLink"></string>
+	<!-- ClassPath for autoDetect section -->
+	<string name="library_matisse_classPath">com.zhihu.matisse.Matisse</string>
+	<!-- License section -->
+	<string name="library_matisse_licenseId">apache_2_0</string>
+	<!-- Custom variables section -->
+</resources>
