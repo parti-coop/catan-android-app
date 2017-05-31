@@ -175,14 +175,14 @@ public class PostBinder {
             titleTextView.setVisibility(android.view.View.GONE);
         } else {
             titleTextView.setVisibility(android.view.View.VISIBLE);
-            new TextHelper(context).setTextViewHTML(titleTextView, post.parsed_title);
+            new TextHelper(context).setTextViewHTML(titleTextView, post.parsed_title, post.truncated_parsed_body);
         }
 
         if(TextUtils.isEmpty(post.parsed_body)) {
             bodyTextView.setVisibility(android.view.View.GONE);
         } else {
             bodyTextView.setVisibility(android.view.View.VISIBLE);
-            new TextHelper(context).setTextViewHTML(bodyTextView, post.parsed_body);
+            new TextHelper(context).setTextViewHTML(bodyTextView, post.parsed_body, post.truncated_parsed_body);
         }
 
         newCommentButton.setOnClickListener(view -> presenter.onClickNewComment(post));

@@ -3,11 +3,13 @@ package xyz.parti.catan.helper;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -26,6 +28,7 @@ import xyz.parti.catan.ui.view.GlideImageGetter;
  */
 
 public class TextHelper {
+    private static final int TAG_ORIGIN = 2030;
     private Context context;
 
     public TextHelper(Context context) {
@@ -65,11 +68,30 @@ public class TextHelper {
         strBuilder.removeSpan(span);
     }
 
-    public void setTextViewHTML(TextView text, String html) {
-        CharSequence sequence = trimTrailingWhitespace(converToHtml(html, new GlideImageGetter(context, text)));
-        SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
+    public void setTextViewHTML(TextView textView, String html, String truncatedHtml) {
+        CharSequence originSequence = trimTrailingWhitespace(converToHtml(html, new GlideImageGetter(context, textView)));
+        if(!TextUtils.isEmpty(truncatedHtml)) {
+            String expandText = context.getResources().getString(R.string.view_more);
+            CharSequence truncatedSequence = converToHtml(truncatedHtml.replace("<read-more></read-more>", "<a href='action://view_more'>" + expandText + "</a>"),
+                    new GlideImageGetter(context, textView));
+            ViewMoreListener viewMoreListener = () -> textView.setText(getSmartSpannableStringBuilder(originSequence, null));
+            textView.setText(getSmartSpannableStringBuilder(trimTrailingWhitespace(truncatedSequence), viewMoreListener));
+        } else {
+            textView.setText(getSmartSpannableStringBuilder(originSequence, null));
+        }
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        processLinks(sequence, strBuilder);
+//        if(maxLine <= 0) return;
+
+//        String expandText = context.getResources().getString(R.string.view_more);
+//        String collapseText = context.getResources().getString(R.string.view_less);
+//        makeTextViewResizable(textView, maxLine, expandText, collapseText, true);
+    }
+
+    @NonNull
+    private SpannableStringBuilder getSmartSpannableStringBuilder(CharSequence sequence, ViewMoreListener viewMoreListener) {
+        SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
+        processLinks(sequence, strBuilder, viewMoreListener);
 
         Pattern mentionPattern = Pattern.compile("(@all)");
         Matcher matcher = mentionPattern.matcher(strBuilder);
@@ -77,27 +99,39 @@ public class TextHelper {
         while (matcher.find()) {
             strBuilder.setSpan(span, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-
-        text.setText(strBuilder);
-        text.setMovementMethod(LinkMovementMethod.getInstance());
+        return strBuilder;
     }
 
-    private void processLinks(CharSequence sequence, SpannableStringBuilder strBuilder) {
+    private void processLinks(CharSequence sequence, SpannableStringBuilder strBuilder, ViewMoreListener viewMoreListener) {
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
         for (final URLSpan span : urls) {
             ClickableSpan clickable =  new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(span.getURL())));
+                    if("action://view_more".equals(span.getURL())) {
+                        if(viewMoreListener != null) {
+                            viewMoreListener.onClick();
+                        }
+                    } else {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(span.getURL())));
+                    }
                 }
 
                 @Override public void updateDrawState(TextPaint ds) {
                     super.updateDrawState(ds);
                     ds.setUnderlineText(false);
-                    ds.setColor(ContextCompat.getColor(context, R.color.default_text_view_link));
+                    if("action://view_more".equals(span.getURL())) {
+                        ds.setColor(ContextCompat.getColor(context, R.color.brand_gray_less_dark));
+                    } else {
+                        ds.setColor(ContextCompat.getColor(context, R.color.default_text_view_link));
+                    }
                 }
             };
             makeLinkClickable(strBuilder, span, clickable);
         }
+    }
+
+    interface ViewMoreListener {
+        void onClick();
     }
 }

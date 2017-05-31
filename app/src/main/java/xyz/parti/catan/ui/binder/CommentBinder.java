@@ -57,7 +57,7 @@ public class CommentBinder {
     public void bindData(Post post, Comment comment, boolean isLineVisible) {
         new ImageHelper(userImageImageView).loadInto(comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(comment.user.nickname);
-        new TextHelper(context).setTextViewHTML(bodyTextView, comment.body);
+        new TextHelper(context).setTextViewHTML(bodyTextView, comment.body, comment.truncated_body);
         createdAtTextView.setReferenceTime(comment.created_at.getTime());
 
         if(isLineVisible) {

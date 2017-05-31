@@ -94,4 +94,6 @@
     <string name="new_post_hint">무슨 이야기를 나누실래요?</string>
     <string name="title_activity_image_picker">사진 선택</string>
     <string name="merged_notification_title">새로운 소식 %d개</string>
+    <string name="view_more">더보기</string>
+    <string name="view_less">줄이기</string>
 </resources>
