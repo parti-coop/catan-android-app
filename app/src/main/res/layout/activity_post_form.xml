@@ -62,7 +62,7 @@
                 android:scrollbars="none"
                 android:inputType="textMultiLine"
                 android:gravity="top"
-                android:hint="@string/new_post_hint"
+                android:hint="@string/new_post_placeholder"
                 android:textColorHint="@color/brand_gray"
                 app:backgroundTint="@android:color/transparent" />
 

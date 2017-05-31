@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="drawable_callback_tag" type="id" />
-    <item name="post_form_parti" type="id">xyz.parti.catan.PostFormParti</item>
-    <item name="post_form_group" type="id">xyz.parti.catan.PostFormGroup</item>
-    <item name="post_form_image" type="id">xyz.parti.catan.PostFormImage</item>
+    <item name="post_form_parti" type="id" />
+    <item name="post_form_group" type="id" />
+    <item name="post_form_image" type="id" />
+    <item name="tag_latest_comment_binder" type="id" />
+    <item name="tag_latest_comment" type="id" />
 </resources>

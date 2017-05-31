@@ -11,43 +11,45 @@ import xyz.parti.catan.data.model.RecyclableModel;
  */
 
 public class InfinitableModelHolder<T extends RecyclableModel> {
+    static int TYPE_MODEL = 0;
+    static int TYPE_LOAD = 1;
+
     private final T model;
-    private final boolean isLoader;
+    private final int viewType;
 
-    private InfinitableModelHolder(T model, boolean isLoader) {
+    private InfinitableModelHolder(T model, int viewType) {
         this.model = model;
-        this.isLoader = isLoader;
+        this.viewType = viewType;
     }
 
-    public static <T extends RecyclableModel> InfinitableModelHolder<T> forModel(T model) {
-        return new InfinitableModelHolder<>(model, false);
+    static <T extends RecyclableModel> InfinitableModelHolder<T> forModel(T model) {
+        return new InfinitableModelHolder<>(model, TYPE_MODEL);
     }
 
-    public static <T extends RecyclableModel> InfinitableModelHolder<T> forLoader() {
-        return new InfinitableModelHolder<>(null, true);
+    static <T extends RecyclableModel> InfinitableModelHolder<T> forLoader() {
+        return new InfinitableModelHolder<>(null, TYPE_LOAD);
+    }
+
+    static <T extends RecyclableModel> InfinitableModelHolder<T> forCustomeView(int viewType) {
+        return new InfinitableModelHolder<>(null, viewType);
     }
 
     public boolean isLoader() {
-        return this.isLoader;
+        return this.viewType == TYPE_LOAD;
     }
 
     public T getModel() {
         return this.model;
     }
 
+    public int getViewType() {
+        return this.viewType;
+    }
+
     public static <T extends RecyclableModel> List<InfinitableModelHolder<T>> from(Collection<T> c) {
         List<InfinitableModelHolder<T>> result = new ArrayList<>();
         for (T item : c) {
             result.add(InfinitableModelHolder.forModel(item));
-        }
-
-        return result;
-    }
-
-    public static <T extends RecyclableModel> List<T> asModels(Collection<InfinitableModelHolder<T>> c) {
-        List<T> result = new ArrayList<>();
-        for (InfinitableModelHolder<T> item : c) {
-            result.add(item.getModel());
         }
 
         return result;

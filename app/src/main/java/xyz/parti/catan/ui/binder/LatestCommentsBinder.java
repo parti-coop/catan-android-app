@@ -63,8 +63,8 @@ public class LatestCommentsBinder {
         CommentBinder binder = new CommentBinder(commentLayout, presenter);
         binder.bindData(post, comment);
 
-        commentLayout.setTag(R.string.tag_latest_comment_binder, binder);
-        commentLayout.setTag(R.string.tag_latest_comment, comment);
+        commentLayout.setTag(R.id.tag_latest_comment_binder, binder);
+        commentLayout.setTag(R.id.tag_latest_comment, comment);
         commentsListLayout.addView(commentLayout);
     }
 
@@ -75,9 +75,9 @@ public class LatestCommentsBinder {
         int commentCount = commentsListLayout.getChildCount();
         for(int i = 0; i < commentCount; i++) {
             LinearLayout commentLayout = (LinearLayout) commentsListLayout.getChildAt(i);
-            Comment taggingComment = (Comment) commentLayout.getTag(R.string.tag_latest_comment);
+            Comment taggingComment = (Comment) commentLayout.getTag(R.id.tag_latest_comment);
             if(taggingComment != null && taggingComment.id != null && taggingComment.id.equals(comment.id)) {
-                CommentBinder commentBinder = (CommentBinder) commentLayout.getTag(R.string.tag_latest_comment_binder);
+                CommentBinder commentBinder = (CommentBinder) commentLayout.getTag(R.id.tag_latest_comment_binder);
                 commentBinder.rebindData(post, comment, payload);
             }
         }

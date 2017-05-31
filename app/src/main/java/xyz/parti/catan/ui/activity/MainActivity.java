@@ -58,6 +58,7 @@ import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
+import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
@@ -133,7 +134,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     presenter.attachView(MainActivity.this);
                     checkAppVersion();
                     setUpToolbar();
-                    setUpFeed();
+                    setUpFeed(session.getCurrentUser());
                     setUpCheckNewPost();
                     setUpDrawerBar();
                     setUpSwipeRefresh();
@@ -318,10 +319,10 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         appToolbar.setNavigationIcon(R.drawable.ic_menu_white);
     }
 
-    private void setUpFeed() {
+    private void setUpFeed(User currentUser) {
         downloadProgressDialog = new ProgressDialog(this, R.style.AppAlertDialog);
 
-        PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this);
+        PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this, currentUser);
         feedAdapter.setPresenter(presenter);
         feedAdapter.setLoadMoreListener(() -> {
             postListRecyclerView.post(() -> presenter.loadMorePosts());

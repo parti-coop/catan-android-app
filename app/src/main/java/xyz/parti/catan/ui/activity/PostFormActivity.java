@@ -146,6 +146,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         } else {
             showPartiChoiceDialog();
         }
+        saveButton.setEnabled(false);
     }
 
     @Override
@@ -217,7 +218,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
     @Override
     public void setParti(Parti parti) {
         partiTitleTextView.setText(parti.title);
-        new ImageHelper(partiLogoImageView).loadInto(parti.logo_url);
+        new ImageHelper(partiLogoImageView).loadInto(parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
     }
 
     @Override

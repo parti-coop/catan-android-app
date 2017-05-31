@@ -16,9 +16,6 @@ import xyz.parti.catan.data.model.RecyclableModel;
  */
 
 public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
-    private static int TYPE_MODEL = 0;
-    private static int TYPE_LOAD = 1;
-
     private final List<InfinitableModelHolder<T>> holders;
     private OnLoadMoreListener loadMoreListener;
     private boolean isLoading = false, isMoreDataAvailable = true;
@@ -27,6 +24,8 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     abstract boolean isLoadMorePosition(int position);
     abstract void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
     abstract LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateLoaderHolder(ViewGroup parent);
+    abstract protected void prepareChangedModel(InfinitableModelHolder<T> holder);
+
 
     LoadMoreRecyclerViewAdapter() {
         holders = new ArrayList<>();
@@ -85,8 +84,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         }
     }
 
-    abstract protected void prepareChangedModel(InfinitableModelHolder<T> holder);
-
     public void appendLoader() {
         holders.add(InfinitableModelHolder.forLoader());
         notifyItemInserted(holders.size() - 1);
@@ -94,6 +91,11 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
 
     public void prependLoader() {
         holders.add(0, InfinitableModelHolder.forLoader());
+        notifyItemInserted(0);
+    }
+
+    public void prependCustomView(int viewType) {
+        holders.add(InfinitableModelHolder.forCustomeView(viewType));
         notifyItemInserted(0);
     }
 
@@ -132,27 +134,35 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     @Override
-    final public int getItemViewType(int position) {
+    public int getItemViewType(int position) {
         if(holders.get(position).isLoader()){
-            return TYPE_LOAD;
+            return InfinitableModelHolder.TYPE_LOAD;
         }else{
-            return TYPE_MODEL;
+            return InfinitableModelHolder.TYPE_MODEL;
         }
     }
 
     @Override
     final public LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == TYPE_MODEL) {
+        if(viewType == InfinitableModelHolder.TYPE_MODEL) {
             return onCreateModelViewHolder(parent);
-        } else {
+        } else if(viewType == InfinitableModelHolder.TYPE_LOAD) {
             return onCreateLoaderHolder(parent);
+        } else {
+            return onCreateCustomViewHolder(parent, viewType);
         }
+    }
+
+    public LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
+        throw new UnsupportedOperationException("Not supported viewType : " + viewType);
     }
 
     @Override
     public void onBindViewHolder(LoadMoreRecyclerViewAdapter.BaseViewHolder viewHolder, int position) {
-        if(getItemViewType(position) == TYPE_MODEL){
+        if(getItemViewType(position) == InfinitableModelHolder.TYPE_MODEL){
             onBuildModelViewHolder(viewHolder, position);
+        } else {
+            onBuildCustomViewHolder(viewHolder, position);
         }
 
         if(isLoadMorePosition(position)){
@@ -160,8 +170,11 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         }
     }
 
+    protected void onBuildCustomViewHolder(BaseViewHolder viewHolder, int position) {
+    }
+
     @Override
-    final public int getItemCount() {
+    public int getItemCount() {
         return holders.size();
     }
 
