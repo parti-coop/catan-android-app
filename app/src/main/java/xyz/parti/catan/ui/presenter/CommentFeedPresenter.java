@@ -80,7 +80,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
                     if (response.isSuccessful()) {
                         Page<Comment> page = response.body();
-                        feedAdapter.appendModels(page.items);
+                        feedAdapter.clearAndAppendModels(page.items);
                         feedAdapter.setMoreDataAvailable(page.has_more_item);
                     } else {
                         ReportHelper.wtf(getView().getContext(), "AllComments load first error : " + response.code());

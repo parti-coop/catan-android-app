@@ -106,10 +106,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     lastLoadFirstPostsAtMillis = System.currentTimeMillis();
                     getView().ensureToPostListDemoIsGone();
                     if (response.isSuccessful()) {
-                        feedAdapter.clearData();
-
                         Page<Post> page = response.body();
-                        feedAdapter.appendModels(page.items);
+                        feedAdapter.clearAndAppendModels(page.items, 1);
                         feedAdapter.setMoreDataAvailable(page.has_more_item);
                     } else {
                         feedAdapter.setMoreDataAvailable(false);

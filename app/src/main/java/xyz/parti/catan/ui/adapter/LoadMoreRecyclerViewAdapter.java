@@ -35,6 +35,19 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         this.isMoreDataAvailable = moreDataAvailable;
     }
 
+    public void clearAndAppendModels(List<T> items) {
+        clearAndAppendModels(items, 0);
+    }
+
+    public void clearAndAppendModels(List<T> items, int offset) {
+        this.holders.subList(offset, this.holders.size()).clear();
+        List<InfinitableModelHolder<T>> holders =
+                InfinitableModelHolder.from(items);
+        this.holders.addAll(holders);
+        prepareChangedModels(holders);
+        notifyDataSetChanged();
+    }
+
     public void appendModels(List<T> items) {
         List<InfinitableModelHolder<T>> holders =
                 InfinitableModelHolder.from(items);
