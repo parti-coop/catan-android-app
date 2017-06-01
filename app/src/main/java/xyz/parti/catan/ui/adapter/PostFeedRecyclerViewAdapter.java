@@ -114,6 +114,10 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         this.presenter = presenter;
     }
 
+    public void clearAndAppendPostLineForm() {
+        this.clearAndAppendCustomView(FORM_TYPE);
+    }
+
     static class PostViewHolder extends ModelViewHolder {
         private final PostBinder postBinder;
 

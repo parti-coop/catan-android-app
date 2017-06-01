@@ -277,8 +277,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         long reload_gap_mills = 10 * 60 * 1000;
         if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
-            feedAdapter.clearData();
-            feedAdapter.notifyDataSetChanged();
+            feedAdapter.clearAndAppendPostLineForm();
             getView().showPostListDemo();
             loadFirstPosts();
         }

@@ -40,7 +40,9 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public void clearAndAppendModels(List<T> items, int offset) {
-        this.holders.subList(offset, this.holders.size()).clear();
+        if(this.holders.size() > 0) {
+            this.holders.subList(offset, this.holders.size()).clear();
+        }
         List<InfinitableModelHolder<T>> holders =
                 InfinitableModelHolder.from(items);
         this.holders.addAll(holders);
@@ -110,6 +112,14 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     public void prependCustomView(int viewType) {
         holders.add(InfinitableModelHolder.forCustomeView(viewType));
         notifyItemInserted(0);
+    }
+
+    public void clearAndAppendCustomView(int viewType) {
+        if(this.holders.size() > 0) {
+            this.holders.clear();
+        }
+        holders.add(InfinitableModelHolder.forCustomeView(viewType));
+        notifyDataSetChanged();
     }
 
     public void removeFirstMoldelHolder() {
@@ -212,10 +222,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
 
     public void setLoadStarted() {
         isLoading = true;
-    }
-
-    public void clearData() {
-        this.holders.clear();
     }
 
     T getModel(int position) {
