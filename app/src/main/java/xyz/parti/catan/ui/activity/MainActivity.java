@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -39,9 +40,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
 import org.parceler.Parcels;
-import org.w3c.dom.Text;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -320,7 +319,11 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     private void setUpFeed(User currentUser) {
-        downloadProgressDialog = new ProgressDialog(this, R.style.AppAlertDialog);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.downloadProgressDialog = new ProgressDialog(this, R.style.AppProgressDialog);
+        } else {
+            this.downloadProgressDialog = new ProgressDialog(this);
+        }
 
         PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this, currentUser);
         feedAdapter.setPresenter(presenter);
@@ -536,6 +539,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void showDownloadedFile(Uri uri, String mimeType) {
+        Log.d(Constants.TAG, "Show File MimeType : " + mimeType);
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         newIntent.setDataAndType(uri, mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

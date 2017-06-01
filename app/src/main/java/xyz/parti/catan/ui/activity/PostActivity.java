@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.ViewGroup;
@@ -75,7 +76,11 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     }
 
     private void setUpPost(Post post) {
-        this.downloadProgressDialog = new ProgressDialog(this);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.downloadProgressDialog = new ProgressDialog(this, R.style.AppProgressDialog);
+        } else {
+            this.downloadProgressDialog = new ProgressDialog(this);
+        }
         this.postBinder = new PostBinder(this, this.postLayout, this.presenter);
         this.postBinder.bindData(post);
     }
