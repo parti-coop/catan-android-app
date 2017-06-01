@@ -233,7 +233,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         Date lastStrockedAtOfFirstInPostList = null;
         if(!feedAdapter.isEmpty()) {
-            InfinitableModelHolder<Post> firstPostHolder = feedAdapter.getFirstHolder();
+            InfinitableModelHolder<Post> firstPostHolder = feedAdapter.getHolder(1);
             if(!firstPostHolder.isLoader()) {
                 lastStrockedAtOfFirstInPostList = firstPostHolder.getModel().last_stroked_at;
             }

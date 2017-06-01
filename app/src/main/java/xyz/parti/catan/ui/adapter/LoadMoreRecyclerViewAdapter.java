@@ -228,7 +228,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         return getHolder(0);
     }
 
-    private InfinitableModelHolder<T> getHolder(int position) {
+    public InfinitableModelHolder<T> getHolder(int position) {
         return holders.get(position);
     }
 
