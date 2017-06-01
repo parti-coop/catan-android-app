@@ -53,7 +53,9 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
     @Override
     void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(post, getModel(position), position);
+        Comment model = getModel(position);
+        if(model == null) return;
+        ((CommentFeedRecyclerViewAdapter.CommentViewHolder) viewHolder).bindData(post, model, position);
     }
 
     @Override
@@ -63,7 +65,9 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
         } else {
             for (Object payload : payloads) {
                 if (holder instanceof CommentViewHolder) {
-                    ((CommentViewHolder)holder).getCommentBinder().rebindData(post, getModel(position), payload);
+                    Comment model = getModel(position);
+                    if(model == null) continue;
+                    ((CommentViewHolder)holder).getCommentBinder().rebindData(post, model, payload);
                 }
             }
         }

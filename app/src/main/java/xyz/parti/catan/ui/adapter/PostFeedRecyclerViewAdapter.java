@@ -73,7 +73,9 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
     @Override
     public void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        ((PostFeedRecyclerViewAdapter.PostViewHolder) viewHolder).bindData(getModel(position));
+        Post model = getModel(position);
+        if(model == null) return;
+        ((PostFeedRecyclerViewAdapter.PostViewHolder) viewHolder).bindData(model);
     }
 
     @Override
@@ -101,7 +103,9 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
             }
             for (Object payload : payloads) {
                 PostViewHolder postViewHolder = (PostViewHolder) holder;
-                postViewHolder.getPostBinder().rebindData(getModel(position), payload);
+                Post model = getModel(position);
+                if(model == null) continue;
+                postViewHolder.getPostBinder().rebindData(model, payload);
             }
         }
     }

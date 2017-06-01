@@ -117,7 +117,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     getView().ensureExpendedAppBar();
                     getView().stopAndEnableSwipeRefreshing();
                     
-                    if(feedAdapter.getItemCount() <= 0) {
+                    if(feedAdapter.getModelItemCount() <= 0) {
                         getView().showEmpty(!response.isSuccessful());
                     }
                 }, error -> {
@@ -234,7 +234,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         Date lastStrockedAtOfFirstInPostList = null;
         if(!feedAdapter.isEmpty()) {
             InfinitableModelHolder<Post> firstPostHolder = feedAdapter.getHolder(1);
-            if(!firstPostHolder.isLoader()) {
+            if(!firstPostHolder.isLoader() && firstPostHolder.getModel() != null) {
                 lastStrockedAtOfFirstInPostList = firstPostHolder.getModel().last_stroked_at;
             }
         }
@@ -265,7 +265,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             return;
         }
 
-        if(feedAdapter.getItemCount() <= 0) {
+        if(feedAdapter.getModelItemCount() <= 0) {
             this.retryLoadingPost();
             return;
         }

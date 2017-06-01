@@ -191,6 +191,17 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         return holders.size();
     }
 
+    public int getModelItemCount() {
+        if(holders == null) return 0;
+
+        int result = 0;
+        for(InfinitableModelHolder<T> holder : holders) {
+            if(holder.getViewType() == InfinitableModelHolder.TYPE_MODEL) result++;
+        }
+
+        return result;
+    }
+
     private void notifyDataPrepended(int count) {
         notifyItemRangeInserted(0, count);
     }
@@ -217,15 +228,28 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public T getFirstModel() {
-        if(getItemCount() <= 0) return null;
-        return getModel(0);
+        if(getModelItemCount() <= 0) return null;
+        int i = 0;
+        T result = null;
+        do {
+            if(getItemCount() <= i) break;
+            result = getModel(i);
+            i++;
+        } while(result == null);
+
+        return result;
     }
     public T getLastModel() {
-        return getModel(holders.size() - 1);
-    }
+        if(getModelItemCount() <= 0) return null;
+        int i = holders.size() - 1;
+        T result = null;
+        do {
+            if(0 > i) break;
+            result = getModel(i);
+            i--;
+        } while(result == null);
 
-    public InfinitableModelHolder<T> getFirstHolder() {
-        return getHolder(0);
+        return result;
     }
 
     public InfinitableModelHolder<T> getHolder(int position) {
