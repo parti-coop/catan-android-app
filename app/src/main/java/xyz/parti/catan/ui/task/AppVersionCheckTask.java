@@ -3,6 +3,7 @@ package xyz.parti.catan.ui.task;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import io.reactivex.disposables.Disposable;
@@ -52,7 +53,7 @@ public class AppVersionCheckTask {
                         pref.edit().putLong(KEY_LAST_CHECKED_AT_MILLS, System.currentTimeMillis()).apply();
 
                         String lastVersion = response.body().get("last_version").getAsString();
-                        if (lastVersion == null || lastVersion.equals(currentVersion)) {
+                        if (TextUtils.isEmpty(lastVersion) || lastVersion.equals(currentVersion)) {
                             return;
                         }
                         action.run(lastVersion);
