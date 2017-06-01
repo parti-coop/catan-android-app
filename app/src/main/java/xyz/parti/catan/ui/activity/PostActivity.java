@@ -154,7 +154,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     public void showNewCommentForm(Post post, Comment comment) {
         Intent intent = new Intent(this, AllCommentsActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
-        intent.putExtra("comment", Parcels.wrap(post));
+        intent.putExtra("comment", Parcels.wrap(comment));
         intent.putExtra("focusInput", true);
         startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
     }
