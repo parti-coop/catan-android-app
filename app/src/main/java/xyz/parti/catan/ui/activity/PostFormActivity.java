@@ -378,7 +378,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             // Use the Builder class for convenient dialog construction
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppAlertDialog);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
             View view = inflater.inflate(R.layout.fragment_parti_choice, null);

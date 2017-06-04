@@ -1,11 +1,13 @@
 package xyz.parti.catan.ui.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -21,6 +23,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -61,6 +64,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
     private LoginTask partiLoginTask;
     private ProgressToggler progressToggler;
     private View decorView;
+    private AlertDialog googleServiceErrorDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +76,6 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         partiLoginTask = setUpLoginTask();
         facebookAuthClient = initFacebook();
         twitterAuthClient = initTwitter();
-        googleApiClient = initGoogle();
         progressToggler = new ProgressToggler(panelLayout, statusProgressBar);
 
         loginByEmailButton.setOnClickListener(view -> {
@@ -88,12 +91,19 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     @Override
     public void onPause() {
-        this.partiLoginTask.cancel();
+        if(partiLoginTask != null) {
+            this.partiLoginTask.cancel();
+        }
         super.onPause();
     }
 
     public void onDestroy() {
-        this.partiLoginTask.destroy();
+        if(partiLoginTask != null) {
+            this.partiLoginTask.destroy();
+        }
+        if(this.googleServiceErrorDialog != null) {
+            this.googleServiceErrorDialog.dismiss();
+        }
         super.onDestroy();
     }
 
@@ -124,7 +134,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void onNotFoundUser() {
                 progressToggler.toggle(false);
-                Snackbar.make(panelLayout, String.format(Locale.getDefault(), getResources().getString(R.string.login_social_not_found_user)), 10 * 1000)
+                Snackbar.make(panelLayout, getResources().getString(R.string.login_social_not_found_user), 10 * 1000)
                         .setAction(R.string.ok,
                                 view -> {
                                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
@@ -157,6 +167,29 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
                 .build();
     }
 
+    private void showGoogleServiceErrorMessage() {
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.common_google_play_services_update_title)
+                .setMessage(R.string.google_play_services_update_text)        // 메세지 설정
+                .setCancelable(true)        // 뒤로 버튼 클릭시 취소 가능 설정
+                .setPositiveButton("확인", (dialog, whichButton) -> {
+                    try {
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
+                        }
+                    } catch (android.content.ActivityNotFoundException ignore) {
+                        Toast.makeText(getApplicationContext(), R.string.not_support_device, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
+        googleServiceErrorDialog = builder.create();
+        googleServiceErrorDialog.show();
+    }
+
     @OnClick(R.id.button_login_by_facebook)
     public void loginFacebook() {
         progressToggler.toggle(true);
@@ -186,6 +219,21 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     @OnClick(R.id.button_login_by_google)
     public void loginGoogle() {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if(status != ConnectionResult.SUCCESS) {
+            if(googleApiAvailability.isUserResolvableError(status)) {
+                showGoogleServiceErrorMessage();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.not_support_device, Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
+
+        if(this.googleApiClient == null) {
+            this.googleApiClient = initGoogle();
+        }
+
         progressToggler.toggle(true);
         final Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);

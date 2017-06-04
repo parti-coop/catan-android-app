@@ -9,10 +9,12 @@
         <item name="android:alertDialogStyle">@style/AppAlertDialog</item>
     </style>
 
-    <style name="AppAlertDialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="AppDialogWhenLarge" parent="Theme.AppCompat.Light.DialogWhenLarge">
         <item name="colorPrimary">@color/style_color_primary</item>
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="android:alertDialogStyle">@style/AppAlertDialog</item>
     </style>
 
     <style name="LoginTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
@@ -24,10 +26,21 @@
         <item name="colorControlHighlight">#fff</item>
         <item name="android:textColorPrimary">#fff</item>
         <item name="android:textColorHint">#fff</item>
+        <item name="android:alertDialogStyle">@style/AppAlertDialog</item>
+    </style>
+
+    <style name="AppAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/style_color_primary</item>
+        <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="android:windowTitleStyle">@style/AppDialogWindowTitle</item>
     </style>
 
     <style name="SettingsTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="AppDialogWindowTitle" parent="Base.DialogWindowTitle.AppCompat">
     </style>
 
     <style name="AppMetiess" parent="Matisse.Zhihu">

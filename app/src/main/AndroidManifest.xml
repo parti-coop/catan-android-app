@@ -67,7 +67,7 @@
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_post_form"
-            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
+            android:theme="@style/AppDialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activity.PostActivity"
@@ -80,13 +80,13 @@
             android:name=".ui.activity.DisconnectActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_disconnect"></activity>
+            android:label="@string/title_activity_disconnect" />
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/SettingsTheme"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
 
         <receiver
             android:name=".ui.receivers.NetworkChangeReceiver"

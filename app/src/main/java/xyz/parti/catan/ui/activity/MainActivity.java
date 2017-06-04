@@ -71,7 +71,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
     public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
     public static final int REQUEST_UPDATE_POST = 1999;
-    public static final int REQUEST_PUSH_MESSAGE = 2000;
     public static final int REQUEST_NEW_POST = 2001;
 
     @BindView(R.id.toolbar_app)

@@ -32,15 +32,6 @@
             android:layout_alignParentBottom="true"
             android:orientation="vertical">
 
-            <!--<com.joanzapata.iconify.widget.IconButton-->
-                <!--android:id="@+id/button_login_by_facebook"-->
-                <!--style="?android:textAppearanceSmall"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="5dp"-->
-                <!--android:text="@string/login_by_facebook_button"-->
-                <!--android:textStyle="bold" />-->
-
             <mehdi.sakout.fancybuttons.FancyButton
                 android:id="@+id/button_login_by_facebook"
                 android:layout_width="match_parent"
