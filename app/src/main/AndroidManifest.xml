@@ -60,7 +60,7 @@
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_all_comments"
-            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
+            android:theme="@style/AppDialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activity.PostFormActivity"
@@ -74,7 +74,7 @@
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_post"
-            android:theme="@style/Base.Theme.AppCompat.Light.DialogWhenLarge"
+            android:theme="@style/AppDialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activity.DisconnectActivity"

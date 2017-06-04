@@ -37,7 +37,14 @@
     </style>
 
     <style name="SettingsTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/AppPreference</item>
+    </style>
+
+    <style name="AppPreference" parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceCategoryStyle">@style/AppPreferenceCategory</item>
+    </style>
+
+    <style name="AppPreferenceCategory" parent="@style/Preference.Category">
     </style>
 
     <style name="AppDialogWindowTitle" parent="Base.DialogWindowTitle.AppCompat">

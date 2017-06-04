@@ -1,22 +1,9 @@
 <resources>
 
-    <style name="SettingsTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-    </style>
-
     <style name="AppProgressDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorPrimary">@color/style_color_primary</item>
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>
     </style>
-
-    <!--<style name="AppDialogWhenLarge" parent="Theme.AppCompat.Light.DialogWhenLarge">-->
-        <!--<item name="colorPrimary">@color/style_color_primary</item>-->
-        <!--<item name="colorPrimaryDark">@color/style_color_primary_dark</item>-->
-        <!--<item name="colorAccent">@color/style_color_accent</item>-->
-        <!--<item name="android:textColorPrimary">@android:color/white</item>-->
-        <!--<item name="android:textColorSecondary">@android:color/white</item>-->
-        <!--<item name="android:alertDialogStyle">@style/AppAlertDialog</item>-->
-    <!--</style>-->
 
 </resources>

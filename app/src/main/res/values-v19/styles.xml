@@ -1,7 +1,6 @@
 <resources>
 
-    <style name="SettingsTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    <style name="AppPreferenceCategory" parent="@style/Preference.Category.Material">
     </style>
 
 </resources>
