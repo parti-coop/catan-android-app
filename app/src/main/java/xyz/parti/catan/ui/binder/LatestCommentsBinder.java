@@ -1,11 +1,14 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
-import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,14 +33,19 @@ public class LatestCommentsBinder {
     TextView newCommentInputTextView;
 
     private final PostBinder.PostBindablePresenter presenter;
-    private final LayoutInflater inflater;
     private final Context context;
+    private final List<CommentBinder> commentBinders = new ArrayList<>();
 
     LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
-        this.inflater =  LayoutInflater.from(view.getContext());
         ButterKnife.bind(this, view);
+
+        int commentCount = commentsListLayout.getChildCount();
+        for(int i = 0; i < commentCount; i++) {
+            View commentView = commentsListLayout.getChildAt(i);
+            commentBinders.add(new CommentBinder(commentView, presenter));
+        }
     }
 
     public void bindData(Post post) {
@@ -50,34 +58,30 @@ public class LatestCommentsBinder {
             loadMoreTextView.setOnClickListener(null);
         }
 
-
-        commentsListLayout.removeAllViews();
-        for(Comment comment: post.latest_comments) bindComment(post, comment);
+        List<Comment> lastComments = post.lastComments(commentBinders.size());
+        for(CommentBinder binder : commentBinders) {
+            binder.hideData();
+        }
+        for(int i = 0; i < lastComments.size(); i++) {
+            bindComment(commentBinders.get(i), post, lastComments.get(i));
+        }
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         newCommentInputTextView.setOnClickListener(view -> presenter.onClickNewComment(post));
     }
 
-    private void bindComment(Post post, Comment comment) {
-        LinearLayout commentLayout = (LinearLayout) inflater.inflate(R.layout.comment, commentsListLayout, false);
-        CommentBinder binder = new CommentBinder(commentLayout, presenter);
-        binder.bindData(post, comment);
-
-        commentLayout.setTag(R.id.tag_latest_comment_binder, binder);
-        commentLayout.setTag(R.id.tag_latest_comment, comment);
-        commentsListLayout.addView(commentLayout);
+    private void bindComment(CommentBinder commentBinder, Post post, Comment comment) {
+        commentBinder.bindData(post, comment);
     }
 
     void rebindComment(Post post, CommentDiff commentDiff) {
         Comment comment = commentDiff.getComment();
         Object payload = commentDiff.getPayload();
 
-        int commentCount = commentsListLayout.getChildCount();
-        for(int i = 0; i < commentCount; i++) {
-            LinearLayout commentLayout = (LinearLayout) commentsListLayout.getChildAt(i);
-            Comment taggingComment = (Comment) commentLayout.getTag(R.id.tag_latest_comment);
+        for(CommentBinder commentBinder : commentBinders) {
+            if(! commentBinder.isVisible()) continue;
+            Comment taggingComment = commentBinder.getComment();
             if(taggingComment != null && taggingComment.id != null && taggingComment.id.equals(comment.id)) {
-                CommentBinder commentBinder = (CommentBinder) commentLayout.getTag(R.id.tag_latest_comment_binder);
                 commentBinder.rebindData(post, comment, payload);
             }
         }
@@ -95,7 +99,7 @@ public class LatestCommentsBinder {
         public Comment getComment() {
             return comment;
         }
-        public String getPayload() {
+        String getPayload() {
             return payload;
         }
     }

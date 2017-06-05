@@ -112,7 +112,6 @@ public class LoginTask {
 
     private void saveDeviceToken() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
         DeviceTokensService service = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
         ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> {
             Log.d(Constants.TAG, "Reset Instance ID");

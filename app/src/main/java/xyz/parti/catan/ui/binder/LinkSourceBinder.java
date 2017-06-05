@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.joanzapata.iconify.widget.IconTextView;
 
 import butterknife.BindView;
@@ -32,7 +33,7 @@ public class LinkSourceBinder {
     @BindView(R.id.textview_video_sign)
     IconTextView videoSignTextView;
 
-    public LinkSourceBinder(ViewGroup view) {
+    public LinkSourceBinder(View view) {
         ButterKnife.bind(this, view);
     }
 
@@ -40,10 +41,14 @@ public class LinkSourceBinder {
         if(linkSource.title_or_url != null) {
             titleTextView.setText(linkSource.title_or_url);
             titleTextView.setVisibility(View.VISIBLE);
+        } else {
+            titleTextView.setVisibility(View.GONE);
         }
         if(linkSource.body != null) {
             bodyTextView.setText(linkSource.body);
             bodyTextView.setVisibility(View.VISIBLE);
+        } else {
+            bodyTextView.setVisibility(View.GONE);
         }
         if(linkSource.site_name != null) {
             siteNameTextView.setText(linkSource.site_name);
@@ -59,6 +64,10 @@ public class LinkSourceBinder {
                 videoSignTextView.setVisibility(View.GONE);
             }
             imageLayout.setVisibility(View.VISIBLE);
+        } else {
+            Glide.clear(imageImageView);
+            imageImageView.setImageDrawable(null);
+            imageLayout.setVisibility(View.GONE);
         }
     }
 }

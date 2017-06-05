@@ -127,6 +127,19 @@ public class Post implements RecyclableModel {
         }
     }
 
+    public List<Comment> lastComments(int limit) {
+        if(latest_comments == null) return new ArrayList<>();
+        List<Comment> result = new ArrayList<>();
+        if (latest_comments.length >= limit) {
+            for (int i = latest_comments.length - limit; i < latest_comments.length; i++) {
+                result.add(latest_comments[i]);
+            }
+        } else {
+            result.addAll(Arrays.asList(latest_comments));
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " - post id : " + id;

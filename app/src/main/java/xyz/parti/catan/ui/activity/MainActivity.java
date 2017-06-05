@@ -336,9 +336,10 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         final LinearLayoutManager recyclerViewLayout = new LinearLayoutManager(this) {
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
-                return 1000;
+                return 2000;
             }
         };
+        recyclerViewLayout.setInitialPrefetchItemCount(20);
         postListRecyclerView.setLayoutManager(recyclerViewLayout);
         postListRecyclerView.setAdapter(feedAdapter);
         postListRecyclerView.setItemViewCacheSize(50);

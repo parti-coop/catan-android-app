@@ -2,7 +2,7 @@ package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,7 +32,7 @@ public class PollBinder {
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
 
-    public PollBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
+    PollBinder(PostBinder.PostBindablePresenter presenter, View view) {
         this.presenter = presenter;
         this.context = view.getContext();
         ButterKnife.bind(this, view);

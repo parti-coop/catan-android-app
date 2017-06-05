@@ -68,7 +68,6 @@ public class ReceivablePushMessageCheckTask {
 
     private String getFirebaseInstanceToken() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(Constants.TAG_TEST, "FirebaseInstanceId token: " + refreshedToken);
         return refreshedToken;
     }
 }

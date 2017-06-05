@@ -1,7 +1,7 @@
 package xyz.parti.catan.ui.binder;
 
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,7 +15,7 @@ import xyz.parti.catan.data.model.Post;
  * Created by dalikim on 2017. 4. 28..
  */
 
-public class SurveyBinder {
+class SurveyBinder {
     @BindView(R.id.layout_options)
     LinearLayout optionsLayout;
     @BindView(R.id.textview_footnote)
@@ -24,13 +24,14 @@ public class SurveyBinder {
     private PostBinder.PostBindablePresenter presenter;
     private LayoutInflater inflater;
 
-    public SurveyBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
+    SurveyBinder(PostBinder.PostBindablePresenter presenter, View view) {
         this.presenter = presenter;
         this.inflater =  LayoutInflater.from(view.getContext());
         ButterKnife.bind(this, view);
     }
 
     public void bindData(Post post) {
+        optionsLayout.removeAllViews();
         for(Option option : post.survey.options) {
             bindOption(post, option);
         }

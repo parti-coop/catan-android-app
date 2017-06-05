@@ -42,17 +42,29 @@ public class CommentBinder {
     @BindView(R.id.button_show_likes)
     Button showLikesButton;
 
+    private final View view;
     private final Context context;
     private final CommentLikablePresenter presenter;
+    private Comment comment;
 
     public CommentBinder(View view, CommentLikablePresenter presenter) {
+        this.view = view;
         this.context = view.getContext();
         this.presenter = presenter;
         ButterKnife.bind(this, view);
+
+        Object commentTagData = view.getTag(R.id.tag_latest_comment);
+        if(commentTagData != null) {
+            comment = (Comment) commentTagData;
+        }
     }
 
     public void bindData(Post post, Comment comment) {
+        this.comment = comment;
+        view.setTag(R.id.tag_latest_comment, comment);
+
         bindData(post, comment, true);
+        view.setVisibility(View.VISIBLE);
     }
     public void bindData(Post post, Comment comment, boolean isLineVisible) {
         new ImageHelper(userImageImageView).loadInto(comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
@@ -93,6 +105,19 @@ public class CommentBinder {
         } else {
             Log.d(Constants.TAG, "CommentBinder : invalid playload");
         }
+    }
+
+    public void hideData() {
+        this.comment = null;
+        view.setVisibility(View.GONE);
+    }
+
+    public boolean isVisible() {
+        return view.getVisibility() == View.VISIBLE;
+    }
+
+    public Comment getComment() {
+        return comment;
     }
 
     /**

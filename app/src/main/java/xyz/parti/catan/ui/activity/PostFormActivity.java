@@ -15,7 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -250,7 +249,6 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         List<PostFormImageItem> items = new ArrayList<>();
         for(Uri imageUri : imagesUrls) {
             items.add(new PostFormImageItem(imageUri));
-            Log.d(Constants.TAG_TEST, imageUri.toString());
         }
         previewImagesAdapter.add(items);
         toggleVisibilityOfPreviewImagesAdapter();

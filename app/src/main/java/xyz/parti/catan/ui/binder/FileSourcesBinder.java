@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,7 +26,7 @@ import xyz.parti.catan.ui.view.MatchParentWidthImageView;
  * Created by dalikim on 2017. 4. 4..
  */
 
-public class FileSourcesBinder {
+class FileSourcesBinder {
     private final static int HALF_IMAGE_SPACE = 5;
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
@@ -35,7 +36,7 @@ public class FileSourcesBinder {
     @BindView(R.id.layout_images)
     ViewGroup imagesLayout;
 
-    public FileSourcesBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
+    FileSourcesBinder(PostBinder.PostBindablePresenter presenter, View view) {
         this.presenter = presenter;
         this.context = view.getContext();
         ButterKnife.bind(this, view);
@@ -159,6 +160,11 @@ public class FileSourcesBinder {
 
             fileSourcesLayout.setOnClickListener(view -> presenter.onClickDocFileSource(post, docFileSource));
         }
+    }
+
+    public void unbindData() {
+        imagesLayout.removeAllViews();
+        docsLayout.removeAllViews();
     }
 
     static class DocFileSourceHolder {

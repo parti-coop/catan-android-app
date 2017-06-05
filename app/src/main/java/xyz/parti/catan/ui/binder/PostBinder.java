@@ -5,15 +5,12 @@ import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.github.curioustechizen.ago.RelativeTimeTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,9 +32,13 @@ import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
  */
 
 public class PostBinder {
-    private final LayoutInflater inflater;
     private final Context context;
     private final PostBindablePresenter presenter;
+    private final LatestCommentsBinder latestCommentsBinder;
+    private final LinkSourceBinder linkSourceBinder;
+    private final FileSourcesBinder fileSourcesBinder;
+    private final PollBinder pollBinder;
+    private final SurveyBinder surveyBinder;
 
     @BindView(R.id.imageview_parti_logo)
     ImageView partiLogoImageView;
@@ -67,13 +68,25 @@ public class PostBinder {
     Button showLikesButton;
     @BindView(R.id.layout_comments_section)
     LinearLayout commentsSectionLayout;
+    @BindView(R.id.view_references_link_source)
+    View referencesLinkSourceView;
+    @BindView(R.id.view_references_file_sources)
+    View referencesFileSourcesView;
+    @BindView(R.id.view_references_poll)
+    View referencesPollView;
+    @BindView(R.id.view_references_survey)
+    View referencesSurveyView;
 
     public PostBinder(Context context, View view, PostBindablePresenter presenter) {
         this.context = context;
         this.presenter = presenter;
         ButterKnife.bind(this, view);
 
-        this.inflater = LayoutInflater.from(view.getContext());
+        latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout);
+        linkSourceBinder = new LinkSourceBinder(referencesLinkSourceView);
+        fileSourcesBinder = new FileSourcesBinder(presenter, referencesFileSourcesView);
+        pollBinder = new PollBinder(presenter, referencesPollView);
+        surveyBinder = new SurveyBinder(presenter, referencesSurveyView);
     }
 
     public void bindData(Post post) {
@@ -84,7 +97,7 @@ public class PostBinder {
     }
 
     private void bindComments(Post post) {
-        new LatestCommentsBinder(presenter, commentsSectionLayout).bindData(post);
+        latestCommentsBinder.bindData(post);
     }
 
     private void bindReferences(Post post) {
@@ -97,43 +110,49 @@ public class PostBinder {
     }
 
     private void resetReferences() {
-        referencesLayout.removeAllViews();
         referencesLayout.setVisibility(ViewGroup.GONE);
     }
 
     private void bindLinkSources(final Post post) {
         if(post.link_source != null) {
-            LinearLayout linkSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_link_source, referencesLayout, true);
-            linkSourcesLayout.setOnClickListener(view -> presenter.onClickLinkSource(post));
-            new LinkSourceBinder(linkSourcesLayout).bindData(post.link_source);
-
+            linkSourceBinder.bindData(post.link_source);
+            referencesLinkSourceView.setOnClickListener(view -> presenter.onClickLinkSource(post));
+            referencesLinkSourceView.setVisibility(View.VISIBLE);
             referencesLayout.setVisibility(ViewGroup.VISIBLE);
+        } else {
+            referencesLinkSourceView.setOnClickListener(null);
+            referencesLinkSourceView.setVisibility(View.GONE);
         }
     }
 
     private void bindFileSources(Post post) {
         if(post.file_sources != null) {
-            LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_file_sources, referencesLayout, true);
-            new FileSourcesBinder(presenter, fileSourcesLayout).bindData(post);
-
+            fileSourcesBinder.bindData(post);
+            referencesFileSourcesView.setVisibility(View.VISIBLE);
             referencesLayout.setVisibility(ViewGroup.VISIBLE);
+        } else {
+            fileSourcesBinder.unbindData();
+            referencesFileSourcesView.setVisibility(View.GONE);
         }
     }
 
     private void bindPoll(final Post post) {
         if(post.poll != null) {
-            LinearLayout pollLayout = (LinearLayout) inflater.inflate(R.layout.references_poll, referencesLayout, true);
-            pollLayout.setOnClickListener(null);
-            new PollBinder(presenter, pollLayout).bindData(post);
+            pollBinder.bindData(post);
+            referencesPollView.setVisibility(View.VISIBLE);
             referencesLayout.setVisibility(ViewGroup.VISIBLE);
+        } else {
+            referencesPollView.setVisibility(View.GONE);
         }
     }
 
     private void bindSurvey(final Post post) {
         if(post.survey != null) {
-            LinearLayout surveyLayout = (LinearLayout) inflater.inflate(R.layout.references_survey, referencesLayout, true);
-            new SurveyBinder(presenter, surveyLayout).bindData(post);
+            surveyBinder.bindData(post);
+            referencesSurveyView.setVisibility(View.VISIBLE);
             referencesLayout.setVisibility(ViewGroup.VISIBLE);
+        } else {
+            referencesSurveyView.setVisibility(View.GONE);
         }
     }
 
