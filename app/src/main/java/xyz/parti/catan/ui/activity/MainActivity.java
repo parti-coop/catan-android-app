@@ -586,8 +586,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     public void showPostListDemo() {
         appBarLayout.setExpanded(true);
-        postListDemoLayout.startShimmerAnimation();
+        noPostSignLayout.setVisibility(View.GONE);
         postListDemoLayout.setVisibility(View.VISIBLE);
+        postListDemoLayout.startShimmerAnimation();
+        if(newPostsSignAnimator != null) {
+            newPostsSignAnimator.hideImmediately();
+        }
+        postListSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -660,10 +665,25 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         }
     }
 
+    /*
+        OptionsMenu
+    */
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         newPostMenuItem = menu.findItem(R.id.action_new_post);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_new_post:
+                presenter.showPostForm();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

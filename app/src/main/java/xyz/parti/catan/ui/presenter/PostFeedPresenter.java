@@ -33,6 +33,7 @@ import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
+import xyz.parti.catan.data.model.ReadParti;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.repository.NotificationsRepository;
 import xyz.parti.catan.data.services.PartiesService;
@@ -121,6 +122,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         Page<Post> page = response.body();
                         feedAdapter.clearAndAppendModels(page.items, 1);
                         feedAdapter.setMoreDataAvailable(page.has_more_item);
+
+                        ReadParti readParti = ReadParti.forParti(currentParti);
+                        if(feedAdapter.getFirstModel() != null) {
+                            readParti.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
+                        }
+                        readParti.save();
                     } else {
                         feedAdapter.setMoreDataAvailable(false);
                         getView().reportError("Load first post error : " + response.code());

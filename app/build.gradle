@@ -3,6 +3,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 android {
@@ -129,6 +130,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.9.2@aar') {
         transitive = true
     }
+    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     compile project(':matisse')
 
     annotationProcessor 'org.parceler:parceler:1.1.6'
