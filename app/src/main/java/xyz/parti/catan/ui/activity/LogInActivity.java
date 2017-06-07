@@ -1,6 +1,5 @@
 package xyz.parti.catan.ui.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -33,7 +32,6 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import java.util.Collections;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

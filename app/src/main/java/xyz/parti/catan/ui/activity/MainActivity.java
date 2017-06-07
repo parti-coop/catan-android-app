@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,11 +17,9 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -38,11 +35,16 @@ import android.widget.Toast;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +56,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
+import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
@@ -61,10 +64,10 @@ import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
-import xyz.parti.catan.ui.binder.DrawerNavigationHeaderBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
+import xyz.parti.catan.ui.view.BaseDrawerItem;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
@@ -81,10 +84,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     DrawerLayout rootDrawerLayout;
     @BindView(R.id.appbarlayout)
     AppBarLayout appBarLayout;
-    @BindView(R.id.layout_drawer_panel)
-    RelativeLayout drawerPanelLayout;
-    @BindView(R.id.navigation_view_drawer)
-    NavigationView drawerNavigationView;
     @BindView(R.id.swipe_refresh_layout_post_list)
     SwipeRefreshLayout postListSwipeRefreshLayout;
     @BindView(R.id.layout_new_posts_sign)
@@ -108,10 +107,10 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     private NewPostSignAnimator newPostsSignAnimator;
 
     private CheckNewPostBroadcastReceiver newPostsBroadcastReceiver = new CheckNewPostBroadcastReceiver();
-    private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
     private MenuItem newPostMenuItem;
+    private Drawer drawer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -166,50 +165,41 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     private void setUpDrawerBar() {
-        drawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                rootDrawerLayout,      /* DrawerLayout object */
-                R.string.drawer_open,        /* "open drawer" description */
-                R.string.drawer_close       /* "close drawer" description */
-        );
-        drawerNavigationView.setNavigationItemSelectedListener(item -> {
-            rootDrawerLayout.closeDrawers();
-
-            switch (item.getItemId()){
-                case R.id.button_settings:
-                    if(presenter != null) {
-                        presenter.showSettings();
+        drawer = new DrawerBuilder()
+                .withTranslucentStatusBar(false)
+                .withActivity(this)
+                .withToolbar(appToolbar)
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        if(drawer.getDrawerItems().size() <= 0) {
+                            presenter.loadDrawer();
+                        }
                     }
-                    return true;
-                default:
-                    return true;
-            }
-        });
-        drawerNavigationView.setCheckedItem(R.id.item_post_feed);
 
-        new DrawerNavigationHeaderBinder(drawerNavigationView.getHeaderView(0)).bindData(presenter.getCurrentUser());
-    }
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        presenter.loadDrawer();
+                    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_new_post:
-                presenter.showPostForm();
-                return true;
-            default:
-                // Pass the event to ActionBarDrawerToggle, if it returns
-                // true, then it has handled the app icon touch event
-                if (drawerToggle.onOptionsItemSelected(item)) {
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                    }
+                })
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    if(drawerItem.getType() == R.id.drawer_item_my_post_feed) {
+                        presenter.convertToMyPostFeed();
+                    } else if(drawerItem.getType() == R.id.drawer_item_parti_post_feed) {
+                        Object tagData = drawerItem.getTag();
+                        if (tagData == null) return false;
+                        if (!(tagData instanceof Parti)) return false;
+                        presenter.convertToPartiPostFeed((Parti) tagData);
+                    }
+                    drawer.closeDrawer();
                     return true;
-                }
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+                }).build();
+        presenter.loadDrawer();
     }
 
     @Override
@@ -433,6 +423,10 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         postListDemoLayout.setVisibility(View.GONE);
         postListRecyclerView.setVisibility(View.GONE);
         noPostSignLayout.setVisibility(View.VISIBLE);
+        if(newPostsSignAnimator != null) {
+            newPostsSignAnimator.hideImmediately();
+        }
+        postListSwipeRefreshLayout.setRefreshing(false);
 
         if(isError) {
             retryButton.setVisibility(View.VISIBLE);
@@ -460,6 +454,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         postListDemoLayout.setVisibility(View.VISIBLE);
         postListRecyclerView.setVisibility(View.VISIBLE);
         noPostSignLayout.setVisibility(View.GONE);
+
         retryButton.setVisibility(View.GONE);
         goToPartiesButton.setVisibility(View.GONE);
     }
@@ -483,6 +478,32 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         if(postListRecyclerView != null && postListRecyclerView.getVisibility() == View.VISIBLE) {
             postListRecyclerView.scrollToPosition(0);
         }
+    }
+
+    @Override
+    public void showDrawerProgressBar() {
+
+    }
+
+    @Override
+    public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties) {
+        List<IDrawerItem> drawerItems = new ArrayList<>();
+        drawerItems.add(BaseDrawerItem.forPostFeed().withName(R.string.navigation_menu_my_post_feed).withLogo(currentUser.image_url));
+        for(Group group: joindedParties.keySet()) {
+            SectionDrawerItem groupItem = new SectionDrawerItem().withName(group.title).withTextColorRes(R.color.material_drawer_header_selection_text);
+            drawerItems.add(groupItem);
+            for(Parti parti : joindedParties.get(group)) {
+                BaseDrawerItem item = BaseDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);
+                item.withTag(parti);
+                drawerItems.add(item);
+            }
+        }
+        drawer.setItems(drawerItems);
+    }
+
+    @Override
+    public void hideDrawerProgressBar() {
+
     }
 
     @Override

@@ -21,4 +21,6 @@
     <dimen name="parti_list_padding">10dp</dimen>
     <dimen name="comment_send_button">12sp</dimen>
     <dimen name="grid_expected_size">120dp</dimen>
+
+    <dimen name="material_drawer_item_primary">36dp</dimen>
 </resources>

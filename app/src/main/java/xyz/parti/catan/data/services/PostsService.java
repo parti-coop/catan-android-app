@@ -25,10 +25,10 @@ import xyz.parti.catan.data.model.Update;
  */
 
 public interface PostsService {
-    @GET("/api/v1/posts/dashboard_latest")
+    @GET("/api/v1/posts/dashboard")
     Flowable<Response<Page<Post>>> getDashBoardLastest();
 
-    @GET("/api/v1/posts/dashboard_after")
+    @GET("/api/v1/posts/dashboard")
     Flowable<Response<Page<Post>>> getDashboardAfter(
             @Query("last_id") long lastId);
 

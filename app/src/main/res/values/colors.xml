@@ -7,6 +7,8 @@
     <color name="brand_gray_light">#efefef</color>
 
     <color name="style_color_primary">#966fd6</color>
+    <color name="style_color_primary_light">#ded2f2</color>
+    <color name="style_color_primary_less_light">#a07dda</color>
     <color name="style_color_primary_dark">#6b37c1</color>
     <color name="style_color_accent">#6b37c1</color>
     <color name="style_color_default_border">@color/brand_gray_light</color>
@@ -26,4 +28,14 @@
     <color name="selected_vote_button">#fff</color>
     <color name="drawer_item_text">@color/brand_gray_dark</color>
     <color name="comment_form_placeholer">@color/brand_gray</color>
+
+    <color name="material_drawer_background">@color/style_color_primary</color>
+    <color name="material_drawer_primary_text">@android:color/white</color>
+    <color name="material_drawer_primary_icon">@color/brand_gray_light</color>
+    <color name="material_drawer_secondary_text">@android:color/white</color>
+    <color name="material_drawer_hint_text">@color/brand_gray_light</color>
+    <color name="material_drawer_divider">@color/style_color_primary_less_light</color>
+    <color name="material_drawer_selected">@color/style_color_primary_dark</color>
+    <color name="material_drawer_selected_text">@android:color/white</color>
+    <color name="material_drawer_header_selection_text">@color/style_color_primary_light</color>
 </resources>

@@ -6,4 +6,6 @@
     <item name="post_form_image" type="id" />
     <item name="tag_latest_comment_binder" type="id" />
     <item name="tag_latest_comment" type="id" />
+    <item name="drawer_item_parti_post_feed" type="id" />
+    <item name="drawer_item_my_post_feed" type="id" />
 </resources>

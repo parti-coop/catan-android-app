@@ -3,6 +3,7 @@ package xyz.parti.catan.helper;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -11,6 +12,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 
 /**

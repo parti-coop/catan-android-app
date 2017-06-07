@@ -1,11 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="MaterialDrawerTheme.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/style_color_primary</item>
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>
+        <item name="drawerArrowStyle">@style/AppDrawerArrowStyle</item>
         <item name="android:alertDialogStyle">@style/AppAlertDialog</item>
     </style>
 
@@ -38,6 +39,11 @@
 
     <style name="SettingsTheme" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
         <item name="preferenceTheme">@style/AppPreference</item>
+    </style>
+
+    <style name="AppDrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
     </style>
 
     <style name="AppPreference" parent="@style/PreferenceThemeOverlay.v14.Material">

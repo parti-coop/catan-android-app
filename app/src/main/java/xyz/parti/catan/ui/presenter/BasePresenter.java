@@ -27,21 +27,4 @@ abstract class BasePresenter<T> {
     public T getView() {
         return view;
     }
-
-    private boolean isViewAttached() {
-        return view != null;
-    }
-
-    void checkViewAttached() {
-        if (!isViewAttached()) throw new ViewNotAttachedException();
-    }
-
-
-
-    private static class ViewNotAttachedException extends RuntimeException {
-        public ViewNotAttachedException() {
-            super("Please call Presenter.attachView(MvpView) before" +
-                    " requesting data to the Presenter");
-        }
-    }
 }
