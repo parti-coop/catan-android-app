@@ -25,6 +25,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -125,6 +126,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     private PostFeedPresenter presenter;
     private MenuItem newPostMenuItem;
     private Drawer drawer;
+    private View drawerDemoLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -266,6 +268,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     }
                 }).build();
 
+        drawerDemoLayout = LayoutInflater.from(this).inflate(R.layout.drawer_demo, drawer.getSlider(), false);
+        drawer.getSlider().addView(drawerDemoLayout);
         presenter.loadDrawer();
     }
 
@@ -539,11 +543,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void showDrawerProgressBar() {
-
-    }
-
-    @Override
     public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti) {
         List<IDrawerItem> drawerItems = new ArrayList<>();
 
@@ -566,8 +565,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void hideDrawerProgressBar() {
-
+    public void ensureToHideDrawerDemo() {
+        drawerDemoLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -610,6 +609,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         toolbarPartiLogoImageView.setImageDrawable(null);
         new ImageHelper(toolbarPartiLogoImageView).loadInto(parti.logo_url);
         toolbarDashboardLogoImageView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean canRefreshDrawer() {
+        if(drawer == null) return false;
+        if(drawer.getDrawerItems().size() <= 0) return true;
+        return !drawer.isDrawerOpen();
     }
 
     @Override

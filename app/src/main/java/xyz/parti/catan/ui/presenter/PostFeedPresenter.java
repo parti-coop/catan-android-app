@@ -10,7 +10,6 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -496,13 +495,13 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     public void loadDrawer() {
         if(!isActive()) return;
 
-        getView().showDrawerProgressBar();
         loadDrawer = getRxGuardian().subscribe(loadDrawer,
                 partiesService.getMyJoined(),
                 new Consumer<Response<Parti[]>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Response<Parti[]> response) throws Exception {
                         if (!isActive()) return;
+                        if (!getView().canRefreshDrawer()) return;
                         if (response.isSuccessful()) {
                             joindedParties.clear();
                             joindedParties.addAll(Arrays.asList(response.body()));
@@ -511,7 +510,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             }
                             getView().setUpDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentParti);
                         }
-                        getView().hideDrawerProgressBar();
+                        getView().ensureToHideDrawerDemo();
 
                         watchNewPosts();
                     }
@@ -519,7 +518,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
                         getView().reportError(error);
-                        getView().hideDrawerProgressBar();
+                        getView().ensureToHideDrawerDemo();
                     }
                 });
     }
@@ -651,14 +650,15 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showPostForm(Parti parti, String body);
         void scrollToTop();
 
-        void showDrawerProgressBar();
         void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti);
-        void hideDrawerProgressBar();
+        void ensureToHideDrawerDemo();
 
         void markUnreadOrNotParti(long partiId, boolean unread);
         void markUnreadOrNotDashboard(boolean unread);
 
         void changeDashboardToolbar();
         void changePartiPostFeedToolbar(Parti parti);
+
+        boolean canRefreshDrawer();
     }
 }
