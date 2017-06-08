@@ -504,6 +504,15 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
+    public void showPostForm(Parti parti) {
+        Intent intent = new Intent(this, PostFormActivity.class);
+        if(parti != null) {
+            intent.putExtra("parti", Parcels.wrap(parti));
+        }
+        startActivityForResult(intent, REQUEST_NEW_POST);
+    }
+
+    @Override
     public void showPostForm(Parti parti, String body) {
         Intent intent = new Intent(this, PostFormActivity.class);
         intent.putExtra("parti", Parcels.wrap(parti));

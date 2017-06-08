@@ -433,7 +433,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     }
 
     public void showPostForm() {
-        getView().showPostForm();
+        getView().showPostForm(currentParti);
     }
 
     public void savePost(final Parti parti, final String body, List<SelectedImage> fileSourcesAttachmentImages) {
@@ -642,6 +642,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showEmpty(boolean isError);
         void readyToRetry();
         void showPostForm();
+        void showPostForm(Parti parti);
         void showPostForm(Parti parti, String body);
         void scrollToTop();
 
