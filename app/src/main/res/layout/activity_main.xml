@@ -176,30 +176,4 @@
             </FrameLayout>
         </android.support.design.widget.CoordinatorLayout>
     </FrameLayout>
-    <RelativeLayout
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:id="@+id/layout_drawer_panel"
-        android:layout_gravity="start"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#111">
-        <android.support.design.widget.NavigationView
-            android:id="@+id/navigation_view_drawer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:itemIconTint="@color/drawer_item"
-            app:itemTextColor="@color/drawer_item"
-            app:itemBackground="@android:color/transparent"
-            app:headerLayout="@layout/navigation_header"
-            app:menu="@menu/navigation_menu" />
-        <!--<ListView-->
-            <!--android:id="@+id/navList"-->
-            <!--android:layout_width="280dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:choiceMode="singleChoice"-->
-            <!--android:background="#ffffffff" />-->
-    </RelativeLayout>
 </android.support.v4.widget.DrawerLayout>

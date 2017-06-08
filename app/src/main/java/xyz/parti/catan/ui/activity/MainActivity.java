@@ -29,6 +29,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +64,7 @@ import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
@@ -103,6 +106,14 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     FancyButton goToPartiesButton;
     @BindView(R.id.button_retry)
     FancyButton retryButton;
+    @BindView(R.id.imageview_toolbar_dashboard_logo)
+    ImageView toolbarDashboardLogoImageView;
+    @BindView(R.id.layout_toolbar_parti)
+    LinearLayout toolbarPartiLayout;
+    @BindView(R.id.imageview_toolbar_parti_logo)
+    ImageView toolbarPartiLogoImageView;
+    @BindView(R.id.textview_toolbar_parti_title)
+    TextView toolbarPartiTitleTextView;
 
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
@@ -243,12 +254,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if(drawerItem.getType() == R.id.drawer_item_dashboard) {
-                            presenter.convertToMyPostFeed();
+                            presenter.showDashboardPostFeed();
                         } else if(drawerItem.getType() == R.id.drawer_item_parti_post_feed) {
                             Object tagData = drawerItem.getTag();
                             if (tagData == null) return false;
                             if (!(tagData instanceof Parti)) return false;
-                            presenter.convertToPartiPostFeed((Parti) tagData);
+                            presenter.showPartiPostFeed((Parti) tagData);
                         }
                         drawer.closeDrawer();
                         return true;
@@ -584,6 +595,21 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 break;
             }
         }
+    }
+
+    @Override
+    public void changeDashboardToolbar() {
+        toolbarPartiLayout.setVisibility(View.GONE);
+        toolbarDashboardLogoImageView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void changePartiPostFeedToolbar(Parti parti) {
+        toolbarPartiLayout.setVisibility(View.VISIBLE);
+        toolbarPartiTitleTextView.setText(parti.title);
+        toolbarPartiLogoImageView.setImageDrawable(null);
+        new ImageHelper(toolbarPartiLogoImageView).loadInto(parti.logo_url);
+        toolbarDashboardLogoImageView.setVisibility(View.GONE);
     }
 
     @Override

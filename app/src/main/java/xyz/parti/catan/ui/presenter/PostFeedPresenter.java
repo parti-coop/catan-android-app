@@ -613,17 +613,21 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         return result;
     }
 
-    public void convertToMyPostFeed() {
+    public void showDashboardPostFeed() {
         if(!isActive()) return;
+        if(currentParti == null) return;
 
         currentParti = null;
+        getView().changeDashboardToolbar();
         refreshPosts();
     }
 
-    public void convertToPartiPostFeed(Parti parti) {
+    public void showPartiPostFeed(Parti parti) {
         if(!isActive()) return;
+        if(currentParti != null && currentParti.id.equals(parti.id)) return;
 
         currentParti = parti;
+        getView().changePartiPostFeedToolbar(parti);
         refreshPosts();
     }
 
@@ -652,5 +656,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         void markUnreadOrNotParti(long partiId, boolean unread);
         void markUnreadOrNotDashboard(boolean unread);
+
+        void changeDashboardToolbar();
+        void changePartiPostFeedToolbar(Parti parti);
     }
 }
