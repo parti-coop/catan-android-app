@@ -69,6 +69,7 @@ import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
+import xyz.parti.catan.ui.view.GroupSectionDrawerItem;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 import xyz.parti.catan.ui.view.PostFeedDrawerItem;
 
@@ -135,7 +136,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     setUpToolbar();
                     setUpFeed(session.getCurrentUser());
                     setUpCheckNewPost();
-                    setUpDrawerBar();
+                    setUpDrawerBar(session.getCurrentUser());
                     setUpSwipeRefresh();
 
                     receivePushMessageIntent(getIntent());
@@ -191,6 +192,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         if(presenter != null) {
             presenter.onResume();
         }
+        ensureExpendedAppBar();
     }
 
     private void checkAppVersion() {
@@ -214,7 +216,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 android.R.color.holo_red_light);
     }
 
-    private void setUpDrawerBar() {
+    private void setUpDrawerBar(User currentUser) {
         drawer = new DrawerBuilder()
                 .withTranslucentStatusBar(false)
                 .withActivity(this)
@@ -252,6 +254,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                         return true;
                     }
                 }).build();
+
         presenter.loadDrawer();
     }
 
@@ -524,14 +527,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti) {
         List<IDrawerItem> drawerItems = new ArrayList<>();
 
-        PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forPostFeed().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url);
-        if(currentParti == null) {
-            dashboardItem.withSetSelected(true);
-        }
-        drawerItems.add(dashboardItem);
-
+        drawerItems.add(PostFeedDrawerItem.forPostFeed().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url).withSetSelected(currentParti == null));
         for(Group group: joindedParties.keySet()) {
-            SectionDrawerItem groupItem = new SectionDrawerItem().withName(group.title).withTextColorRes(R.color.material_drawer_header_selection_text);
+            SectionDrawerItem groupItem = new GroupSectionDrawerItem().withName(group.title).withDivider(false).withTextColorRes(R.color.material_drawer_header_selection_text);
             drawerItems.add(groupItem);
             for(Parti parti : joindedParties.get(group)) {
                 PostFeedDrawerItem item = PostFeedDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);

@@ -27,7 +27,8 @@ public class ReadParti extends Model {
     public Date lastStrokedAt;
 
     public boolean isUnread() {
-        if(lastReadAt == null || lastStrokedAt == null) return false;
+        if(lastStrokedAt == null) return false;
+        if(lastReadAt == null &&lastStrokedAt != null ) return true;
         return (lastStrokedAt.getTime() > lastReadAt.getTime());
     }
 

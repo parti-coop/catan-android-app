@@ -74,19 +74,19 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
      * @param partiViewHolder
      */
     protected void bindViewHelper(PartiViewHolder partiViewHolder) {
-        Context ctx = partiViewHolder.itemView.getContext();
+        Context ctx = partiViewHolder.view.getContext();
 
         //set the identifier from the drawerItem here. It can be used to run tests
-        partiViewHolder.itemView.setId(hashCode());
+        partiViewHolder.view.setId(hashCode());
 
         //set the item selected if it is
-        partiViewHolder.itemView.setSelected(isSelected());
+        partiViewHolder.view.setSelected(isSelected());
 
         //set the item enabled if it is
-        partiViewHolder.itemView.setEnabled(isEnabled());
+        partiViewHolder.view.setEnabled(isEnabled());
 
         //
-        partiViewHolder.itemView.setTag(this);
+        partiViewHolder.view.setTag(this);
 
         //get the correct color for the background
         int selectedColor = getSelectedColor(ctx);
@@ -111,7 +111,7 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
         if (unreadMarked) {
             partiViewHolder.name.setPaintFlags(partiViewHolder.name.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
             //set the colors for textViews
-            partiViewHolder.name.setTextColor(ContextCompat.getColor(ctx, (R.color.material_drawer_primary_text_unread)));
+            partiViewHolder.name.setTextColor(DrawerUIUtils.getTextColorStateList(ContextCompat.getColor(ctx, (R.color.material_drawer_primary_text_unread)), ContextCompat.getColor(ctx, (R.color.material_drawer_selected_text))));
         } else {
             partiViewHolder.name.setPaintFlags(partiViewHolder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
             //set the colors for textViews
