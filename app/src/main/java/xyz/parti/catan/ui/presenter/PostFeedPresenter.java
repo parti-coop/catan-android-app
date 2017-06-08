@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ import xyz.parti.catan.ui.task.ReceivablePushMessageCheckTask;
 
 public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresenter.View> implements PostBinder.PostBindablePresenter {
     private final DatabaseReference partiesFirebaseRoot;
+    private final List<DatabaseReference> listenPartiFireBases = new ArrayList<>();
 
     private SessionManager session;
     private final PostsService postsService;
@@ -77,7 +79,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
     private List<Parti> joindedParties = new ArrayList<>();
     private Parti currentParti;
-    private ChildEventListener newPostListener;
+    private ValueEventListener newPostListener;
 
     public PostFeedPresenter(SessionManager session) {
         super(session);
@@ -523,26 +525,15 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     }
 
     public void watchNewPosts() {
-        newPostListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                onDataChange(dataSnapshot);
+        if(newPostListener != null) {
+            for(DatabaseReference partiFirebase : listenPartiFireBases) {
+                partiFirebase.removeEventListener(newPostListener);
             }
+        }
 
+        newPostListener = new ValueEventListener() {
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                onDataChange(dataSnapshot);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-            }
-
-            void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getKey() == null) return;
                 long partiId = Long.parseLong(dataSnapshot.getKey());
                 if(!isJoinedParti(partiId)) {
@@ -573,7 +564,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 Log.e(Constants.TAG, databaseError.getMessage(), databaseError.toException());
             }
         };
-        partiesFirebaseRoot.addChildEventListener(newPostListener);
+
+        for(Parti parti : this.joindedParties) {
+            DatabaseReference partiFirebase = partiesFirebaseRoot.child(String.valueOf(parti.id));
+            partiFirebase.addValueEventListener(newPostListener);
+            listenPartiFireBases.add(partiFirebase);
+        }
     }
 
     private boolean isJoinedParti(long currentId) {
@@ -596,7 +592,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void unwatchNewPosts() {
         if(newPostListener != null) {
-            partiesFirebaseRoot.removeEventListener(newPostListener);
+            for(DatabaseReference partiFirebase : listenPartiFireBases) {
+                partiFirebase.removeEventListener(newPostListener);
+            }
         }
 //
 //        this.watchedPartiesFirebase.clear();
