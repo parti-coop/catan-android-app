@@ -40,7 +40,7 @@ import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
-import xyz.parti.catan.data.model.ReadParti;
+import xyz.parti.catan.data.model.ReadPostFeed;
 import xyz.parti.catan.data.model.Update;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.repository.NotificationsRepository;
@@ -137,11 +137,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             feedAdapter.clearAndAppendModels(page.items, 1);
                             feedAdapter.setMoreDataAvailable(page.has_more_item);
 
-                            ReadParti readParti = ReadParti.forParti(currentParti);
+                            ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(currentParti);
                             if (feedAdapter.getFirstModel() != null) {
-                                readParti.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
+                                readPostFeed.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
                             }
-                            readParti.save();
+                            readPostFeed.save();
+                            markUnreadOrNotParti(readPostFeed);
                         } else {
                             feedAdapter.setMoreDataAvailable(false);
                             getView().reportError("Load first post error : " + response.code());
@@ -545,26 +546,26 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 if(dataSnapshot.getKey() == null) return;
                 long partiId = Long.parseLong(dataSnapshot.getKey());
                 if(!isJoinedParti(partiId)) {
-                    ReadParti.destroyIfExist(partiId);
+                    ReadPostFeed.destroyIfExist(partiId);
                     return;
                 }
 
-                ReadParti readParti = ReadParti.forParti(partiId);
+                ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(partiId);
 
                 Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
                 if(lastStrokedSecondTime == null || lastStrokedSecondTime < 0) {
-                    readParti.lastStrokedAt = null;
+                    readPostFeed.lastStrokedAt = null;
                 } else {
-                    readParti.lastStrokedAt = new Date(lastStrokedSecondTime * 1000);
+                    readPostFeed.lastStrokedAt = new Date(lastStrokedSecondTime * 1000);
 
-                    ReadParti readDashboard = ReadParti.forDashboard();
-                    if(readDashboard.lastStrokedAt == null || readParti.lastStrokedAt.getTime() > readDashboard.lastStrokedAt.getTime()) {
-                        readDashboard.lastStrokedAt = readParti.lastStrokedAt;
+                    ReadPostFeed readDashboard = ReadPostFeed.forDashboard();
+                    if(readDashboard.lastStrokedAt == null || readPostFeed.lastStrokedAt.getTime() > readDashboard.lastStrokedAt.getTime()) {
+                        readDashboard.lastStrokedAt = readPostFeed.lastStrokedAt;
                         readDashboard.save();
                     }
                 }
-                readParti.save();
-                markUnreadOrNotParti(readParti);
+                readPostFeed.save();
+                markUnreadOrNotParti(readPostFeed);
             }
 
             @Override
@@ -584,11 +585,13 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         return false;
     }
 
-    private void markUnreadOrNotParti(ReadParti readParti) {
+    private void markUnreadOrNotParti(ReadPostFeed readPostFeed) {
         if(!isActive()) return;
 
-        getView().markUnreadOrNotDashboard(ReadParti.forDashboard().isUnread());
-        getView().markUnreadOrNotParti(readParti.partiId, readParti.isUnread());
+        getView().markUnreadOrNotDashboard(ReadPostFeed.forDashboard().isUnread());
+        if(!readPostFeed.isDashboard()) {
+            getView().markUnreadOrNotParti(readPostFeed.partiId, readPostFeed.isUnread());
+        }
     }
 
     public void unwatchNewPosts() {

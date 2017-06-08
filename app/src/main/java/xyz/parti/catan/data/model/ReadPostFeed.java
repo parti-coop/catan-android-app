@@ -13,8 +13,8 @@ import java.util.List;
  * Created by dalikim on 2017. 6. 7..
  */
 
-@Table(name = "ReadParties")
-public class ReadParti extends Model {
+@Table(name = "ReadPostFeeds")
+public class ReadPostFeed extends Model {
     public final static long DASHBOARD = 0;
 
     @Column(name = "PartiId")
@@ -32,33 +32,33 @@ public class ReadParti extends Model {
         return (lastStrokedAt.getTime() > lastReadAt.getTime());
     }
 
-    public static ReadParti forDashboard() {
-        return forParti(null);
+    public static ReadPostFeed forDashboard() {
+        return forPartiOrDashboard(null);
     }
 
-    public static ReadParti forParti(long partiId) {
-        ReadParti readParti = new Select()
-                .from(ReadParti.class)
+    public static ReadPostFeed forPartiOrDashboard(long partiId) {
+        ReadPostFeed readPostFeed = new Select()
+                .from(ReadPostFeed.class)
                 .where("PartiId = ?", partiId)
                 .executeSingle();
-        if(readParti == null) {
-            readParti = new ReadParti();
-            readParti.partiId = partiId;
+        if(readPostFeed == null) {
+            readPostFeed = new ReadPostFeed();
+            readPostFeed.partiId = partiId;
         }
-        return readParti;
+        return readPostFeed;
     }
 
-    public static ReadParti forParti(Parti currentParti) {
-        return forParti(currentParti == null ? DASHBOARD : currentParti.id);
+    public static ReadPostFeed forPartiOrDashboard(Parti currentParti) {
+        return forPartiOrDashboard(currentParti == null ? DASHBOARD : currentParti.id);
     }
 
     public static List<Long> unreads() {
         List<Long> result = new ArrayList<>();
         
-        List<ReadParti> all = new Select().from(ReadParti.class).execute();
-        for(ReadParti readParti : all) {
-            if(readParti.isUnread()) {
-                result.add(readParti.partiId);
+        List<ReadPostFeed> all = new Select().from(ReadPostFeed.class).execute();
+        for(ReadPostFeed readPostFeed : all) {
+            if(readPostFeed.isUnread()) {
+                result.add(readPostFeed.partiId);
             }
         }
 
@@ -66,8 +66,12 @@ public class ReadParti extends Model {
     }
 
     public static void destroyIfExist(long partiId) {
-        ReadParti readParti = forParti(partiId);
-        if(readParti.getId() == null) return;
-        readParti.delete();
+        ReadPostFeed readPostFeed = forPartiOrDashboard(partiId);
+        if(readPostFeed.getId() == null) return;
+        readPostFeed.delete();
+    }
+
+    public boolean isDashboard() {
+        return partiId == DASHBOARD;
     }
 }
