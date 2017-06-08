@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -63,12 +64,13 @@ import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
+import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
-import xyz.parti.catan.ui.view.BaseDrawerItem;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
+import xyz.parti.catan.ui.view.PostFeedDrawerItem;
 
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
     public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
@@ -118,7 +120,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         setContentView(R.layout.activity_main);
 
         if(new NetworkHelper(this).isValidNetwork()) {
-            SessionManager session = new SessionManager(this.getApplicationContext());
+            final SessionManager session = new SessionManager(this.getApplicationContext());
             session.checkLogin(new SessionManager.OnCheckListener() {
                 @Override
                 public void onLoggedIn() {
@@ -148,6 +150,49 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        cancelCheckNewPostJob();
+        if(downloadProgressDialog != null) {
+            downloadProgressDialog.dismiss();
+        }
+        if(presenter != null) {
+            presenter.detachView();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(presenter != null) {
+            presenter.watchNewPosts();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(presenter != null) {
+            presenter.unwatchNewPosts();
+        }
+    }
+
+    @Override
+    protected void onPause()  {
+        super.onPause();
+        cancelCheckNewPostJob();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startCheckNewPostJob();
+        if(presenter != null) {
+            presenter.onResume();
+        }
+    }
+
     private void checkAppVersion() {
         presenter.checkAppVersion();
     }
@@ -156,7 +201,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     private void setUpSwipeRefresh() {
-        postListSwipeRefreshLayout.setOnRefreshListener(() -> presenter.loadFirstPosts());
+        postListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenter.loadFirstPosts();
+            }
+        });
         // Configure the refreshing colors
         postListSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -187,23 +237,26 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
                     }
                 })
-                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
-                    if(drawerItem.getType() == R.id.drawer_item_my_post_feed) {
-                        presenter.convertToMyPostFeed();
-                    } else if(drawerItem.getType() == R.id.drawer_item_parti_post_feed) {
-                        Object tagData = drawerItem.getTag();
-                        if (tagData == null) return false;
-                        if (!(tagData instanceof Parti)) return false;
-                        presenter.convertToPartiPostFeed((Parti) tagData);
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        if(drawerItem.getType() == R.id.drawer_item_dashboard) {
+                            presenter.convertToMyPostFeed();
+                        } else if(drawerItem.getType() == R.id.drawer_item_parti_post_feed) {
+                            Object tagData = drawerItem.getTag();
+                            if (tagData == null) return false;
+                            if (!(tagData instanceof Parti)) return false;
+                            presenter.convertToPartiPostFeed((Parti) tagData);
+                        }
+                        drawer.closeDrawer();
+                        return true;
                     }
-                    drawer.closeDrawer();
-                    return true;
                 }).build();
         presenter.loadDrawer();
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         SessionManager session = new SessionManager(this.getApplicationContext());
         session.checkLogin(new SessionManager.OnCheckListener() {
@@ -316,10 +369,18 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
         PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this, currentUser);
         feedAdapter.setPresenter(presenter);
-        feedAdapter.setLoadMoreListener(() -> {
-            postListRecyclerView.post(() -> presenter.loadMorePosts());
-            //Calling loadMorePosts function in Runnable to fix the
-            // java.lang.IllegalStateException: Cannot call this method while RecyclerView is computing a layout or scrolling error
+        feedAdapter.setLoadMoreListener(new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                postListRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMorePosts();
+                        //Calling loadMorePosts function in Runnable to fix the
+                        // java.lang.IllegalStateException: Cannot call this method while RecyclerView is computing a layout or scrolling error
+                    }
+                });
+            }
         });
 
         postListRecyclerView.setHasFixedSize(true);
@@ -344,31 +405,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    protected void onDestroy() {
-        cancelCheckNewPostJob();
-        if(downloadProgressDialog != null) {
-            downloadProgressDialog.dismiss();
-        }
-        if(presenter != null) {
-            presenter.detachView();
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onPause()  {
-        super.onPause();
-        cancelCheckNewPostJob();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startCheckNewPostJob();
-        presenter.onResume();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -390,7 +426,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 presenter.savePost(parti, body, fileSourceAttachmentUris);
                 return;
             default:
-                return;
         }
     }
 
@@ -486,24 +521,62 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties) {
+    public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti) {
         List<IDrawerItem> drawerItems = new ArrayList<>();
-        drawerItems.add(BaseDrawerItem.forPostFeed().withName(R.string.navigation_menu_my_post_feed).withLogo(currentUser.image_url));
+
+        PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forPostFeed().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url);
+        if(currentParti == null) {
+            dashboardItem.withSetSelected(true);
+        }
+        drawerItems.add(dashboardItem);
+
         for(Group group: joindedParties.keySet()) {
             SectionDrawerItem groupItem = new SectionDrawerItem().withName(group.title).withTextColorRes(R.color.material_drawer_header_selection_text);
             drawerItems.add(groupItem);
             for(Parti parti : joindedParties.get(group)) {
-                BaseDrawerItem item = BaseDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);
+                PostFeedDrawerItem item = PostFeedDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);
                 item.withTag(parti);
+
+                if(currentParti != null && parti.id.equals(currentParti.id)) {
+                    item.withSetSelected(true);
+                }
                 drawerItems.add(item);
             }
         }
+
         drawer.setItems(drawerItems);
     }
 
     @Override
     public void hideDrawerProgressBar() {
 
+    }
+
+    @Override
+    public void markUnreadOrNotParti(long partiId, boolean unread) {
+        if(drawer == null) return;
+        for(IDrawerItem item : drawer.getDrawerItems()) {
+            if(item.getType() == R.id.drawer_item_parti_post_feed) {
+                if(item.getTag() != null) {
+                    Parti parti = (Parti) item.getTag();
+                    if(partiId == parti.id) {
+                        drawer.updateItem(((PostFeedDrawerItem) item).withUnreadMark(unread));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void markUnreadOrNotDashboard(boolean unread) {
+        if(drawer == null) return;
+        for(IDrawerItem item : drawer.getDrawerItems()) {
+            if(item.getType() == R.id.drawer_item_dashboard) {
+                drawer.updateItem(((PostFeedDrawerItem) item).withUnreadMark(unread));
+                break;
+            }
+        }
     }
 
     @Override
@@ -519,8 +592,18 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         downloadProgressDialog.setIndeterminate(true);
         downloadProgressDialog.setCancelable(true);
-        downloadProgressDialog.setOnCancelListener(dialogInterface -> task.cancel(true));
-        downloadProgressDialog.setOnDismissListener(dialog -> task.cancel(true));
+        downloadProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                task.cancel(true);
+            }
+        });
+        downloadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                task.cancel(true);
+            }
+        });
 
         downloadProgressDialog.show();
     }
@@ -615,7 +698,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void showNewVersionMessage(String newVersion) {
         Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000)
                 .setAction(R.string.ok,
-                    view -> new IntentHelper(this).startPlayStore(getPackageName()))
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new IntentHelper(MainActivity.this).startPlayStore(getPackageName());
+                            }
+                        })
                 .show();
     }
 

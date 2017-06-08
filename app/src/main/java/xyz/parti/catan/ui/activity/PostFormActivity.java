@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.HeaderAdapter;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
@@ -299,7 +300,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
     }
 
     @Override
-    public void showImagePicker(ArrayList<Uri> uris) {
+    public void showImagePicker(final ArrayList<Uri> uris) {
         new TedPermission(this)
                 .setPermissionListener(new PermissionListener() {
                     @Override
@@ -386,7 +387,12 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
             builder.setView(view);
 
             builder.setTitle(R.string.dialog_title_choice_parti_on_post_form);
-            builder.setNegativeButton(R.string.cancel, (iDialog, button) -> iDialog.cancel());
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface iDialog, int button) {
+                    iDialog.cancel();
+                }
+            });
             AlertDialog dialog = builder.create();
 
             if(savedInstanceState != null && savedInstanceState.getBoolean("showDialog", false)) {
@@ -400,9 +406,12 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
 
             fastAdapter = new FastItemAdapter<>();
             fastAdapter.withSelectable(true);
-            fastAdapter.withOnClickListener((v, adapter, item, position) -> {
-                presenter.selectParti(((PostFormPartiItem)item).getParti());
-                return true;
+            fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<AbstractItem>() {
+                @Override
+                public boolean onClick(View v, IAdapter<AbstractItem> adapter, AbstractItem item, int position) {
+                    presenter.selectParti(((PostFormPartiItem)item).getParti());
+                    return true;
+                }
             });
             headerAdapter = new HeaderAdapter<>();
             

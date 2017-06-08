@@ -4,7 +4,7 @@
         <item
             android:id="@+id/item_post_feed"
             android:icon="@drawable/ic_post_feed"
-            android:title="@string/navigation_menu_my_post_feed" />
+            android:title="@string/navigation_menu_dashboard" />
     </group>
     <item
         android:id="@+id/button_settings"

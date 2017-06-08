@@ -3,7 +3,6 @@ package xyz.parti.catan.ui.presenter;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonNull;
@@ -11,7 +10,9 @@ import com.google.gson.JsonNull;
 import java.io.File;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
@@ -92,15 +93,22 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         );
         onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
                 call,
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.toggleUpvoting();
-                        changePost(post, Post.IS_UPVOTED_BY_ME);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            post.toggleUpvoting();
+                            changePost(post, Post.IS_UPVOTED_BY_ME);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                        }
                     }
-                }, error -> ReportHelper.wtf(getView().getContext(), error)
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     @Override
@@ -110,43 +118,65 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         );
         onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
                 call,
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.toggleCommentUpvoting(comment);
-                        changePost(post, new LatestCommentsBinder.CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            post.toggleCommentUpvoting(comment);
+                            changePost(post, new LatestCommentsBinder.CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                        }
                     }
-                }, error -> ReportHelper.wtf(getView().getContext(), error)
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     @Override
     public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
         onClickSurveyOptionPublisher = getRxGuardian().subscribe(onClickSurveyOptionPublisher,
                 feedbacksService.feedback(option.id, isChecked),
-                response -> {
-                    if(response.isSuccessful()) {
-                        reloadPostSurvey(post);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Feedback error : " + response.code());
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            reloadPostSurvey(post);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Feedback error : " + response.code());
+                        }
                     }
-                }, error -> ReportHelper.wtf(getView().getContext(), error)
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     private void reloadPostSurvey(final Post post) {
         reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
                 postsService.getPost(post.id),
-                response -> {
-                    if(getView() == null) return;
-                    if(response.isSuccessful()) {
-                        post.survey = response.body().survey;
-                        changePost(post, post.survey);
-                    } else {
-                        getView().reportError("Rebind survey error : " + response.code());
+                new Consumer<Response<Post>>() {
+                    @Override
+                    public void accept(@NonNull Response<Post> response) throws Exception {
+                        if (getView() == null) return;
+                        if (response.isSuccessful()) {
+                            post.survey = response.body().survey;
+                            changePost(post, post.survey);
+                        } else {
+                            getView().reportError("Rebind survey error : " + response.code());
+                        }
                     }
-                }, error -> getView().reportError(error));
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                    }
+                });
     }
 
     @Override
@@ -154,15 +184,22 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
         onClickPollAgreePublisher = getRxGuardian().subscribe(onClickPollAgreePublisher,
                 votingsService.voting(post.poll.id, newChoice),
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.poll.updateChoice(getCurrentUser(), newChoice);
-                        changePost(post, post.poll);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Agree error : " + response.code());
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            post.poll.updateChoice(getCurrentUser(), newChoice);
+                            changePost(post, post.poll);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Agree error : " + response.code());
+                        }
                     }
-                }, error -> ReportHelper.wtf(getView().getContext(), error)
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     @Override
@@ -170,15 +207,22 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
         onClickPollDisgreePublisher = getRxGuardian().subscribe(onClickPollDisgreePublisher,
                 votingsService.voting(post.poll.id, newChoice),
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.poll.updateChoice(getCurrentUser(), newChoice);
-                        changePost(post, post.poll);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Disagree error : " + response.code());
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            post.poll.updateChoice(getCurrentUser(), newChoice);
+                            changePost(post, post.poll);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Disagree error : " + response.code());
+                        }
                     }
-                }, error -> ReportHelper.wtf(getView().getContext(), error)
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     @Override

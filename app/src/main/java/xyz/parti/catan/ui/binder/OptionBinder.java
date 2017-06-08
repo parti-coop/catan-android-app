@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.binder;
 
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -40,7 +41,12 @@ class OptionBinder {
     public void bindData(final Post post, final Option option) {
         bodyTextView.setText(option.body);
         if(post.survey.is_open) {
-            bodyTextView.setOnClickListener(view -> checkBox.setChecked(!checkBox.isChecked()));
+            bodyTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkBox.setChecked(!checkBox.isChecked());
+                }
+            });
         }
 
         if(post.survey.is_open) {

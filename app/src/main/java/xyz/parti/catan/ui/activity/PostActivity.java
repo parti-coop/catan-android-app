@@ -3,6 +3,7 @@ package xyz.parti.catan.ui.activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -19,7 +20,6 @@ import com.gun0912.tedpermission.TedPermission;
 
 import org.parceler.Parcels;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -199,13 +199,23 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     }
 
     @Override
-    public void showDownloadDocFileSourceProgress(DownloadFilesTask task) {
+    public void showDownloadDocFileSourceProgress(final DownloadFilesTask task) {
         downloadProgressDialog.setMessage("다운로드 중");
         downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         downloadProgressDialog.setIndeterminate(true);
         downloadProgressDialog.setCancelable(true);
-        downloadProgressDialog.setOnCancelListener(dialogInterface -> task.cancel(true));
-        downloadProgressDialog.setOnDismissListener(dialog -> task.cancel(true));
+        downloadProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                task.cancel(true);
+            }
+        });
+        downloadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                task.cancel(true);
+            }
+        });
 
         downloadProgressDialog.show();
     }

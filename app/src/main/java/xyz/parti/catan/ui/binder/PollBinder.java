@@ -42,8 +42,18 @@ public class PollBinder {
         titleTextView.setText(post.poll.title);
         bindVotings(post);
 
-        agreeButton.setOnClickListener(view -> presenter.onClickPollAgree(post));
-        disagreeButton.setOnClickListener(view -> presenter.onClickPollDisgree(post));
+        agreeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickPollAgree(post);
+            }
+        });
+        disagreeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickPollDisgree(post);
+            }
+        });
     }
 
     private void bindVotings(Post post) {

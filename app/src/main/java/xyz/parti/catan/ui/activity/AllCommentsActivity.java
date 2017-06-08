@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -30,6 +29,7 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
 
 /**
@@ -95,7 +95,17 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     private void setUpComments(boolean focusInput, Post post, Comment comment) {
         feedAdapter = new CommentFeedRecyclerViewAdapter(this, post);
-        feedAdapter.setLoadMoreListener(() -> listRecyclerView.post(() -> presenter.loadMoreComments()));
+        feedAdapter.setLoadMoreListener(new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                listRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreComments();
+                    }
+                });
+            }
+        });
         presenter.setCommentFeedRecyclerViewAdapter(feedAdapter);
         feedAdapter.setPresenter(presenter);
 
@@ -104,11 +114,19 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         layoutManager.setStackFromEnd(true);
         listRecyclerView.setLayoutManager(layoutManager);
         listRecyclerView.setAdapter(this.feedAdapter);
-        listRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            final int newHeight = bottom - top;
-            final int oldHeight = oldBottom - oldTop;
-            if(oldHeight != 0 && newHeight != oldHeight) {
-                listRecyclerView.post(() -> listRecyclerView.scrollBy(0, oldHeight - newHeight));
+        listRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                final int newHeight = bottom - top;
+                final int oldHeight = oldBottom - oldTop;
+                if(oldHeight != 0 && newHeight != oldHeight) {
+                    listRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listRecyclerView.scrollBy(0, oldHeight - newHeight);
+                        }
+                    });
+                }
             }
         });
         presenter.loadFirstComments();
@@ -119,13 +137,19 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     }
 
     private void focusForm(Comment comment) {
-        newCommentInputEditText.post(() -> {
-            newCommentInputEditText.setFocusableInTouchMode(true);
-            newCommentInputEditText.requestFocus();
-            newCommentInputEditText.post(() -> {
-                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                imm.showSoftInput(newCommentInputEditText, 0);
-            });
+        newCommentInputEditText.post(new Runnable() {
+            @Override
+            public void run() {
+                newCommentInputEditText.setFocusableInTouchMode(true);
+                newCommentInputEditText.requestFocus();
+                newCommentInputEditText.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(newCommentInputEditText, 0);
+                    }
+                });
+            }
         });
         if(comment != null) {
             String defaultComment = String.format(Locale.getDefault(), "@%s ", comment.user.nickname);
@@ -136,7 +160,12 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     private void setUpCommentForm() {
         disableCommentCreateButton();
-        newCommentCreateButton.setOnClickListener(view -> presenter.onClickCommentCreateButton(newCommentInputEditText.getText().toString()));
+        newCommentCreateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickCommentCreateButton(newCommentInputEditText.getText().toString());
+            }
+        });
 
         newCommentInputEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -184,8 +213,11 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         newCommentInputEditText.setEnabled(false);
         newCommentCreateButton.setText("{fa-circle-o-notch spin}");
         if(this.feedAdapter.getItemCount() > 0) {
-            listRecyclerView.postDelayed(() -> {
-                listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
+            listRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
+                }
             }, 100);
         }
     }

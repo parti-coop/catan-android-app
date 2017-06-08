@@ -33,7 +33,7 @@
             android:lines="1"
             android:maxLines="1"
             android:textSize="@dimen/material_drawer_item_primary_text"
-            android:text="@string/navigation_menu_my_post_feed" />
+            android:text="@string/navigation_menu_dashboard" />
 
     </LinearLayout>
 

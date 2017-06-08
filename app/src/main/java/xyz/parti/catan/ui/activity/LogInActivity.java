@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -76,13 +77,19 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         twitterAuthClient = initTwitter();
         progressToggler = new ProgressToggler(panelLayout, statusProgressBar);
 
-        loginByEmailButton.setOnClickListener(view -> {
-            Intent i = new Intent(LogInActivity.this, EmailLoginActivity.class);
-            LogInActivity.this.startActivity(i);
+        loginByEmailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(LogInActivity.this, EmailLoginActivity.class);
+                LogInActivity.this.startActivity(i);
+            }
         });
-        signUpButton.setOnClickListener(view -> {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
-            startActivity(i);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
+                startActivity(i);
+            }
         });
         decorView = getWindow().getDecorView();
     }
@@ -134,9 +141,12 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
                 progressToggler.toggle(false);
                 Snackbar.make(panelLayout, getResources().getString(R.string.login_social_not_found_user), 10 * 1000)
                         .setAction(R.string.ok,
-                                view -> {
-                                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
-                                    startActivity(i);
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
+                                        startActivity(i);
+                                    }
                                 })
                         .show();
             }
@@ -172,16 +182,19 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         builder.setTitle(R.string.common_google_play_services_update_title)
                 .setMessage(R.string.google_play_services_update_text)        // 메세지 설정
                 .setCancelable(true)        // 뒤로 버튼 클릭시 취소 가능 설정
-                .setPositiveButton("확인", (dialog, whichButton) -> {
-                    try {
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton) {
                         try {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
-                        } catch (android.content.ActivityNotFoundException anfe) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
+                            }
+                        } catch (android.content.ActivityNotFoundException ignore) {
+                            Toast.makeText(getApplicationContext(), R.string.not_support_device, Toast.LENGTH_LONG).show();
+                            finish();
                         }
-                    } catch (android.content.ActivityNotFoundException ignore) {
-                        Toast.makeText(getApplicationContext(), R.string.not_support_device, Toast.LENGTH_LONG).show();
-                        finish();
                     }
                 });
         googleServiceErrorDialog = builder.create();

@@ -68,20 +68,31 @@ public class ServiceBuilder {
     }
 
     private static void oauthIntercept(OkHttpClient.Builder httpBuilder) {
-        httpBuilder.addInterceptor(chain -> {
-            return getResponseWithOAuth(chain, null, null);
-        });
+        httpBuilder.addInterceptor(new Interceptor() {
+               @Override
+               public Response intercept(Chain chain) throws IOException {
+                   return getResponseWithOAuth(chain, null, null);
+               }
+           });
     }
 
     private static void oauthIntercept(OkHttpClient.Builder httpBuilder, final SessionManager session) {
-        httpBuilder.addInterceptor(chain -> {
-            PartiAccessToken token = session.getPartiAccessToken();
-            return getResponseWithOAuth(chain, token, session);
-        });
+        httpBuilder.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    PartiAccessToken token = session.getPartiAccessToken();
+                    return getResponseWithOAuth(chain, token, session);
+                }
+            });
     }
 
     private static void oauthIntercept(OkHttpClient.Builder httpBuilder, final PartiAccessToken token) {
-        httpBuilder.addInterceptor(chain -> getResponseWithOAuth(chain, token, null));
+        httpBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                return getResponseWithOAuth(chain, token, null);
+            }
+        });
     }
 
     private static Response getResponseWithOAuth(Interceptor.Chain chain, PartiAccessToken token, SessionManager session) throws IOException {

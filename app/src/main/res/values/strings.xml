@@ -62,7 +62,7 @@
     <string name="fail_to_connect">연결할 수 없습니다. 잠시 후에 다시 시도해 주세요.</string>
     <string name="title_activity_disconnect">네트워크 끊김</string>
 
-    <string name="navigation_menu_my_post_feed">내 피드</string>
+    <string name="navigation_menu_dashboard">내 피드</string>
     <string name="navigation_settings">설정</string>
 
     <string name="license">라이센스</string>

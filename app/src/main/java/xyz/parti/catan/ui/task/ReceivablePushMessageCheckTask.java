@@ -1,13 +1,18 @@
 package xyz.parti.catan.ui.task;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonNull;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
@@ -53,13 +58,19 @@ public class ReceivablePushMessageCheckTask {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.receivable_push_message_confirm_title);
         builder.setMessage(R.string.receivable_push_message_confirm_message);
-        builder.setPositiveButton(R.string.yes, (dialog, whichs) -> {
-            String refreshedToken = getFirebaseInstanceToken();
-            createDeviceTokenPublisher = rxGuardian.subscribe(createDeviceTokenPublisher, deviceTokensService.create(refreshedToken),
-                    response -> {
-                        Log.d(Constants.TAG, "Create Instance ID");
-                        PrefPushMessage.setReceivable(context);
-                    });
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichs) {
+                String refreshedToken = getFirebaseInstanceToken();
+                createDeviceTokenPublisher = rxGuardian.subscribe(createDeviceTokenPublisher, deviceTokensService.create(refreshedToken),
+                        new Consumer<Response<JsonNull>>() {
+                            @Override
+                            public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                                Log.d(Constants.TAG, "Create Instance ID");
+                                PrefPushMessage.setReceivable(context);
+                            }
+                        });
+            }
         });
         builder.setNegativeButton(R.string.no, null);
         builder.show();
@@ -67,7 +78,6 @@ public class ReceivablePushMessageCheckTask {
     }
 
     private String getFirebaseInstanceToken() {
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        return refreshedToken;
+        return FirebaseInstanceId.getInstance().getToken();
     }
 }

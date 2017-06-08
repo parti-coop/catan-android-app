@@ -5,9 +5,16 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonNull;
+
+import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
@@ -74,38 +81,53 @@ public class LoginTask {
 
     private void process(Flowable<Response<PartiAccessToken>> flowable) {
         loginDisposable = rxGuardian.subscribe(loginDisposable,
-                flowable.flatMap(response -> {
-                    if(response.isSuccessful()) {
-                        UsersService userService = ServiceBuilder.createNoRefreshService(UsersService.class, response.body());
-                        return userService.getCurrentUser();
-                    } else {
-                        return Flowable.error(new NotFoundUserError());
-                    }
-                }, (tokenResponse, userResponse) -> new Pair<>(tokenResponse.body(), userResponse))
-                , pair -> {
-                    PartiAccessToken token = pair.first;
-                    Response<User> response = pair.second;
+                flowable.flatMap(
+                        new Function<Response<PartiAccessToken>, Publisher<Response<User>>>() {
+                            @Override
+                            public Publisher<Response<User>> apply(@NonNull Response<PartiAccessToken> response) throws Exception {
+                                if (response.isSuccessful()) {
+                                    UsersService userService = ServiceBuilder.createNoRefreshService(UsersService.class, response.body());
+                                    return userService.getCurrentUser();
+                                } else {
+                                    return Flowable.error(new NotFoundUserError());
+                                }
+                            }
+                        }, new BiFunction<Response<PartiAccessToken>, Response<User>, Pair<PartiAccessToken, Response<User>>>() {
+                            @Override
+                            public Pair<PartiAccessToken, Response<User>> apply(@NonNull Response<PartiAccessToken> tokenResponse, @NonNull Response<User> userResponse) throws Exception {
+                                return new Pair<>(tokenResponse.body(), userResponse);
+                            }
+                        })
+                , new Consumer<Pair<PartiAccessToken, Response<User>>>() {
+                    @Override
+                    public void accept(@NonNull Pair<PartiAccessToken, Response<User>> pair) throws Exception {
+                        PartiAccessToken token = pair.first;
+                        Response<User> response = pair.second;
 
-                    if(! response.isSuccessful()) {
-                        ReportHelper.wtf(context.getApplicationContext(), context.getResources().getString(R.string.login_fail));
-                        afterLogin.onFail();
-                        return;
-                    }
+                        if (!response.isSuccessful()) {
+                            ReportHelper.wtf(context.getApplicationContext(), context.getResources().getString(R.string.login_fail));
+                            afterLogin.onFail();
+                            return;
+                        }
 
-                    User user = response.body();
-                    session.createLoginSession(user, token);
-                    if(BuildConfig.DEBUG) {
-                        Log.d(Constants.TAG, user.nickname + "(으)로 로그인");
-                    }
-                    afterLogin.onSuccess();
+                        User user = response.body();
+                        session.createLoginSession(user, token);
+                        if (BuildConfig.DEBUG) {
+                            Log.d(Constants.TAG, user.nickname + "(으)로 로그인");
+                        }
+                        afterLogin.onSuccess();
 
-                    saveDeviceToken();
-                }, error -> {
-                    if(error instanceof NotFoundUserError) {
-                        afterLogin.onNotFoundUser();
-                    } else {
-                        ReportHelper.wtf(context.getApplicationContext(), error);
-                        afterLogin.onError();
+                        saveDeviceToken();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        if (error instanceof NotFoundUserError) {
+                            afterLogin.onNotFoundUser();
+                        } else {
+                            ReportHelper.wtf(context.getApplicationContext(), error);
+                            afterLogin.onError();
+                        }
                     }
                 });
     }
@@ -113,12 +135,21 @@ public class LoginTask {
     private void saveDeviceToken() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         DeviceTokensService service = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
-        ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken), response -> {
-            Log.d(Constants.TAG, "Reset Instance ID");
-        }, error -> Log.e(Constants.TAG, "Error to reset Instance ID", error));
+        ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken),
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        Log.d(Constants.TAG, "Reset Instance ID");
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        Log.e(Constants.TAG, "Error to reset Instance ID", error);
+                    }
+                });
     }
 
-    public static class NotFoundUserError extends Throwable {}
+    private static class NotFoundUserError extends Throwable {}
 
     public interface After {
         void onSuccess();

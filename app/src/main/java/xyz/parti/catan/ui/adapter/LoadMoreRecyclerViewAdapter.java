@@ -100,17 +100,17 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public void appendLoader() {
-        holders.add(InfinitableModelHolder.forLoader());
+        holders.add(InfinitableModelHolder.<T>forLoader());
         notifyItemInserted(holders.size() - 1);
     }
 
     public void prependLoader() {
-        holders.add(0, InfinitableModelHolder.forLoader());
+        holders.add(0, InfinitableModelHolder.<T>forLoader());
         notifyItemInserted(0);
     }
 
     public void prependCustomView(int viewType) {
-        holders.add(InfinitableModelHolder.forCustomeView(viewType));
+        holders.add(InfinitableModelHolder.<T>forCustomeView(viewType));
         notifyItemInserted(0);
     }
 
@@ -118,7 +118,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         if(this.holders.size() > 0) {
             this.holders.clear();
         }
-        holders.add(InfinitableModelHolder.forCustomeView(viewType));
+        holders.add(InfinitableModelHolder.<T>forCustomeView(viewType));
         notifyDataSetChanged();
     }
 

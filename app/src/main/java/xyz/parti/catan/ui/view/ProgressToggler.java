@@ -18,7 +18,7 @@ public class ProgressToggler {
         this.progressBar = progressBar;
     }
 
-    public void toggle(boolean show) {
+    public void toggle(final boolean show) {
         int shortAnimTime = view.getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         view.setVisibility(show ? View.GONE : View.VISIBLE);

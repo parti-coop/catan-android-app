@@ -81,11 +81,11 @@ public class NotificationsRepository {
     }
 
     public void destroyAllSingles() {
-        resetSingles(new HashMap<>());
+        resetSingles(new HashMap<Integer, List<PushMessage>>());
     }
 
     public void destroyMerged() {
-        resetMerged(new ArrayList<>());
+        resetMerged(new ArrayList<PushMessage>());
     }
 
     public void mergeAll(PushMessage newPushMessage) {

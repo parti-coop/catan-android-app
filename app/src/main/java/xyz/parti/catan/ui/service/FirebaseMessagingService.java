@@ -123,7 +123,12 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private void makeMergedNotification(PushMessage newPushMessage) {
         List<PushMessage> pushMessages = getNotificationsRepository().fetchAllPushMessages();
         pushMessages.add(newPushMessage);
-        Collections.sort(pushMessages, (pushMessageOne, pushMessageTwo) -> (int)(pushMessageTwo.id - pushMessageOne.id));
+        Collections.sort(pushMessages, new Comparator<PushMessage>() {
+            @Override
+            public int compare(PushMessage pushMessageOne, PushMessage pushMessageTwo) {
+                return (int)(pushMessageTwo.id - pushMessageOne.id);
+            }
+        });
 
         String title = String.format(Locale.getDefault(), getResources().getString(R.string.merged_notification_title), pushMessages.size());
         NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();

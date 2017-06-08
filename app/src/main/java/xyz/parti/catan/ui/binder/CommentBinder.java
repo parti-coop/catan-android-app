@@ -66,7 +66,7 @@ public class CommentBinder {
         bindData(post, comment, true);
         view.setVisibility(View.VISIBLE);
     }
-    public void bindData(Post post, Comment comment, boolean isLineVisible) {
+    public void bindData(final Post post, final Comment comment, boolean isLineVisible) {
         new ImageHelper(userImageImageView).loadInto(comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(comment.user.nickname);
         new TextHelper(context).setTextViewHTML(bodyTextView, comment.body, comment.truncated_body);
@@ -77,12 +77,17 @@ public class CommentBinder {
         } else {
             dividerView.setVisibility(View.GONE);
         }
-        newCommentButton.setOnClickListener(view -> presenter.onClickNewComment(post, comment));
+        newCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickNewComment(post, comment);
+            }
+        });
 
         bindLike(post, comment);
     }
 
-    private void bindLike(Post post, Comment comment) {
+    private void bindLike(final Post post, final Comment comment) {
         if(comment.is_upvoted_by_me) {
             likeButton.setTypeface(null, Typeface.BOLD);
             likeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
@@ -90,7 +95,12 @@ public class CommentBinder {
             likeButton.setTypeface(null, Typeface.NORMAL);
             likeButton.setTextColor(ContextCompat.getColor(context, R.color.comment_button_text));
         }
-        likeButton.setOnClickListener(view -> presenter.onClickLike(post, comment));
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickLike(post, comment);
+            }
+        });
         if(comment.upvotes_count > 0) {
             showLikesButton.setText(String.format("{fa-heart} %d", comment.upvotes_count));
             showLikesButton.setVisibility(View.VISIBLE);

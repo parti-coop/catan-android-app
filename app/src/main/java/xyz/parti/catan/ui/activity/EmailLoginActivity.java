@@ -77,9 +77,12 @@ public class EmailLoginActivity extends BaseActivity {
                 progressToggler.toggle(false);
                 Snackbar.make(formView, String.format(getResources().getString(R.string.login_password_not_found_user)), 30 * 1000)
                         .setAction(R.string.ok,
-                                view -> {
-                                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
-                                    startActivity(i);
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
+                                        startActivity(i);
+                                    }
                                 })
                         .show();
             }
@@ -142,7 +145,12 @@ public class EmailLoginActivity extends BaseActivity {
         }
 
         progressToggler.toggle(true);
-        formView.post(() -> new KeyboardHelper(this).hideKey());
+        formView.post(new Runnable() {
+            @Override
+            public void run() {
+                new KeyboardHelper(EmailLoginActivity.this).hideKey();
+            }
+        } );
         partiLoginTask.loginCredentials(email, password);
     }
 

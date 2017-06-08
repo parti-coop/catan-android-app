@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,7 +18,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 
 /**
@@ -35,7 +33,7 @@ public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateCha
     /**
      * Weak {@link java.util.HashSet}.
      */
-    private final Set<ViewTarget> mViewTargetSet = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<ViewTarget> mViewTargetSet = Collections.newSetFromMap(new WeakHashMap<ViewTarget, Boolean>());
 
     public GlideImageGetter(Context context, TextView textView) {
         this.mContext = context;

@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonNull;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -28,7 +30,10 @@ import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
@@ -68,18 +73,24 @@ public class SettingsActivity extends BaseActivity {
         SettingsService settingsService = ServiceBuilder.createUnsignedService(SettingsService.class);
         settingPublisher = rxGuardian.subscribe(settingPublisher,
                 settingsService.getAll(),
-                response -> {
-                    if(response.isSuccessful()) {
-                        settings = response.body();
-                    } else {
-                        Log.d(Constants.TAG, "Setting Info Error");
+                new Consumer<Response<Setting>>() {
+                    @Override
+                    public void accept(@NonNull Response<Setting> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            settings = response.body();
+                        } else {
+                            Log.d(Constants.TAG, "Setting Info Error");
+                        }
+                        setUpFragment();
+                        prefsLayout.setVisibility(View.VISIBLE);
                     }
-                    setUpFragment();
-                    prefsLayout.setVisibility(View.VISIBLE);
-                }, error -> {
-                    Log.e(Constants.TAG, "Setting Info Exception", error);
-                    setUpFragment();
-                    prefsLayout.setVisibility(View.VISIBLE);
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        Log.e(Constants.TAG, "Setting Info Exception", error);
+                        setUpFragment();
+                        prefsLayout.setVisibility(View.VISIBLE);
+                    }
                 }
         );
     }
@@ -160,17 +171,31 @@ public class SettingsActivity extends BaseActivity {
 
         private void setUpReceivePushMessageAction() {
             Preference pref = findPreference(Constants.PREF_VALUE_KEY_RECEIVE_PUSH_MESSAGE);
-            pref.setOnPreferenceChangeListener((preference, newValue) -> {
-                if((Boolean) newValue) {
-                    String refreshedToken = getFirebaseInstanceToken();
-                    createDeviceTokenPublisher = rxGuardian.subscribe(createDeviceTokenPublisher, deviceTokensService.create(refreshedToken),
-                            response -> Log.d(Constants.TAG, "Create Instance ID"));
-                } else {
-                    String refreshedToken = getFirebaseInstanceToken();
-                    removeDeviceTokenPublisher = rxGuardian.subscribe(removeDeviceTokenPublisher, deviceTokensService.destroy(refreshedToken),
-                            response -> Log.d(Constants.TAG, "Destroy Instance ID"));
+            pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if((Boolean) newValue) {
+                        String refreshedToken = getFirebaseInstanceToken();
+                        createDeviceTokenPublisher = rxGuardian.subscribe(createDeviceTokenPublisher, deviceTokensService.create(refreshedToken),
+                                new Consumer<Response<JsonNull>>() {
+                                    @Override
+                                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                                        Log.d(Constants.TAG, "Create Instance ID");
+                                    }
+                                });
+                    } else {
+                        String refreshedToken = getFirebaseInstanceToken();
+                        removeDeviceTokenPublisher = rxGuardian.subscribe(removeDeviceTokenPublisher, deviceTokensService.destroy(refreshedToken),
+                                new Consumer<Response<JsonNull>>() {
+                                    @Override
+                                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                                        Log.d(Constants.TAG, "Destroy Instance ID");
+                                    }
+                                });
+                    }
+                    return true;
                 }
-                return true;
             });
         }
 
@@ -181,10 +206,13 @@ public class SettingsActivity extends BaseActivity {
 
         private void setUpShowProfileAction() {
             Preference pref = findPreference("pref_show_profile");
-            pref.setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(setting.profile_url)));
-                return false;
-            });
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                                                  @Override
+                                                  public boolean onPreferenceClick(Preference preference) {
+                                                      startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(setting.profile_url)));
+                                                      return false;
+                                                  }
+                                              });
         }
     }
 
@@ -216,12 +244,15 @@ public class SettingsActivity extends BaseActivity {
             setUpMenuAction("pref_privacy", setting.privacy_url);
         }
 
-        private void setUpMenuAction(String pref_name, String url) {
+        private void setUpMenuAction(String pref_name, final String url) {
             Preference pref = findPreference(pref_name);
-            pref.setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                return false;
-            });
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                                                  @Override
+                                                  public boolean onPreferenceClick(Preference preference) {
+                                                      startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                                                      return false;
+                                                  }
+                                              });
         }
     }
 
@@ -249,16 +280,19 @@ public class SettingsActivity extends BaseActivity {
 
         private void setUpLicenseAction() {
             Preference pref = findPreference("pref_license");
-            pref.setOnPreferenceClickListener(preference -> {
-                new LibsBuilder()
-                        .withActivityTheme(R.style.Theme_AppCompat_Light_NoActionBar)
-                        .withActivityTitle(getResources().getString(R.string.license))
-                        .withLicenseShown(true)
-                        .withLicenseDialog(true)
-                        .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android", "rxjava", "rxandroid", "material-dialogs", "FastAdapter", "matisse")
-                        .start(getActivity());
-                return false;
-            });
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                                                  @Override
+                                                  public boolean onPreferenceClick(Preference preference) {
+                                                      new LibsBuilder()
+                                                              .withActivityTheme(R.style.Theme_AppCompat_Light_NoActionBar)
+                                                              .withActivityTitle(getResources().getString(R.string.license))
+                                                              .withLicenseShown(true)
+                                                              .withLicenseDialog(true)
+                                                              .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android", "rxjava", "rxandroid", "material-dialogs", "FastAdapter", "matisse")
+                                                              .start(getActivity());
+                                                      return false;
+                                                  }
+                                              });
         }
     }
 
@@ -296,26 +330,38 @@ public class SettingsActivity extends BaseActivity {
 
         private void setUpLogOutAction() {
             Preference pref = findPreference("pref_logout");
-            pref.setOnPreferenceClickListener(preference -> {
-                confirmLogOut();
-                return false;
-            });
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                                                  @Override
+                                                  public boolean onPreferenceClick(Preference preference) {
+                                                      confirmLogOut();
+                                                      return false;
+                                                  }
+                                              });
         }
 
         private void confirmLogOut() {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.logout_confirm_title);
             builder.setMessage(R.string.logout_confirm_message);
-            builder.setPositiveButton(R.string.yes, (dialog, whichs) -> {
-                String refreshedToken = getFirebaseInstanceToken();
-                removeDeviceTokenPublisher = rxGuardian.subscribe(removeDeviceTokenPublisher, deviceTokensService.destroy(refreshedToken), response -> {
-                    Log.d(Constants.TAG, "Destroy Instance ID");
-                    realLogout();
-                }, error -> {
-                    Log.e(Constants.TAG, "Error to destroy Instance ID", error);
-                    realLogout();
-                });
-            });
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int whichs) {
+                    String refreshedToken = getFirebaseInstanceToken();
+                    removeDeviceTokenPublisher = rxGuardian.subscribe(removeDeviceTokenPublisher, deviceTokensService.destroy(refreshedToken),
+                            new Consumer<Response<JsonNull>>() {
+                                @Override
+                                public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                                    Log.d(Constants.TAG, "Destroy Instance ID");
+                                    realLogout();
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(@NonNull Throwable error) throws Exception {
+                                    Log.e(Constants.TAG, "Error to destroy Instance ID", error);
+                                    realLogout();
+                                }
+                            });
+                }});
             builder.setNegativeButton(R.string.no, null);
             builder.show();
         }

@@ -99,7 +99,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
             }
             return downloadedSize;
         } catch(Throwable e) {
-            Log.e(Constants.TAG_TEST, e.getMessage(), e);
+            Log.e(Constants.TAG, e.getMessage(), e);
             throw e;
         } finally {
             try {

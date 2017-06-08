@@ -12,7 +12,9 @@ import java.io.File;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
@@ -73,27 +75,33 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
         firstCommentsPublisher = getRxGuardian().subscribe(firstCommentsPublisher,
                 commentsService.getComments(post.id),
-                response -> {
-                    if (!isActive()) {
-                        return;
-                    }
+                new Consumer<Response<Page<Comment>>>() {
+                    @Override
+                    public void accept(@NonNull Response<Page<Comment>> response) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
 
-                    if (response.isSuccessful()) {
-                        Page<Comment> page = response.body();
-                        feedAdapter.clearAndAppendModels(page.items);
-                        feedAdapter.setMoreDataAvailable(page.has_more_item);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "AllComments load first error : " + response.code());
-                        feedAdapter.setMoreDataAvailable(false);
+                        if (response.isSuccessful()) {
+                            Page<Comment> page = response.body();
+                            feedAdapter.clearAndAppendModels(page.items);
+                            feedAdapter.setMoreDataAvailable(page.has_more_item);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "AllComments load first error : " + response.code());
+                            feedAdapter.setMoreDataAvailable(false);
+                        }
+                        feedAdapter.setLoadFinished();
                     }
-                    feedAdapter.setLoadFinished();
-                }, error -> {
-                    if(!isActive()) {
-                        return;
-                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
 
-                    ReportHelper.wtf(getView().getContext(), error);
-                    feedAdapter.setLoadFinished();
+                        ReportHelper.wtf(getView().getContext(), error);
+                        feedAdapter.setLoadFinished();
+                    }
                 });
     }
 
@@ -112,40 +120,46 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         feedAdapter.notifyItemInserted(0);
 
         moreCommentsPublisher = getRxGuardian().subscribe(moreCommentsPublisher,
-            commentsService.getComments(post.id, comment.id),
-            response -> {
-                if(!isActive()) {
-                    return;
-                }
+                commentsService.getComments(post.id, comment.id),
+                new Consumer<Response<Page<Comment>>>() {
+                    @Override
+                    public void accept(@NonNull Response<Page<Comment>> response) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
 
-                if(response.isSuccessful()) {
-                    //remove loading view
-                    feedAdapter.removeFirstMoldelHolder();
+                        if (response.isSuccessful()) {
+                            //remove loading view
+                            feedAdapter.removeFirstMoldelHolder();
 
-                    Page<Comment> page = response.body();
-                    List<Comment> result = page.items;
-                    if(result.size() > 0){
-                        //add loaded data
-                        feedAdapter.prependModels(page.items);
-                        feedAdapter.setMoreDataAvailable(page.has_more_item);
-                    }else{
-                        //result size 0 means there is no more data available at server
-                        feedAdapter.setMoreDataAvailable(false);
+                            Page<Comment> page = response.body();
+                            List<Comment> result = page.items;
+                            if (result.size() > 0) {
+                                //add loaded data
+                                feedAdapter.prependModels(page.items);
+                                feedAdapter.setMoreDataAvailable(page.has_more_item);
+                            } else {
+                                //result size 0 means there is no more data available at server
+                                feedAdapter.setMoreDataAvailable(false);
+                            }
+                        } else {
+                            feedAdapter.setMoreDataAvailable(false);
+                            ReportHelper.wtf(getView().getContext(), "AllComments load more error : " + response.code());
+                        }
+                        feedAdapter.setLoadFinished();
                     }
-                } else {
-                    feedAdapter.setMoreDataAvailable(false);
-                    ReportHelper.wtf(getView().getContext(), "AllComments load more error : " + response.code());
-                }
-                feedAdapter.setLoadFinished();
-            }, error -> {
-                if(!isActive()) {
-                    return;
-                }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
 
-                feedAdapter.setMoreDataAvailable(false);
-                feedAdapter.setLoadFinished();
-                ReportHelper.wtf(getView().getContext(), error);
-            });
+                        feedAdapter.setMoreDataAvailable(false);
+                        feedAdapter.setLoadFinished();
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     public void onClickCommentCreateButton(String body) {
@@ -158,34 +172,40 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
         createCommentPublisher = getRxGuardian().subscribe(createCommentPublisher,
                 commentsService.createComment(post.id, body),
-                response -> {
-                    if(!isActive()) {
-                        return;
-                    }
-
-                    if(response.isSuccessful()) {
-                        Comment comment = response.body();
-                        feedAdapter.appendModel(comment);
-                        feedAdapter.notifyItemChanged(feedAdapter.getLastPosition() - 1);
-
-                        if(!feedAdapter.isEmpty()) {
-                            getView().showCommentList();
+                new Consumer<Response<Comment>>() {
+                    @Override
+                    public void accept(@NonNull Response<Comment> response) throws Exception {
+                        if (!isActive()) {
+                            return;
                         }
-                        post.addComment(comment);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Create comment error : " + response.code());
-                    }
-                    getView().setCompletedCommentForm();
-                    feedAdapter.setLoadFinished();
-                }, error -> {
-                    if(!isActive()) {
-                        return;
-                    }
 
-                    getView().setCompletedCommentForm();
-                    feedAdapter.setLoadFinished();
+                        if (response.isSuccessful()) {
+                            Comment comment = response.body();
+                            feedAdapter.appendModel(comment);
+                            feedAdapter.notifyItemChanged(feedAdapter.getLastPosition() - 1);
 
-                    ReportHelper.wtf(getView().getContext(), error);
+                            if (!feedAdapter.isEmpty()) {
+                                getView().showCommentList();
+                            }
+                            post.addComment(comment);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Create comment error : " + response.code());
+                        }
+                        getView().setCompletedCommentForm();
+                        feedAdapter.setLoadFinished();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
+
+                        getView().setCompletedCommentForm();
+                        feedAdapter.setLoadFinished();
+
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
                 });
     }
 
@@ -207,7 +227,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
     }
 
     @Override
-    public void onClickLike(Post post, Comment comment) {
+    public void onClickLike(final Post post, final Comment comment) {
         if(!isActive()) return;
 
         feedAdapter.changeModel(comment, Comment.IS_UPVOTED_BY_ME);
@@ -216,15 +236,22 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         );
         onClickLikePublisher = getRxGuardian().subscribe(onClickLikePublisher,
                 call,
-                response -> {
-                    if(response.isSuccessful()) {
-                        post.toggleCommentUpvoting(comment);
-                        changeComment(comment, Comment.IS_UPVOTED_BY_ME);
-                    } else {
-                        ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            post.toggleCommentUpvoting(comment);
+                            changeComment(comment, Comment.IS_UPVOTED_BY_ME);
+                        } else {
+                            ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                        }
                     }
-                }, error -> ReportHelper.wtf(getView().getContext(), error)
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        ReportHelper.wtf(getView().getContext(), error);
+                    }
+                });
     }
 
     private void changeComment(Comment comment, Object payload) {

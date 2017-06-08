@@ -48,11 +48,16 @@ public class LatestCommentsBinder {
         }
     }
 
-    public void bindData(Post post) {
+    public void bindData(final Post post) {
         if(post.hasMoreComments()) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
             loadMoreTextView.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
-            loadMoreTextView.setOnClickListener(view -> presenter.onClickMoreComments(post));
+            loadMoreTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickMoreComments(post);
+                }
+            });
         } else {
             loadMoreTextView.setVisibility(android.view.View.GONE);
             loadMoreTextView.setOnClickListener(null);
@@ -67,7 +72,12 @@ public class LatestCommentsBinder {
         }
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
-        newCommentInputTextView.setOnClickListener(view -> presenter.onClickNewComment(post));
+        newCommentInputTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickNewComment(post);
+            }
+        });
     }
 
     private void bindComment(CommentBinder commentBinder, Post post, Comment comment) {

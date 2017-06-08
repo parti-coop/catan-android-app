@@ -72,13 +72,18 @@ public class TextHelper {
         setTextViewHTML(textView, html, null);
     }
 
-    public void setTextViewHTML(TextView textView, String html, String truncatedHtml) {
-        CharSequence originSequence = trimTrailingWhitespace(converToHtml(html, new GlideImageGetter(context, textView)));
+    public void setTextViewHTML(final TextView textView, String html, String truncatedHtml) {
+        final CharSequence originSequence = trimTrailingWhitespace(converToHtml(html, new GlideImageGetter(context, textView)));
         if(!TextUtils.isEmpty(truncatedHtml)) {
             String expandText = context.getResources().getString(R.string.view_more);
             CharSequence truncatedSequence = converToHtml(truncatedHtml.replace("<read-more></read-more>", "<a href='action://view_more'>" + expandText + "</a>"),
                     new GlideImageGetter(context, textView));
-            ViewMoreListener viewMoreListener = () -> textView.setText(getSmartSpannableStringBuilder(originSequence, null));
+            ViewMoreListener viewMoreListener = new ViewMoreListener() {
+                @Override
+                public void onClick() {
+                    textView.setText(getSmartSpannableStringBuilder(originSequence, null));
+                }
+            };
             textView.setText(getSmartSpannableStringBuilder(trimTrailingWhitespace(truncatedSequence), viewMoreListener));
         } else {
             textView.setText(getSmartSpannableStringBuilder(originSequence, null));
@@ -100,7 +105,7 @@ public class TextHelper {
         return strBuilder;
     }
 
-    private void processLinks(CharSequence sequence, SpannableStringBuilder strBuilder, ViewMoreListener viewMoreListener) {
+    private void processLinks(CharSequence sequence, SpannableStringBuilder strBuilder, final ViewMoreListener viewMoreListener) {
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
         for (final URLSpan span : urls) {
             ClickableSpan clickable =  new ClickableSpan() {

@@ -116,7 +116,12 @@ public class PostBinder {
     private void bindLinkSources(final Post post) {
         if(post.link_source != null) {
             linkSourceBinder.bindData(post.link_source);
-            referencesLinkSourceView.setOnClickListener(view -> presenter.onClickLinkSource(post));
+            referencesLinkSourceView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickLinkSource(post);
+                }
+            });
             referencesLinkSourceView.setVisibility(View.VISIBLE);
             referencesLayout.setVisibility(ViewGroup.VISIBLE);
         } else {
@@ -164,7 +169,12 @@ public class PostBinder {
             likeButton.setTypeface(null, Typeface.NORMAL);
             likeButton.setTextColor(ContextCompat.getColor(context, R.color.post_button_text));
         }
-        likeButton.setOnClickListener(view -> presenter.onClickLike(post));
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickLike(post);
+            }
+        });
 
         if(post.upvotes_count > 0) {
             showLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
@@ -188,7 +198,12 @@ public class PostBinder {
         new ImageHelper(userImageImageView).loadInto(post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(post.user.nickname);
         createdAtTextView.setReferenceTime(post.created_at.getTime());
-        createdAtTextView.setOnClickListener(view -> presenter.onClickCreatedAt(post));
+        createdAtTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickCreatedAt(post);
+            }
+        });
 
         if(TextUtils.isEmpty(post.parsed_title)) {
             titleTextView.setVisibility(android.view.View.GONE);
@@ -204,7 +219,12 @@ public class PostBinder {
             new TextHelper(context).setTextViewHTML(bodyTextView, post.parsed_body, post.truncated_parsed_body);
         }
 
-        newCommentButton.setOnClickListener(view -> presenter.onClickNewComment(post));
+        newCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickNewComment(post);
+            }
+        });
     }
 
     public void rebindData(Post post, Object payload) {

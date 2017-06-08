@@ -147,7 +147,6 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
 
         void bindData(User user){
-            Log.d(Constants.TAG_TEST, user.image_url);
             new ImageHelper(userImageImageView).loadInto(user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         }
 

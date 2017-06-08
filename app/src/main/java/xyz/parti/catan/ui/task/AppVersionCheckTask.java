@@ -6,7 +6,11 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.services.AppVersionService;
@@ -48,21 +52,26 @@ public class AppVersionCheckTask {
         AppVersionService appVersionService = ServiceBuilder.createUnsignedService(AppVersionService.class);
         this.lastVersionObserver = rxGuardian.subscribe(lastVersionObserver,
                 appVersionService.getLastVersion(),
-                response -> {
-                    if(response.isSuccessful()) {
-                        pref.edit().putLong(KEY_LAST_CHECKED_AT_MILLS, System.currentTimeMillis()).apply();
+                new Consumer<Response<JsonObject>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<JsonObject> response) throws Exception {
+                        if (response.isSuccessful()) {
+                            pref.edit().putLong(KEY_LAST_CHECKED_AT_MILLS, System.currentTimeMillis()).apply();
 
-                        String lastVersion = response.body().get("last_version").getAsString();
-                        if (TextUtils.isEmpty(lastVersion) || lastVersion.equals(currentVersion)) {
-                            return;
+                            String lastVersion = response.body().get("last_version").getAsString();
+                            if (TextUtils.isEmpty(lastVersion) || lastVersion.equals(currentVersion)) {
+                                return;
+                            }
+                            action.run(lastVersion);
+                        } else {
+                            Log.d(Constants.TAG, "실패 " + response.code());
                         }
-                        action.run(lastVersion);
-                    } else {
-                        Log.d(Constants.TAG, "실패 " + response.code());
                     }
-                }, error -> {
-                    Log.e(Constants.TAG, "getNewVersionIfAvailable 오류 ", error);
-                }
-        );
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        Log.e(Constants.TAG, "getNewVersionIfAvailable 오류 ", error);
+                    }
+                });
     }
 }

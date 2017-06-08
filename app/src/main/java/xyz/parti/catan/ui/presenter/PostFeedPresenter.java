@@ -10,6 +10,11 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,10 +25,12 @@ import java.util.TreeMap;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Response;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
@@ -34,6 +41,7 @@ import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.model.ReadParti;
+import xyz.parti.catan.data.model.Update;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.repository.NotificationsRepository;
 import xyz.parti.catan.data.services.PartiesService;
@@ -50,6 +58,8 @@ import xyz.parti.catan.ui.task.ReceivablePushMessageCheckTask;
  */
 
 public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresenter.View> implements PostBinder.PostBindablePresenter {
+    private final DatabaseReference partiesFirebaseRoot;
+
     private SessionManager session;
     private final PostsService postsService;
     private final PartiesService partiesService;
@@ -67,12 +77,14 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
     private List<Parti> joindedParties = new ArrayList<>();
     private Parti currentParti;
+    private ChildEventListener newPostListener;
 
     public PostFeedPresenter(SessionManager session) {
         super(session);
         this.session = session;
         postsService = ServiceBuilder.createService(PostsService.class, session);
         partiesService = ServiceBuilder.createService(PartiesService.class, session);
+        partiesFirebaseRoot = FirebaseDatabase.getInstance().getReference(BuildConfig.FIREBASE_DATABASE_PARTIES);
     }
 
     @Override
@@ -110,46 +122,52 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             this.currentParti == null ? postsService.getDashBoardLastest() : partiesService.getPostsLastest(currentParti.id);
         loadFirstPostsPublisher = getRxGuardian().subscribe(loadFirstPostsPublisher,
                 boardLastest,
-                response -> {
-                    /* SUCCESS */
-                    if (!isActive()) {
-                        return;
-                    }
-
-                    lastLoadFirstPostsAtMillis = System.currentTimeMillis();
-                    getView().ensureToPostListDemoIsGone();
-                    if (response.isSuccessful()) {
-                        Page<Post> page = response.body();
-                        feedAdapter.clearAndAppendModels(page.items, 1);
-                        feedAdapter.setMoreDataAvailable(page.has_more_item);
-
-                        ReadParti readParti = ReadParti.forParti(currentParti);
-                        if(feedAdapter.getFirstModel() != null) {
-                            readParti.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
+                new Consumer<Response<Page<Post>>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<Page<Post>> response) throws Exception {
+                        /* SUCCESS */
+                        if (!isActive()) {
+                            return;
                         }
-                        readParti.save();
-                    } else {
-                        feedAdapter.setMoreDataAvailable(false);
-                        getView().reportError("Load first post error : " + response.code());
-                    }
-                    feedAdapter.setLoadFinished();
-                    getView().ensureExpendedAppBar();
-                    getView().stopAndEnableSwipeRefreshing();
-                    
-                    if(feedAdapter.getModelItemCount() <= 0) {
-                        getView().showEmpty(!response.isSuccessful());
-                    }
-                }, error -> {
-                    /* ERROR **/
-                    if (!isActive()) {
-                        return;
-                    }
-                    getView().reportError(error);
 
-                    feedAdapter.setLoadFinished();
-                    getView().ensureExpendedAppBar();
-                    getView().stopAndEnableSwipeRefreshing();
-                    getView().showEmpty(true);
+                        lastLoadFirstPostsAtMillis = System.currentTimeMillis();
+                        getView().ensureToPostListDemoIsGone();
+                        if (response.isSuccessful()) {
+                            Page<Post> page = response.body();
+                            feedAdapter.clearAndAppendModels(page.items, 1);
+                            feedAdapter.setMoreDataAvailable(page.has_more_item);
+
+                            ReadParti readParti = ReadParti.forParti(currentParti);
+                            if (feedAdapter.getFirstModel() != null) {
+                                readParti.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
+                            }
+                            readParti.save();
+                        } else {
+                            feedAdapter.setMoreDataAvailable(false);
+                            getView().reportError("Load first post error : " + response.code());
+                        }
+                        feedAdapter.setLoadFinished();
+                        getView().ensureExpendedAppBar();
+                        getView().stopAndEnableSwipeRefreshing();
+
+                        if (feedAdapter.getModelItemCount() <= 0) {
+                            getView().showEmpty(!response.isSuccessful());
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        /* ERROR **/
+                        if (!isActive()) {
+                            return;
+                        }
+                        getView().reportError(error);
+
+                        feedAdapter.setLoadFinished();
+                        getView().ensureExpendedAppBar();
+                        getView().stopAndEnableSwipeRefreshing();
+                        getView().showEmpty(true);
+                    }
                 });
     }
 
@@ -167,41 +185,47 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         loadMorePostsPublisher = getRxGuardian().subscribe(loadMorePostsPublisher,
                 boardLastest,
-                response -> {
-                    /* SUCCESS **/
-                    if(!isActive()) {
-                        return;
-                    }
-
-                    if(response.isSuccessful()){
-                        //remove loading view
-                        feedAdapter.removeLastMoldelHolder();
-
-                        Page<Post> page = response.body();
-                        List<Post> result = page.items;
-                        if(result.size() > 0){
-                            //add loaded data
-                            feedAdapter.appendModels(page.items);
-                            feedAdapter.setMoreDataAvailable(page.has_more_item);
-                        }else{
-                            //result size 0 means there is no more data available at server
-                            feedAdapter.setMoreDataAvailable(false);
-                            //telling adapter to stop calling loadFirstPosts more as no more server data available
+                new Consumer<Response<Page<Post>>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<Page<Post>> response) throws Exception {
+                        /* SUCCESS **/
+                        if (!isActive()) {
+                            return;
                         }
-                    }else{
+
+                        if (response.isSuccessful()) {
+                            //remove loading view
+                            feedAdapter.removeLastMoldelHolder();
+
+                            Page<Post> page = response.body();
+                            List<Post> result = page.items;
+                            if (result.size() > 0) {
+                                //add loaded data
+                                feedAdapter.appendModels(page.items);
+                                feedAdapter.setMoreDataAvailable(page.has_more_item);
+                            } else {
+                                //result size 0 means there is no more data available at server
+                                feedAdapter.setMoreDataAvailable(false);
+                                //telling adapter to stop calling loadFirstPosts more as no more server data available
+                            }
+                        } else {
+                            feedAdapter.setMoreDataAvailable(false);
+                            getView().reportError("Load more post error : " + response.code());
+                        }
+                        feedAdapter.setLoadFinished();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        /* ERROR **/
+                        if (!isActive()) {
+                            return;
+                        }
+                        feedAdapter.removeLastMoldelHolder();
+                        feedAdapter.setLoadFinished();
                         feedAdapter.setMoreDataAvailable(false);
-                        getView().reportError("Load more post error : " + response.code());
+                        getView().reportError(error);
                     }
-                    feedAdapter.setLoadFinished();
-                }, error -> {
-                    /* ERROR **/
-                    if(!isActive()) {
-                        return;
-                    }
-                    feedAdapter.removeLastMoldelHolder();
-                    feedAdapter.setLoadFinished();
-                    feedAdapter.setMoreDataAvailable(false);
-                    getView().reportError(error);
                 });
     }
 
@@ -217,27 +241,33 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         checkNewPostsPublisher = getRxGuardian().subscribe(checkNewPostsPublisher,
                 postsService.hasUpdated(lastStrockedAt),
-                response -> {
-                    if(!isActive()) {
-                        return;
-                    }
+                new Consumer<Response<Update>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<Update> response) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
 
-                    if(response.isSuccessful()) {
-                        if (getView().isVisibleNewPostsSign()) return;
-                        if (!response.body().has_updated) return;
-                        if (!lastStrockedAt.equals(getLastStrockedAtForNewPostCheck())) return;
+                        if (response.isSuccessful()) {
+                            if (getView().isVisibleNewPostsSign()) return;
+                            if (!response.body().has_updated) return;
+                            if (!lastStrockedAt.equals(getLastStrockedAtForNewPostCheck())) return;
 
-                        PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
-                        getView().showNewPostsSign();
-                    } else {
-                        getView().reportError("Check new post error : " + response.code());
+                            PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
+                            getView().showNewPostsSign();
+                        } else {
+                            getView().reportError("Check new post error : " + response.code());
+                        }
                     }
-                }, error -> {
-                    if(!isActive()) {
-                        return;
-                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        if (!isActive()) {
+                            return;
+                        }
 
-                    getView().reportError(error);
+                        getView().reportError(error);
+                    }
                 });
     }
 
@@ -313,8 +343,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             return;
         }
 
-        this.appVersionCheckTask.check(newVersion -> {
-            if(isActive()) getView().showNewVersionMessage(newVersion);
+        this.appVersionCheckTask.check(new AppVersionCheckTask.NewVersionAction() {
+            @Override
+            public void run(String newVersion) {
+                if (isActive()) getView().showNewVersionMessage(newVersion);
+            }
         });
     }
 
@@ -373,14 +406,21 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 return;
             }
             receivePushMessageForPostPublisher = getRxGuardian().subscribe(receivePushMessageForPostPublisher, postsService.getPost(postId),
-                    response -> {
-                        if(response.isSuccessful()) {
-                            getView().showPost(response.body());
-                        } else {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                    new Consumer<Response<Post>>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {
+                            if (response.isSuccessful()) {
+                                getView().showPost(response.body());
+                            } else {
+                                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                            }
                         }
-                    }, error -> getView().reportError(error)
-            );
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                            getView().reportError(error);
+                        }
+                    });
         } else if (pushMessage.url != null && !TextUtils.isEmpty(pushMessage.url)) {
             getView().showUrl(Uri.parse(pushMessage.url));
         }
@@ -396,7 +436,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showPostForm();
     }
 
-    public void savePost(Parti parti, String body, List<SelectedImage> fileSourcesAttachmentImages) {
+    public void savePost(final Parti parti, final String body, List<SelectedImage> fileSourcesAttachmentImages) {
         if(!isActive()) return;
 
         getView().scrollToTop();
@@ -414,21 +454,27 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         savePost = getRxGuardian().subscribe(savePost,
                 postsService.createPost(partiIdReq, bodyReq, filesReq),
-                response -> {
-                    if(!isActive()) return;
-                    feedAdapter.removeFirstMoldelHolder();
-                    if(response.isSuccessful())  {
-                        feedAdapter.prependModel(response.body());
-                        getView().scrollToTop();
-                    } else {
-                        getView().reportError("savePost error : " + response.code());
+                new Consumer<Response<Post>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {
+                        if (!isActive()) return;
+                        feedAdapter.removeFirstMoldelHolder();
+                        if (response.isSuccessful()) {
+                            feedAdapter.prependModel(response.body());
+                            getView().scrollToTop();
+                        } else {
+                            getView().reportError("savePost error : " + response.code());
+                            getView().showPostForm(parti, body);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        if (!isActive()) return;
+                        feedAdapter.removeFirstMoldelHolder();
+                        getView().reportError(error);
                         getView().showPostForm(parti, body);
                     }
-                }, error -> {
-                    if(!isActive()) return;
-                    feedAdapter.removeFirstMoldelHolder();
-                    getView().reportError(error);
-                    getView().showPostForm(parti, body);
                 });
     }
 
@@ -450,21 +496,107 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showDrawerProgressBar();
         loadDrawer = getRxGuardian().subscribe(loadDrawer,
                 partiesService.getMyJoined(),
-                response -> {
-                    if(!isActive()) return;
-                    if(response.isSuccessful()) {
-                        joindedParties.clear();
-                        joindedParties.addAll(Arrays.asList(response.body()));
-                        for(Parti parti : joindedParties) {
-                            preloadImage(parti.logo_url);
+                new Consumer<Response<Parti[]>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<Parti[]> response) throws Exception {
+                        if (!isActive()) return;
+                        if (response.isSuccessful()) {
+                            joindedParties.clear();
+                            joindedParties.addAll(Arrays.asList(response.body()));
+                            for (Parti parti : joindedParties) {
+                                preloadImage(parti.logo_url);
+                            }
+                            getView().setUpDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentParti);
                         }
-                        getView().setUpDrawerItems(session.getCurrentUser(), getGroupList(joindedParties));
+                        getView().hideDrawerProgressBar();
+
+                        watchNewPosts();
                     }
-                    getView().hideDrawerProgressBar();
-                }, error -> {
-                    getView().reportError(error);
-                    getView().hideDrawerProgressBar();
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                        getView().hideDrawerProgressBar();
+                    }
                 });
+    }
+
+    public void watchNewPosts() {
+        newPostListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+                onDataChange(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+                onDataChange(dataSnapshot);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+            }
+
+            void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getKey() == null) return;
+                long partiId = Long.parseLong(dataSnapshot.getKey());
+                if(!isJoinedParti(partiId)) {
+                    ReadParti.destroyIfExist(partiId);
+                    return;
+                }
+
+                ReadParti readParti = ReadParti.forParti(partiId);
+
+                Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
+                if(lastStrokedSecondTime == null || lastStrokedSecondTime < 0) {
+                    readParti.lastStrokedAt = null;
+                } else {
+                    readParti.lastStrokedAt = new Date(lastStrokedSecondTime * 1000);
+
+                    ReadParti readDashboard = ReadParti.forDashboard();
+                    if(readDashboard.lastStrokedAt == null || readParti.lastStrokedAt.getTime() > readDashboard.lastStrokedAt.getTime()) {
+                        readDashboard.lastStrokedAt = readParti.lastStrokedAt;
+                        readDashboard.save();
+                    }
+                }
+                readParti.save();
+                markUnreadOrNotParti(readParti);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(Constants.TAG, databaseError.getMessage(), databaseError.toException());
+            }
+        };
+        partiesFirebaseRoot.addChildEventListener(newPostListener);
+    }
+
+    private boolean isJoinedParti(long currentId) {
+        for(Parti parti : this.joindedParties) {
+            if(parti.id.equals(currentId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void markUnreadOrNotParti(ReadParti readParti) {
+        if(!isActive()) return;
+
+        getView().markUnreadOrNotDashboard(ReadParti.forDashboard().isUnread());
+        getView().markUnreadOrNotParti(readParti.partiId, readParti.isUnread());
+    }
+
+    public void unwatchNewPosts() {
+        if(newPostListener != null) {
+            partiesFirebaseRoot.removeEventListener(newPostListener);
+        }
+//
+//        this.watchedPartiesFirebase.clear();
     }
 
     @NonNull
@@ -514,7 +646,10 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void scrollToTop();
 
         void showDrawerProgressBar();
-        void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties);
+        void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti);
         void hideDrawerProgressBar();
+
+        void markUnreadOrNotParti(long partiId, boolean unread);
+        void markUnreadOrNotDashboard(boolean unread);
     }
 }

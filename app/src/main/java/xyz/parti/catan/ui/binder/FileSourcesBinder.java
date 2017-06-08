@@ -64,7 +64,12 @@ class FileSourcesBinder {
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
                 android.view.View imageView = makeImageCell(context, fileSource.attachment_md_url, fileSource.attachment_sm_url, imageFileSourcesRow.size(), col);
-                imageView.setOnClickListener(view -> presenter.onClickImageFileSource(post));
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        presenter.onClickImageFileSource(post);
+                    }
+                });
                 rowLayout.addView(imageView);
                 col++;
             }
@@ -158,7 +163,12 @@ class FileSourcesBinder {
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
             docsLayout.addView(fileSourcesLayout);
 
-            fileSourcesLayout.setOnClickListener(view -> presenter.onClickDocFileSource(post, docFileSource));
+            fileSourcesLayout.setOnClickListener(new View.OnClickListener() {
+                                                     @Override
+                                                     public void onClick(View view) {
+                                                         presenter.onClickDocFileSource(post, docFileSource);
+                                                     }
+                                                 });
         }
     }
 

@@ -9,7 +9,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import retrofit2.Response;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Parti;
@@ -42,17 +45,23 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
         getView().showPartiChoiceProgressBar();
         loadJoinedParties = getRxGuardian().subscribe(loadJoinedParties,
                 partiesService.getMyJoined(),
-                response -> {
-                    if(!isActive()) return;
-                    if(response.isSuccessful()) {
-                        joindedParties.clear();
-                        joindedParties.addAll(Arrays.asList(response.body()));
-                        getView().resetPartiChoiceList(joindedParties);
+                new Consumer<Response<Parti[]>>() {
+                    @Override
+                    public void accept(@NonNull Response<Parti[]> response) throws Exception {
+                        if (!isActive()) return;
+                        if (response.isSuccessful()) {
+                            joindedParties.clear();
+                            joindedParties.addAll(Arrays.asList(response.body()));
+                            getView().resetPartiChoiceList(joindedParties);
+                        }
+                        getView().hidePartiChoiceProgressBar();
                     }
-                    getView().hidePartiChoiceProgressBar();
-                }, error -> {
-                    getView().reportError(error);
-                    getView().hidePartiChoiceProgressBar();
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                        getView().hidePartiChoiceProgressBar();
+                    }
                 });
     }
 

@@ -28,18 +28,17 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName "0.6.3-alpha"
+        versionName "0.6.4-alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        jackOptions {
-            enabled true
-            additionalParameters("jack.incremental": "true")
-        }
+
         multiDexEnabled true
+        multiDexKeepFile file('multidex.config.txt')
+        multiDexKeepProguard file('multidex.pro')
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
+
     apply plugin: "com.android.application"
 
     buildTypes {
@@ -49,10 +48,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", var_api_base_url, "\"https://parti.xyz\""
             signingConfig signingConfigs.config
+
+            buildConfigField "String", "FIREBASE_DATABASE_PARTIES", "\"/production/parties\""
         }
         debug {
             buildConfigField "String", var_api_base_url, "\"http://parti.dev\""
             signingConfig signingConfigs.config
+
+            def FIREBASE_DATABASE_PARTIES = '"' + firebaseDatabaseParti + '"' ?: '"Define firebase database for parties"'
+            buildConfigField "String", "FIREBASE_DATABASE_PARTIES", FIREBASE_DATABASE_PARTIES
         }
     }
     defaultConfig {
@@ -74,7 +78,7 @@ android {
 dependencies {
     final SUPPORT_LIBRARY_VERSION = '25.3.1'
     final RETROFIT_VERSION = '2.2.0'
-    final GOOLGE_VERSION = '10.2.4'
+    final GOOLGE_VERSION = '10.2.6'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -102,6 +106,7 @@ dependencies {
     compile "com.google.android.gms:play-services-gcm:$GOOLGE_VERSION"
     compile "com.google.firebase:firebase-core:$GOOLGE_VERSION"
     compile "com.google.firebase:firebase-messaging:$GOOLGE_VERSION"
+    compile "com.google.firebase:firebase-database:$GOOLGE_VERSION"
 
     compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
     compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
