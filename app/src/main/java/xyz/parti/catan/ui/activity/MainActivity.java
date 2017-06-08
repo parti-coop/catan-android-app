@@ -110,11 +110,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @BindView(R.id.imageview_toolbar_dashboard_logo)
     ImageView toolbarDashboardLogoImageView;
     @BindView(R.id.layout_toolbar_parti)
-    LinearLayout toolbarPartiLayout;
+    RelativeLayout toolbarPartiLayout;
     @BindView(R.id.imageview_toolbar_parti_logo)
     ImageView toolbarPartiLogoImageView;
     @BindView(R.id.textview_toolbar_parti_title)
     TextView toolbarPartiTitleTextView;
+    @BindView(R.id.textview_toolbar_group_title)
+    TextView toolbarGroupTitleTextView;
 
     private AlarmManager newPostsAlarmMgr;
     private PendingIntent newPostsAlarmIntent;
@@ -606,6 +608,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void changePartiPostFeedToolbar(Parti parti) {
         toolbarPartiLayout.setVisibility(View.VISIBLE);
         toolbarPartiTitleTextView.setText(parti.title);
+        if(parti.group != null && !parti.group.isIndie()) {
+            toolbarGroupTitleTextView.setVisibility(View.VISIBLE);
+            toolbarGroupTitleTextView.setText(parti.group.title);
+        } else {
+            toolbarGroupTitleTextView.setVisibility(View.GONE);
+        }
         toolbarPartiLogoImageView.setImageDrawable(null);
         new ImageHelper(toolbarPartiLogoImageView).loadInto(parti.logo_url);
         toolbarDashboardLogoImageView.setVisibility(View.GONE);

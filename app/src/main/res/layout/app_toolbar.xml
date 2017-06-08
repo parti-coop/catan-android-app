@@ -18,37 +18,52 @@
         android:adjustViewBounds="true"
         android:cropToPadding="true"
         android:scaleType="centerInside"
+        android:visibility="visible"
         android:src="@drawable/img_toolbar_logo" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_toolbar_parti"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal"
+        android:layout_gravity ="center"
         android:visibility="gone" >
 
         <ImageView
             android:id="@+id/imageview_toolbar_parti_logo"
-            android:layout_width="@dimen/feed_item_parti_logo"
-            android:layout_height="@dimen/feed_item_parti_logo"
-            android:layout_gravity="center"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginRight="5dp"
             android:scaleType="centerInside"
             android:gravity="left"
             android:src="@drawable/img_sample_parti_logo" />
 
-        <TextView
-            android:id="@+id/textview_toolbar_parti_title"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:maxWidth="140dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical|left"
-            android:maxLines="1"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
+            android:layout_toRightOf="@id/imageview_toolbar_parti_logo"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textview_toolbar_parti_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="140dp"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/white" />
+            <TextView
+                android:id="@+id/textview_toolbar_group_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:maxWidth="140dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textSize="8sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.v7.widget.Toolbar>
