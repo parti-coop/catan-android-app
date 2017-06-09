@@ -31,7 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -256,11 +255,11 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 })
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if(drawerItem.getType() == R.id.drawer_item_dashboard) {
+                    public boolean onItemClick(View view, int position, IDrawerItem item) {
+                        if(item.getType() == R.id.drawer_item_dashbord) {
                             presenter.showDashboardPostFeed();
-                        } else if(drawerItem.getType() == R.id.drawer_item_parti_post_feed) {
-                            Object tagData = drawerItem.getTag();
+                        } else if(item.getType() == R.id.drawer_item_parti) {
+                            Object tagData = item.getTag();
                             if (tagData == null) return false;
                             if (!(tagData instanceof Parti)) return false;
                             presenter.showPartiPostFeed((Parti) tagData);
@@ -545,18 +544,23 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti) {
+    public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPostFeedId) {
         List<IDrawerItem> drawerItems = new ArrayList<>();
+        Log.d(Constants.TAG_TEST, "LOAD START");
+        PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forDashboard().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url);
+        if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) {
+            Log.d(Constants.TAG_TEST, "DASHBOARD SELECTED!!!!");
+            dashboardItem.withSetSelected(true);
+        }
+        drawerItems.add(dashboardItem);
 
-        drawerItems.add(PostFeedDrawerItem.forPostFeed().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url).withSetSelected(currentParti == null));
         for(Group group: joindedParties.keySet()) {
             SectionDrawerItem groupItem = new GroupSectionDrawerItem().withName(group.title).withDivider(false).withTextColorRes(R.color.material_drawer_header_selection_text);
             drawerItems.add(groupItem);
             for(Parti parti : joindedParties.get(group)) {
                 PostFeedDrawerItem item = PostFeedDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);
                 item.withTag(parti);
-
-                if(currentParti != null && parti.id.equals(currentParti.id)) {
+                if(parti.id.equals(currentPostFeedId)) {
                     item.withSetSelected(true);
                 }
                 drawerItems.add(item);
@@ -564,6 +568,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         }
 
         drawer.setItems(drawerItems);
+        Log.d(Constants.TAG_TEST, "LOAD END");
     }
 
     @Override
@@ -575,10 +580,10 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void markUnreadOrNotParti(long partiId, boolean unread) {
         if(drawer == null) return;
         for(IDrawerItem item : drawer.getDrawerItems()) {
-            if(item.getType() == R.id.drawer_item_parti_post_feed) {
+            if(item.getType() == R.id.drawer_item_dashbord) {
                 if(item.getTag() != null) {
                     Parti parti = (Parti) item.getTag();
-                    if(partiId == parti.id) {
+                    if(parti.id.equals(partiId)) {
                         drawer.updateItem(((PostFeedDrawerItem) item).withUnreadMark(unread));
                         break;
                     }
@@ -591,7 +596,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void markUnreadOrNotDashboard(boolean unread) {
         if(drawer == null) return;
         for(IDrawerItem item : drawer.getDrawerItems()) {
-            if(item.getType() == R.id.drawer_item_dashboard) {
+            if(item.getType() == R.id.drawer_item_parti) {
                 drawer.updateItem(((PostFeedDrawerItem) item).withUnreadMark(unread));
                 break;
             }
@@ -624,6 +629,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         if(drawer == null) return false;
         if(drawer.getDrawerItems().size() <= 0) return true;
         return !drawer.isDrawerOpen();
+    }
+
+    @Override
+    public void openDrawer() {
+        if(drawer == null) return;
+        drawer.openDrawer();
     }
 
     @Override

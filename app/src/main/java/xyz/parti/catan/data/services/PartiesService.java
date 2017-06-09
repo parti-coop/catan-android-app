@@ -24,4 +24,7 @@ public interface PartiesService {
     Flowable<Response<Page<Post>>> getPostsAfter(
             @Path("id") long id,
             @Query("last_id") long lastId);
+
+    @GET("/api/v1/parties/{id}")
+    Flowable<Response<Parti>> getParti(@Path("id") long id);
 }

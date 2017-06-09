@@ -9,7 +9,7 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
 import timber.log.Timber;
-import xyz.parti.catan.data.model.ReadPostFeed;
+import xyz.parti.catan.data.activerecord.ReadPostFeed;
 
 public class CatanApplication extends MultiDexApplication {
     @Override

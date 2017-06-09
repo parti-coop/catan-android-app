@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.data.repository.NotificationsRepository;
+import xyz.parti.catan.data.preference.NotificationsPreference;
 
 /**
  * Created by dalikim on 2017. 5. 31..
@@ -13,7 +13,7 @@ import xyz.parti.catan.data.repository.NotificationsRepository;
 
 public class CancelNotificationReceiver extends BroadcastReceiver {
     public static final String EXTRA_KEY_NOTIFICATION_ID = "notificationId";
-    private NotificationsRepository notificationsRepository;
+    private NotificationsPreference notificationsRepository;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -21,9 +21,9 @@ public class CancelNotificationReceiver extends BroadcastReceiver {
         getPushMessagesRepository(context).destroy(notificationId);
     }
 
-    private NotificationsRepository getPushMessagesRepository(Context context) {
+    private NotificationsPreference getPushMessagesRepository(Context context) {
         if(notificationsRepository == null) {
-            notificationsRepository = new NotificationsRepository(context.getSharedPreferences(Constants.PREF_NAME_NOTIFICATIONS, Context.MODE_PRIVATE));
+            notificationsRepository = new NotificationsPreference(context);
         }
         return notificationsRepository;
     }

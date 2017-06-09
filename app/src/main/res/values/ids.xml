@@ -6,7 +6,8 @@
     <item name="post_form_image" type="id" />
     <item name="tag_latest_comment_binder" type="id" />
     <item name="tag_latest_comment" type="id" />
-    <item name="drawer_item_parti_post_feed" type="id" />
-    <item name="drawer_item_dashboard" type="id" />
+    <item name="drawer_item_post_feed" type="id" />
+    <item name="drawer_item_dashbord" type="id" />
+    <item name="drawer_item_parti" type="id" />
     <item name="material_drawer_item_group" type="id" />
 </resources>

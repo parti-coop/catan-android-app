@@ -1,5 +1,6 @@
-package xyz.parti.catan.data.repository;
+package xyz.parti.catan.data.preference;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
@@ -17,11 +18,11 @@ import xyz.parti.catan.data.model.PushMessage;
  * Created by dalikim on 2017. 5. 31..
  */
 
-public class NotificationsRepository {
+public class NotificationsPreference {
     private SharedPreferences preferences;
 
-    public NotificationsRepository(SharedPreferences preferences) {
-        this.preferences = preferences;
+    public NotificationsPreference(Context context) {
+        this.preferences = context.getSharedPreferences(Constants.PREF_NAME_NOTIFICATIONS, Context.MODE_PRIVATE);
     }
 
     private HashMap<Integer, List<PushMessage>> resetSingles(HashMap<Integer, List<PushMessage>> map) {

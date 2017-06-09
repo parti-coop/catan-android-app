@@ -26,7 +26,7 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PushMessage;
-import xyz.parti.catan.data.repository.NotificationsRepository;
+import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.ui.activity.MainActivity;
 import xyz.parti.catan.ui.receivers.CancelNotificationReceiver;
@@ -40,7 +40,7 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     private static final int MAX_SIZE = 3;
     private NotificationManagerCompat notificationManager;
-    private NotificationsRepository notificationsRepository;
+    private NotificationsPreference notificationsRepository;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -210,9 +210,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         return (int)(pushMessage.id % (Integer.MAX_VALUE - 1));
     }
 
-    private NotificationsRepository getNotificationsRepository() {
+    private NotificationsPreference getNotificationsRepository() {
         if(notificationsRepository == null) {
-            notificationsRepository = new NotificationsRepository(getApplicationContext().getSharedPreferences(Constants.PREF_NAME_NOTIFICATIONS, Context.MODE_PRIVATE));
+            notificationsRepository = new NotificationsPreference(getApplicationContext());
         }
         return notificationsRepository;
     }

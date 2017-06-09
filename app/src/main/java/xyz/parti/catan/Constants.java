@@ -13,10 +13,13 @@ public class Constants {
     public static final String PREF_VALUE_KEY_RECEIVE_PUSH_MESSAGE = "pref_receive_push_message";
     public static final String PREF_VALUE_KEY_NOTIFICATION_MAP = "pref_notification_map";
     public static final String PREF_VALUE_KEY_NOTIFICATION_MERGED = "pref_notification_merged";
+    public static final String PREF_VALUE_KEY_LAST_POST_FEED = "pref_last_post_feed";
 
     public static final String PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER = "xyz.parti.catan.RECEIVABLE_PUSH_MESSAGE_CHECKER";
     public static final String PREF_NAME_SESSION = "xyz.parti.catan.SESSION";
     public static final String PREF_NAME_VERSION_CHECKER = "xyz.parti.catan.VERSION_CHECKER";
     public static final String PREF_NAME_NOTIFICATIONS = "xyz.parti.catan.NOTIFICATIONS";
+    public static final String PREF_NAME_LAST_POST_FEED = "xyz.parti.catan.LAST_POST_FEED";
     public static final int MERGED_NOTIFICATION_ID = 0;
+    public final static long POST_FEED_DASHBOARD = 0;
 }

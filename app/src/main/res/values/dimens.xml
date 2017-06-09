@@ -23,4 +23,5 @@
     <dimen name="grid_expected_size">120dp</dimen>
 
     <dimen name="material_drawer_item_primary">36dp</dimen>
+    <dimen name="drawer_item_dashboard_margin_top">10dp</dimen>
 </resources>

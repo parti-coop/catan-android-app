@@ -1,4 +1,4 @@
-package xyz.parti.catan.data.model;
+package xyz.parti.catan.data.activerecord;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import xyz.parti.catan.Constants;
+import xyz.parti.catan.data.model.Parti;
+
 /**
  * Created by dalikim on 2017. 6. 7..
  */
 
 @Table(name = "ReadPostFeeds")
 public class ReadPostFeed extends Model {
-    public final static long DASHBOARD = 0;
-
     @Column(name = "PartiId")
     public long partiId;
 
@@ -33,7 +34,7 @@ public class ReadPostFeed extends Model {
     }
 
     public static ReadPostFeed forDashboard() {
-        return forPartiOrDashboard(null);
+        return forPartiOrDashboard(Constants.POST_FEED_DASHBOARD);
     }
 
     public static ReadPostFeed forPartiOrDashboard(long partiId) {
@@ -46,10 +47,6 @@ public class ReadPostFeed extends Model {
             readPostFeed.partiId = partiId;
         }
         return readPostFeed;
-    }
-
-    public static ReadPostFeed forPartiOrDashboard(Parti currentParti) {
-        return forPartiOrDashboard(currentParti == null ? DASHBOARD : currentParti.id);
     }
 
     public static List<Long> unreads() {
@@ -72,6 +69,6 @@ public class ReadPostFeed extends Model {
     }
 
     public boolean isDashboard() {
-        return partiId == DASHBOARD;
+        return partiId == Constants.POST_FEED_DASHBOARD;
     }
 }

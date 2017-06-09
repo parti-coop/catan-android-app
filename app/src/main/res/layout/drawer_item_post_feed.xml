@@ -4,14 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/material_drawer_item_primary"
     android:orientation="horizontal"
-    android:layout_marginTop="@dimen/default_space"
     android:paddingEnd="@dimen/material_drawer_vertical_padding"
     android:paddingLeft="@dimen/material_drawer_vertical_padding"
     android:paddingRight="@dimen/material_drawer_vertical_padding"
     android:paddingStart="@dimen/material_drawer_vertical_padding">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageview_item_logo"
+    <ImageView
+        android:id="@+id/imageview_item_dashboard_logo"
+        android:adjustViewBounds="false"
+        android:layout_width="@dimen/feed_item_parti_logo"
+        android:layout_height="@dimen/feed_item_parti_logo"
+        android:layout_gravity="center"
+        android:layout_marginRight="@dimen/default_space"/>
+
+    <ImageView
+        android:id="@+id/imageview_item_parti_logo"
         android:adjustViewBounds="false"
         android:layout_width="@dimen/feed_item_parti_logo"
         android:layout_height="@dimen/feed_item_parti_logo"
@@ -26,14 +33,15 @@
 
         <TextView
             android:id="@+id/material_drawer_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:gravity="center_vertical|start"
             android:lines="1"
             android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="@dimen/material_drawer_item_primary_text"
-            android:text="@string/navigation_menu_dashboard" />
+            tools:text="Some drawer text" />
 
     </LinearLayout>
 

@@ -35,15 +35,16 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.activerecord.ReadPostFeed;
 import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
-import xyz.parti.catan.data.model.ReadPostFeed;
 import xyz.parti.catan.data.model.Update;
 import xyz.parti.catan.data.model.User;
-import xyz.parti.catan.data.repository.NotificationsRepository;
+import xyz.parti.catan.data.preference.LastPostFeedPreference;
+import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.data.services.PartiesService;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.helper.AppVersionHelper;
@@ -74,11 +75,14 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Disposable receivePushMessageForPostPublisher;
     private Disposable savePost;
     private Disposable loadDrawer;
+    private Disposable loadParti;
     private AppVersionCheckTask appVersionCheckTask;
     private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
     private List<Parti> joindedParties = new ArrayList<>();
+    private long currentPostFeedId = Constants.POST_FEED_DASHBOARD;
     private Parti currentParti;
     private ValueEventListener newPostListener;
+    private LastPostFeedPreference lastPostFeedPreference;
 
     public PostFeedPresenter(SessionManager session) {
         super(session);
@@ -93,6 +97,21 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         super.attachView(view);
         appVersionCheckTask = new AppVersionCheckTask(new AppVersionHelper(getView().getContext()).getCurrentVerion(), getView().getContext());
         receivablePushMessageCheckTask = new ReceivablePushMessageCheckTask(getView().getContext(), session);
+        lastPostFeedPreference = new LastPostFeedPreference(getView().getContext());
+
+        currentPostFeedId = lastPostFeedPreference.fetch();
+        playWithPostFeed(new OnLoadPostFeed() {
+            @Override
+            public void onDashbard() {
+                getView().changeDashboardToolbar();
+            }
+
+
+            @Override
+            public void onParti(Parti parti) {
+                getView().changePartiPostFeedToolbar(parti);
+            }
+        });
     }
 
     @Override
@@ -120,7 +139,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         if(!isActive()) return;
 
         Flowable<Response<Page<Post>>> boardLastest =
-            this.currentParti == null ? postsService.getDashBoardLastest() : partiesService.getPostsLastest(currentParti.id);
+            this.currentPostFeedId == Constants.POST_FEED_DASHBOARD ? postsService.getDashBoardLastest() : partiesService.getPostsLastest(currentPostFeedId);
         loadFirstPostsPublisher = getRxGuardian().subscribe(loadFirstPostsPublisher,
                 boardLastest,
                 new Consumer<Response<Page<Post>>>() {
@@ -138,7 +157,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             feedAdapter.clearAndAppendModels(page.items, 1);
                             feedAdapter.setMoreDataAvailable(page.has_more_item);
 
-                            ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(currentParti);
+                            ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(currentPostFeedId);
                             if (feedAdapter.getFirstModel() != null) {
                                 readPostFeed.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
                             }
@@ -183,7 +202,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         feedAdapter.appendLoader();
 
         Flowable<Response<Page<Post>>> boardLastest =
-                this.currentParti == null ? postsService.getDashboardAfter(post.id) : partiesService.getPostsAfter(currentParti.id, post.id);
+                this.currentPostFeedId == Constants.POST_FEED_DASHBOARD ? postsService.getDashboardAfter(post.id) : partiesService.getPostsAfter(currentPostFeedId, post.id);
 
         loadMorePostsPublisher = getRxGuardian().subscribe(loadMorePostsPublisher,
                 boardLastest,
@@ -388,7 +407,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         if(notificatiionId != -1) {
             Log.d(Constants.TAG_TEST, "MAIN notificatiionId" + notificatiionId);
-            NotificationsRepository repository = new NotificationsRepository(getView().getContext().getSharedPreferences(Constants.PREF_NAME_NOTIFICATIONS, Context.MODE_PRIVATE));
+            NotificationsPreference repository = new NotificationsPreference(getView().getContext());
             repository.destroy(notificatiionId);
         }
 
@@ -434,8 +453,56 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         receivablePushMessageCheckTask.check();
     }
 
+    interface OnLoadPostFeed {
+        void onDashbard();
+        void onParti(Parti parti);
+    }
+    private void playWithPostFeed(final OnLoadPostFeed callback) {
+        if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) {
+            callback.onDashbard();
+            return;
+        }
+
+        if(currentParti != null && currentParti.id == currentPostFeedId) {
+            callback.onParti(currentParti);
+            return;
+        }
+
+        loadParti = getRxGuardian().subscribe(loadParti, partiesService.getParti(currentPostFeedId),
+                new Consumer<Response<Parti>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Response<Parti> response) throws Exception {
+                        if(!isActive()) return;
+                        if(response.isSuccessful()) {
+                            Parti parti = response.body();
+                            callback.onParti(parti);
+                            currentParti = parti;
+                        } else {
+                            getView().reportError("fetch parti error : " + response.code());
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                    }
+                });
+    }
+
     public void showPostForm() {
-        getView().showPostForm(currentParti);
+        if(!isActive()) return;
+
+        playWithPostFeed(new OnLoadPostFeed() {
+            @Override
+            public void onDashbard() {
+                getView().showPostForm();
+            }
+
+            @Override
+            public void onParti(Parti parti) {
+                getView().showPostForm(parti);
+            }
+        });
     }
 
     public void savePost(final Parti parti, final String body, List<SelectedImage> fileSourcesAttachmentImages) {
@@ -495,32 +562,37 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     public void loadDrawer() {
         if(!isActive()) return;
 
-        loadDrawer = getRxGuardian().subscribe(loadDrawer,
-                partiesService.getMyJoined(),
-                new Consumer<Response<Parti[]>>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull Response<Parti[]> response) throws Exception {
-                        if (!isActive()) return;
-                        if (!getView().canRefreshDrawer()) return;
-                        if (response.isSuccessful()) {
-                            joindedParties.clear();
-                            joindedParties.addAll(Arrays.asList(response.body()));
-                            for (Parti parti : joindedParties) {
-                                preloadImage(parti.logo_url);
-                            }
-                            getView().setUpDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentParti);
-                        }
-                        getView().ensureToHideDrawerDemo();
+        if(lastPostFeedPreference.isNewbie()) {
+            getView().openDrawer();
+            lastPostFeedPreference.save(currentPostFeedId);
+        }
 
-                        watchNewPosts();
+        loadDrawer = getRxGuardian().subscribe(loadDrawer,
+            partiesService.getMyJoined(),
+            new Consumer<Response<Parti[]>>() {
+                @Override
+                public void accept(@io.reactivex.annotations.NonNull Response<Parti[]> response) throws Exception {
+                    if (!isActive()) return;
+                    if (!getView().canRefreshDrawer()) return;
+                    if (response.isSuccessful()) {
+                        joindedParties.clear();
+                        joindedParties.addAll(Arrays.asList(response.body()));
+                        for (Parti parti : joindedParties) {
+                            preloadImage(parti.logo_url);
+                        }
+                        getView().setUpDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
                     }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
-                        getView().reportError(error);
-                        getView().ensureToHideDrawerDemo();
-                    }
-                });
+                    getView().ensureToHideDrawerDemo();
+
+                    watchNewPosts();
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                    getView().reportError(error);
+                    getView().ensureToHideDrawerDemo();
+                }
+            });
     }
 
     public void watchNewPosts() {
@@ -615,18 +687,22 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void showDashboardPostFeed() {
         if(!isActive()) return;
-        if(currentParti == null) return;
+        if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) return;
 
+        currentPostFeedId = Constants.POST_FEED_DASHBOARD;
         currentParti = null;
+        lastPostFeedPreference.save(currentPostFeedId);
         getView().changeDashboardToolbar();
         refreshPosts();
     }
 
     public void showPartiPostFeed(Parti parti) {
         if(!isActive()) return;
-        if(currentParti != null && currentParti.id.equals(parti.id)) return;
+        if(currentPostFeedId != Constants.POST_FEED_DASHBOARD && parti.id.equals(currentPostFeedId)) return;
 
+        currentPostFeedId = parti.id;
         currentParti = parti;
+        lastPostFeedPreference.save(currentPostFeedId);
         getView().changePartiPostFeedToolbar(parti);
         refreshPosts();
     }
@@ -650,7 +726,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showPostForm(Parti parti, String body);
         void scrollToTop();
 
-        void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, Parti currentParti);
+        void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPartiId);
         void ensureToHideDrawerDemo();
 
         void markUnreadOrNotParti(long partiId, boolean unread);
@@ -660,5 +736,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void changePartiPostFeedToolbar(Parti parti);
 
         boolean canRefreshDrawer();
+        void openDrawer();
     }
 }
