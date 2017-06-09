@@ -637,6 +637,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
                 ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(partiId);
 
+                Long lastStrokedBy = dataSnapshot.child("last_stroked_by").getValue(Long.class);
+                if(getCurrentUser().id.equals(lastStrokedBy)) return;
+
                 Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
                 if(lastStrokedSecondTime == null || lastStrokedSecondTime < 0) {
                     readPostFeed.lastStrokedAt = null;
@@ -678,9 +681,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private void markUnreadOrNotParti(ReadPostFeed readPostFeed) {
         if(!isActive()) return;
 
-        getView().markUnreadOrNotDashboard(ReadPostFeed.forDashboard().isUnread());
+        getView().markUnreadOrNotParti(readPostFeed.partiId, readPostFeed.isUnread());
         if(!readPostFeed.isDashboard()) {
-            getView().markUnreadOrNotParti(readPostFeed.partiId, readPostFeed.isUnread());
+            getView().markUnreadOrNotDashboard(ReadPostFeed.forDashboard().isUnread());
         }
     }
 

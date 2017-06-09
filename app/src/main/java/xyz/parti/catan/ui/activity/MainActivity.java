@@ -578,10 +578,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPostFeedId) {
         List<IDrawerItem> drawerItems = new ArrayList<>();
-        Log.d(Constants.TAG_TEST, "LOAD START");
         PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forDashboard().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url);
         if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) {
-            Log.d(Constants.TAG_TEST, "DASHBOARD SELECTED!!!!");
             dashboardItem.withSetSelected(true);
         }
         drawerItems.add(dashboardItem);
@@ -600,7 +598,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         }
 
         drawer.setItems(drawerItems);
-        Log.d(Constants.TAG_TEST, "LOAD END");
     }
 
     @Override
@@ -612,7 +609,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void markUnreadOrNotParti(long partiId, boolean unread) {
         if(drawer == null) return;
         for(IDrawerItem item : drawer.getDrawerItems()) {
-            if(item.getType() == R.id.drawer_item_dashbord) {
+            if(item.getType() == R.id.drawer_item_parti) {
                 if(item.getTag() != null) {
                     Parti parti = (Parti) item.getTag();
                     if(parti.id.equals(partiId)) {
@@ -628,7 +625,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void markUnreadOrNotDashboard(boolean unread) {
         if(drawer == null) return;
         for(IDrawerItem item : drawer.getDrawerItems()) {
-            if(item.getType() == R.id.drawer_item_parti) {
+            if(item.getType() == R.id.drawer_item_dashbord) {
                 drawer.updateItem(((PostFeedDrawerItem) item).withUnreadMark(unread));
                 break;
             }
