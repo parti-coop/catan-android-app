@@ -9,12 +9,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import com.activeandroid.query.Delete;
 import com.google.gson.Gson;
 
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
+import xyz.parti.catan.data.activerecord.ReadPostFeed;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.data.preference.LastPostFeedPreference;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.LogInActivity;
 
@@ -141,6 +144,9 @@ public class SessionManager {
         removePreferences(this.context, Constants.PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER);
         removePreferences(this.context, Constants.PREF_NAME_VERSION_CHECKER);
         removePreferences(this.context, Constants.PREF_NAME_NOTIFICATIONS);
+        removePreferences(this.context, Constants.PREF_NAME_LAST_POST_FEED);
+
+        new Delete().from(ReadPostFeed.class).execute();
         NotificationManagerCompat.from(this.context.getApplicationContext()).cancelAll();
     }
 
