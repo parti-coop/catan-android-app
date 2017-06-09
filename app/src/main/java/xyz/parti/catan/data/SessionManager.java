@@ -23,11 +23,12 @@ import xyz.parti.catan.ui.activity.LogInActivity;
  */
 
 public class SessionManager {
-    private static final String CURRENT_SESSION_VERSION = "3";
+    private static final String CURRENT_SESSION_VERSION = "4";
 
     private static final String KEY_SESSION_VERSION = "session_version";
     private static final String KEY_IS_LOGIN = "is_logged_in";
     private static final String KEY_USER_ID = "user_id";
+
     private static final String KEY_USER = "user";
     private static final String KEY_USER_NICKNAME = "user_nickname";
     private static final String KEY_ACCESS_TOKEN = "access_token";

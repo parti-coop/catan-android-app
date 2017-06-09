@@ -8,4 +8,22 @@
         android:icon="@drawable/ic_pencil_white"
         android:title="새글"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_more"
+        android:icon="@drawable/ic_action_overflow"
+        app:showAsAction="always"
+        android:title="더보기">
+        <menu>
+            <item
+                android:id="@+id/action_profile"
+                android:title="@string/navigation_my_profile"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_settings"
+                android:icon="@drawable/ic_settings"
+                android:title="@string/navigation_settings"
+                app:showAsAction="never" />
+        </menu>
+    </item>
 </menu>

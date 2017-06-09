@@ -16,6 +16,7 @@ public class User {
     public String email;
     public String nickname;
     public String image_url;
+    public String profile_url;
 
     public Collection<? extends String> getPreloadImageUrls() {
         List<String> result = new ArrayList<>();

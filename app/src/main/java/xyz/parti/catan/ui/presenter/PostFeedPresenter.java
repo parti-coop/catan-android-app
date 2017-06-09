@@ -1,6 +1,7 @@
 package xyz.parti.catan.ui.presenter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -151,7 +152,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         }
 
                         lastLoadFirstPostsAtMillis = System.currentTimeMillis();
-                        getView().ensureToPostListDemoIsGone();
+                        getView().readyToShowPostFeed();
                         if (response.isSuccessful()) {
                             Page<Post> page = response.body();
                             feedAdapter.clearAndAppendModels(page.items, 1);
@@ -240,7 +241,16 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             feedAdapter.setMoreDataAvailable(false);
                             getView().reportError("Load more post error : " + response.code());
                         }
+
                         feedAdapter.setLoadFinished();
+                        if (feedAdapter.getModelItemCount() <= 0) {
+                            if(response.code() == 403) {
+                                getView().showBlocked();
+                            } else {
+                                getView().showEmpty(!response.isSuccessful());
+                            }
+                        }
+
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -458,6 +468,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         if(!isActive()) return;
         if(receivablePushMessageCheckTask == null) return;
         receivablePushMessageCheckTask.check();
+    }
+
+    public void showProfile() {
+        if(!isActive()) return;
+
+        getView().showProfile(getCurrentUser());
     }
 
     interface OnLoadPostFeed {
@@ -718,7 +734,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void stopAndEnableSwipeRefreshing();
         boolean isVisibleNewPostsSign();
         void showNewPostsSign();
-        void ensureToPostListDemoIsGone();
+        void readyToShowPostFeed();
         void showPostListDemo();
         void ensureExpendedAppBar();
         void showSettings();
@@ -745,5 +761,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         boolean canRefreshDrawer();
         void openDrawer();
+        void showProfile(User user);
     }
 }

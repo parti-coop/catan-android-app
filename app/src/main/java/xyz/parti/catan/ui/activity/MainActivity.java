@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +38,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -665,6 +670,11 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
+    public void showProfile(User user) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(user.profile_url)));
+    }
+
+    @Override
     public void showPost(Post post) {
         Intent intent = new Intent(this, PostActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
@@ -746,9 +756,15 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void ensureToPostListDemoIsGone() {
+    public void readyToShowPostFeed() {
         postListDemoLayout.stopShimmerAnimation();
         postListDemoLayout.setVisibility(View.GONE);
+        postListRecyclerView.setVisibility(View.VISIBLE);
+        noPostSignLayout.setVisibility(View.GONE);
+        if(newPostsSignAnimator != null) {
+            newPostsSignAnimator.hideImmediately();
+        }
+        postListSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -850,11 +866,33 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final MenuItem profileItem = menu.findItem(R.id.action_profile);
+        User user = presenter.getCurrentUser();
+        if (user != null) {
+            int size = getResources().getDimensionPixelSize(R.dimen.action_user_image);
+
+            Glide.with(this).load(user.image_url).asBitmap().into(new SimpleTarget<Bitmap>(size,size) {
+                @Override
+                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                    profileItem.setIcon(new BitmapDrawable(getResources(), ImageHelper.getCircularBitmap(resource)));
+                }
+            });
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_new_post:
                 presenter.showPostForm();
                 return true;
+            case R.id.action_profile:
+                presenter.showProfile();
+                return true;
+            case R.id.action_settings:
+                presenter.showSettings();
             default:
                 return super.onOptionsItemSelected(item);
         }

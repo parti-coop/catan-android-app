@@ -65,4 +65,7 @@
     <style name="AppMetiessToolbar" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorControlNormal">@android:color/white</item>
     </style>
+
+    <style name="AppToolbarPopupMenu" parent="Theme.AppCompat.Light">
+    </style>
 </resources>

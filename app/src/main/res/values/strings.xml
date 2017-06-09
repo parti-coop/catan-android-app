@@ -100,4 +100,5 @@
 
     <string name="not_support_device">지원하지 않는 기기입니다</string>
     <string name="google_play_services_update_text">구글 서비스를 업데이트해야 구글ID로 빠띠에 로그인 할 수 있습니다</string>
+    <string name="navigation_my_profile">내 프로필</string>
 </resources>
