@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -271,7 +272,18 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
         drawerDemoLayout = LayoutInflater.from(this).inflate(R.layout.drawer_demo, drawer.getSlider(), false);
         drawer.getSlider().addView(drawerDemoLayout);
+        setDrawerVerticalBottomPadding(drawer.getSlider(), R.dimen.default_space);
         presenter.loadDrawer();
+    }
+
+    private void setDrawerVerticalBottomPadding(View v, @DimenRes int id) {
+        int verticalPadding = getResources().getDimensionPixelSize(id);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            v.setPaddingRelative(0, 0, 0, verticalPadding);
+        } else {
+            v.setPadding(0, 0, 0, verticalPadding);
+        }
     }
 
     @Override
@@ -491,6 +503,21 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             noPostSignTextView.setText(getResources().getText(R.string.no_posts));
             goToPartiesButton.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void showBlocked() {
+        postListDemoLayout.setVisibility(View.GONE);
+        postListRecyclerView.setVisibility(View.GONE);
+        noPostSignLayout.setVisibility(View.VISIBLE);
+        if(newPostsSignAnimator != null) {
+            newPostsSignAnimator.hideImmediately();
+        }
+        postListSwipeRefreshLayout.setRefreshing(false);
+
+        retryButton.setVisibility(View.GONE);
+        noPostSignTextView.setText(getResources().getText(R.string.blocked_parti));
+        goToPartiesButton.setVisibility(View.VISIBLE);
     }
 
     @OnClick(R.id.button_retry)

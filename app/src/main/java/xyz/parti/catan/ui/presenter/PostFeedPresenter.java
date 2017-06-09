@@ -163,6 +163,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             }
                             readPostFeed.save();
                             markUnreadOrNotParti(readPostFeed);
+                        } else if (response.code() == 403) {
+                            feedAdapter.setMoreDataAvailable(false);
+                            feedAdapter.clear();
                         } else {
                             feedAdapter.setMoreDataAvailable(false);
                             getView().reportError("Load first post error : " + response.code());
@@ -172,7 +175,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         getView().stopAndEnableSwipeRefreshing();
 
                         if (feedAdapter.getModelItemCount() <= 0) {
-                            getView().showEmpty(!response.isSuccessful());
+                            if(response.code() == 403) {
+                                getView().showBlocked();
+                            } else {
+                                getView().showEmpty(!response.isSuccessful());
+                            }
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -720,6 +727,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showNewVersionMessage(String newVersion);
         void showMessage(String message);
         void showEmpty(boolean isError);
+        void showBlocked();
         void readyToRetry();
         void showPostForm();
         void showPostForm(Parti parti);

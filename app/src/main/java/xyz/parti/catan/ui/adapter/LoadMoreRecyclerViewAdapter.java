@@ -122,6 +122,13 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        if(this.holders.size() > 0) {
+            this.holders.clear();
+        }
+        notifyDataSetChanged();
+    }
+
     public void removeFirstMoldelHolder() {
         holders.remove(0);
         notifyItemRemoved(0);

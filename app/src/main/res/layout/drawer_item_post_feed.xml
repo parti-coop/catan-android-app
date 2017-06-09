@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/material_drawer_vertical_padding"
     android:paddingStart="@dimen/material_drawer_vertical_padding">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageview_item_dashboard_logo"
         android:adjustViewBounds="false"
         android:layout_width="@dimen/feed_item_parti_logo"
