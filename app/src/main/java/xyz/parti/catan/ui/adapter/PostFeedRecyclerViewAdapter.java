@@ -48,6 +48,16 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        Post model = getModel(position);
+        if(model == null) {
+            return super.getItemId(position);
+        } else {
+            return model.id;
+        }
+    }
+
     public LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
         if(viewType == FORM_TYPE) {
             return new PostLineFormViewHolder(inflater.inflate(R.layout.post_line_form, parent, false), presenter);
