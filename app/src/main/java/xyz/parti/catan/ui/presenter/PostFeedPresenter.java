@@ -157,7 +157,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                                 readPostFeed.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
                             }
                             readPostFeed.save();
-                            markUnreadOrNotParti(readPostFeed);
+                            markUnreadOrNotPostFeed(readPostFeed);
                             if(readPostFeed.isUnread() && currentPostFeedId == readPostFeed.partiId && !getView().isVisibleNewPostsSign()) {
                                 getView().showNewPostsSign();
                             }
@@ -585,7 +585,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     }
                 }
                 readPostFeed.save();
-                markUnreadOrNotParti(readPostFeed);
+                markUnreadOrNotPostFeed(readPostFeed);
 
                 if(readPostFeed.isUnread()) {
                     if(currentPostFeedId == postFeedId && !getView().isVisibleNewPostsSign()) {
@@ -616,12 +616,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         return false;
     }
 
-    private void markUnreadOrNotParti(ReadPostFeed readPostFeed) {
+    private void markUnreadOrNotPostFeed(ReadPostFeed readPostFeed) {
         if(!isActive()) return;
 
-        getView().markUnreadOrNotParti(readPostFeed.partiId, readPostFeed.isUnread());
+        getView().markUnreadOrNotPostFeed(readPostFeed.partiId, readPostFeed.isUnread(), readPostFeed.partiId == currentPostFeedId);
         if(!readPostFeed.isDashboard()) {
-            getView().markUnreadOrNotDashboard(ReadPostFeed.forDashboard().isUnread());
+            getView().markUnreadOrNotPostFeed(Constants.POST_FEED_DASHBOARD, ReadPostFeed.forDashboard().isUnread(), Constants.POST_FEED_DASHBOARD == currentPostFeedId);
         }
     }
 
@@ -693,8 +693,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPartiId);
         void ensureToHideDrawerDemo();
 
-        void markUnreadOrNotParti(long partiId, boolean unread);
-        void markUnreadOrNotDashboard(boolean unread);
+        void markUnreadOrNotPostFeed(long partiId, boolean unread, boolean isSelected);
 
         void changeDashboardToolbar();
         void changePartiPostFeedToolbar(Parti parti);
