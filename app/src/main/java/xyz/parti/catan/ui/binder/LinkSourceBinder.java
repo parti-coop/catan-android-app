@@ -1,5 +1,6 @@
 package xyz.parti.catan.ui.binder;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -7,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.facebook.stetho.common.StringUtil;
 import com.joanzapata.iconify.widget.IconTextView;
 
 import butterknife.BindView;
@@ -44,13 +46,13 @@ public class LinkSourceBinder {
         } else {
             titleTextView.setVisibility(View.GONE);
         }
-        if(linkSource.body != null) {
+        if(linkSource.body != null && !TextUtils.isEmpty(linkSource.body)) {
             bodyTextView.setText(linkSource.body);
             bodyTextView.setVisibility(View.VISIBLE);
         } else {
             bodyTextView.setVisibility(View.GONE);
         }
-        if(linkSource.site_name != null) {
+        if(linkSource.site_name != null && !TextUtils.isEmpty(linkSource.site_name)) {
             siteNameTextView.setText(linkSource.site_name);
         } else {
             siteNameTextView.setText(R.string.references_link_source_site_name_fallback);

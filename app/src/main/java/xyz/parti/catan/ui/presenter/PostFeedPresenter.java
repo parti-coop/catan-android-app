@@ -1,10 +1,8 @@
 package xyz.parti.catan.ui.presenter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -42,14 +40,12 @@ import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
-import xyz.parti.catan.data.model.Update;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.preference.LastPostFeedPreference;
 import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.data.services.PartiesService;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.helper.AppVersionHelper;
-import xyz.parti.catan.ui.adapter.InfinitableModelHolder;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
@@ -67,12 +63,10 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private final PostsService postsService;
     private final PartiesService partiesService;
     private PostFeedRecyclerViewAdapter feedAdapter;
-    private Date lastStrockedAtOfNewPostCheck = null;
     private long lastLoadFirstPostsAtMillis = -1;
 
     private Disposable loadFirstPostsPublisher;
     private Disposable loadMorePostsPublisher;
-    private Disposable checkNewPostsPublisher;
     private Disposable receivePushMessageForPostPublisher;
     private Disposable savePost;
     private Disposable loadDrawer;
@@ -164,6 +158,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             }
                             readPostFeed.save();
                             markUnreadOrNotParti(readPostFeed);
+                            if(readPostFeed.isUnread() && currentPostFeedId == readPostFeed.partiId && !getView().isVisibleNewPostsSign()) {
+                                getView().showNewPostsSign();
+                            }
                         } else if (response.code() == 403) {
                             feedAdapter.setMoreDataAvailable(false);
                             feedAdapter.clear();
@@ -267,71 +264,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 });
     }
 
-    public void checkNewPosts() {
-        if(!isActive()) return;
-
-        if(getView().isVisibleNewPostsSign()) {
-            return;
-        }
-
-        final Date lastStrockedAt = getLastStrockedAtForNewPostCheck();
-        if (lastStrockedAt == null) return;
-
-        checkNewPostsPublisher = getRxGuardian().subscribe(checkNewPostsPublisher,
-                postsService.hasUpdated(lastStrockedAt),
-                new Consumer<Response<Update>>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull Response<Update> response) throws Exception {
-                        if (!isActive()) {
-                            return;
-                        }
-
-                        if (response.isSuccessful()) {
-                            if (getView().isVisibleNewPostsSign()) return;
-                            if (!response.body().has_updated) return;
-                            if (!lastStrockedAt.equals(getLastStrockedAtForNewPostCheck())) return;
-
-                            PostFeedPresenter.this.lastStrockedAtOfNewPostCheck = response.body().last_stroked_at;
-                            getView().showNewPostsSign();
-                        } else {
-                            getView().reportError("Check new post error : " + response.code());
-                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
-                        if (!isActive()) {
-                            return;
-                        }
-
-                        getView().reportError(error);
-                    }
-                });
-    }
-
-    @Nullable
-    private Date getLastStrockedAtForNewPostCheck() {
-        if(this.lastStrockedAtOfNewPostCheck != null) {
-            return lastStrockedAtOfNewPostCheck;
-        }
-
-        Date lastStrockedAtOfFirstInPostList = null;
-        if(!feedAdapter.isEmpty()) {
-            InfinitableModelHolder<Post> firstPostHolder = feedAdapter.getHolder(1);
-            if(!firstPostHolder.isLoader() && firstPostHolder.getModel() != null) {
-                lastStrockedAtOfFirstInPostList = firstPostHolder.getModel().last_stroked_at;
-            }
-        }
-
-        if(lastStrockedAtOfNewPostCheck == null) {
-            return lastStrockedAtOfFirstInPostList;
-        } else if(lastStrockedAtOfFirstInPostList == null) {
-            return lastStrockedAtOfNewPostCheck;
-        } else {
-            return (lastStrockedAtOfNewPostCheck.getTime() > lastStrockedAtOfFirstInPostList.getTime() ? lastStrockedAtOfNewPostCheck : lastStrockedAtOfFirstInPostList);
-        }
-    }
-
     @Override
     public void changePost(Post post, Object playload) {
         if(!isActive()) return;
@@ -365,7 +297,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
     }
 
-    public void refreshPosts() {
+    private void refreshPosts() {
         feedAdapter.clearAndAppendPostLineForm();
         feedAdapter.notifyDataSetChanged();
         getView().showPostListDemo();
@@ -629,13 +561,13 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getKey() == null) return;
-                long partiId = Long.parseLong(dataSnapshot.getKey());
-                if(!isJoinedParti(partiId)) {
-                    ReadPostFeed.destroyIfExist(partiId);
+                long postFeedId = Long.parseLong(dataSnapshot.getKey());
+                if(!isJoinedParti(postFeedId)) {
+                    ReadPostFeed.destroyIfExist(postFeedId);
                     return;
                 }
 
-                ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(partiId);
+                ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(postFeedId);
 
                 Long lastStrokedBy = dataSnapshot.child("last_stroked_by").getValue(Long.class);
                 if(getCurrentUser().id.equals(lastStrokedBy)) return;
@@ -654,6 +586,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 }
                 readPostFeed.save();
                 markUnreadOrNotParti(readPostFeed);
+
+                if(readPostFeed.isUnread()) {
+                    if(currentPostFeedId == postFeedId && !getView().isVisibleNewPostsSign()) {
+                        getView().showNewPostsSign();
+                    }
+                }
             }
 
             @Override
@@ -693,8 +631,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 partiFirebase.removeEventListener(newPostListener);
             }
         }
-//
-//        this.watchedPartiesFirebase.clear();
+        listenPartiFireBases.clear();
     }
 
     @NonNull

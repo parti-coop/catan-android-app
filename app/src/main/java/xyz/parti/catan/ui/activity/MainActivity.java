@@ -1,14 +1,10 @@
 package xyz.parti.catan.ui.activity;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -16,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -83,8 +78,6 @@ import xyz.parti.catan.ui.view.NewPostSignAnimator;
 import xyz.parti.catan.ui.view.PostFeedDrawerItem;
 
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
-    public static final String ACTION_CHECK_NEW_POSTS = "xyz.parti.catan.action.CheckNewPosts";
-    public static final long INTERVAL_CHECK_NEW_POSTS = 10 * 60 * 1000;
     public static final int REQUEST_UPDATE_POST = 1999;
     public static final int REQUEST_NEW_POST = 2001;
 
@@ -123,12 +116,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @BindView(R.id.textview_toolbar_group_title)
     TextView toolbarGroupTitleTextView;
 
-    private AlarmManager newPostsAlarmMgr;
-    private PendingIntent newPostsAlarmIntent;
-
     private NewPostSignAnimator newPostsSignAnimator;
 
-    private CheckNewPostBroadcastReceiver newPostsBroadcastReceiver = new CheckNewPostBroadcastReceiver();
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
     private MenuItem newPostMenuItem;
@@ -156,7 +145,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     setUpToolbar();
                     setUpFeed(session.getCurrentUser());
                     setUpCheckNewPost();
-                    setUpDrawerBar(session.getCurrentUser());
+                    setUpDrawerBar();
                     setUpSwipeRefresh();
 
                     receivePushMessageIntent(getIntent());
@@ -173,12 +162,14 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     protected void onDestroy() {
-        cancelCheckNewPostJob();
         if(downloadProgressDialog != null) {
             downloadProgressDialog.dismiss();
         }
         if(presenter != null) {
             presenter.detachView();
+        }
+        if(presenter != null) {
+            presenter.unwatchNewPosts();
         }
         super.onDestroy();
     }
@@ -200,15 +191,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    protected void onPause()  {
-        super.onPause();
-        cancelCheckNewPostJob();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        startCheckNewPostJob();
         if(presenter != null) {
             presenter.onResume();
         }
@@ -236,7 +220,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 android.R.color.holo_red_light);
     }
 
-    private void setUpDrawerBar(User currentUser) {
+    private void setUpDrawerBar() {
         drawer = new DrawerBuilder()
                 .withTranslucentStatusBar(false)
                 .withActivity(this)
@@ -359,33 +343,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 });
             }
         });
-
-        newPostsAlarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-        newPostsAlarmIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_CHECK_NEW_POSTS), 0);
-    }
-
-    private void startCheckNewPostJob() {
-        Log.d(Constants.TAG, "startCheckNewPostJob");
-        if(newPostsBroadcastReceiver != null) {
-            registerReceiver(newPostsBroadcastReceiver, new IntentFilter(ACTION_CHECK_NEW_POSTS));
-        }
-        if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
-            newPostsAlarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + INTERVAL_CHECK_NEW_POSTS, INTERVAL_CHECK_NEW_POSTS, newPostsAlarmIntent);
-        }
-    }
-
-    private void cancelCheckNewPostJob() {
-        Log.d(Constants.TAG, "cancelCheckNewPostJob");
-        if(newPostsBroadcastReceiver != null) {
-            try {
-                unregisterReceiver(newPostsBroadcastReceiver);
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        if(newPostsAlarmMgr != null && newPostsAlarmIntent != null) {
-            newPostsAlarmMgr.cancel(newPostsAlarmIntent);
-        }
     }
 
     private void setUpToolbar() {
@@ -655,9 +612,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public boolean canRefreshDrawer() {
-        if(drawer == null) return false;
-        if(drawer.getDrawerItems().size() <= 0) return true;
-        return !drawer.isDrawerOpen();
+        return drawer != null && (drawer.getDrawerItems().size() <= 0 || !drawer.isDrawerOpen());
     }
 
     @Override
@@ -840,14 +795,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             startActivity(appIntent);
         } catch (ActivityNotFoundException ex) {
             showUrl(webUrl);
-        }
-    }
-
-    public class CheckNewPostBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(presenter == null) return;
-            presenter.checkNewPosts();
         }
     }
 
