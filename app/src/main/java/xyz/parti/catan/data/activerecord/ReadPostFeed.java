@@ -1,18 +1,13 @@
 package xyz.parti.catan.data.activerecord;
 
-import android.util.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.data.model.Parti;
 
 /**
  * Created by dalikim on 2017. 6. 7..
@@ -20,8 +15,8 @@ import xyz.parti.catan.data.model.Parti;
 
 @Table(name = "ReadPostFeeds")
 public class ReadPostFeed extends Model {
-    @Column(name = "PartiId")
-    public long partiId;
+    @Column(name = "PostFeedId")
+    public long postFeedId;
 
     @Column(name = "LastReadAt")
     public Date lastReadAt;
@@ -32,9 +27,6 @@ public class ReadPostFeed extends Model {
     public boolean isUnread() {
         if(lastStrokedAt == null) return false;
         if(lastReadAt == null && lastStrokedAt != null ) return true;
-        Log.d(Constants.TAG_TEST, "READ POST FEED id " + partiId);
-        Log.d(Constants.TAG_TEST, "READ POST FEED lastStrokedAt " + lastStrokedAt.getTime());
-        Log.d(Constants.TAG_TEST, "READ POST FEED lastReadAt " + lastReadAt.getTime());
         return (lastStrokedAt.getTime() > lastReadAt.getTime());
     }
 
@@ -42,14 +34,11 @@ public class ReadPostFeed extends Model {
         return forPartiOrDashboard(Constants.POST_FEED_DASHBOARD);
     }
 
-    public static ReadPostFeed forPartiOrDashboard(long partiId) {
-        ReadPostFeed readPostFeed = new Select()
-                .from(ReadPostFeed.class)
-                .where("PartiId = ?", partiId)
-                .executeSingle();
+    public static ReadPostFeed forPartiOrDashboard(long postFeedId) {
+        ReadPostFeed readPostFeed = ReadPostFeed.fetch(postFeedId);
         if(readPostFeed == null) {
             readPostFeed = new ReadPostFeed();
-            readPostFeed.partiId = partiId;
+            readPostFeed.postFeedId = postFeedId;
         }
         return readPostFeed;
     }
@@ -61,6 +50,36 @@ public class ReadPostFeed extends Model {
     }
 
     public boolean isDashboard() {
-        return partiId == Constants.POST_FEED_DASHBOARD;
+        return postFeedId == Constants.POST_FEED_DASHBOARD;
+    }
+
+    private static ReadPostFeed fetch(long postFeedId) {
+        return new Select()
+                .from(ReadPostFeed.class)
+                .where("PostFeedId = ?", postFeedId)
+                .executeSingle();
+    }
+
+    public void updateLastStrokedAtSeconds(Long lastStrokedSecondTime) {
+        if(lastStrokedSecondTime == null || lastStrokedSecondTime < 0) {
+            lastStrokedAt = null;
+        } else {
+            lastStrokedAt = new Date(lastStrokedSecondTime * 1000);
+
+            if(!isDashboard()) {
+                ReadPostFeed readDashboard = ReadPostFeed.forDashboard();
+                if (readDashboard.lastStrokedAt == null || lastStrokedAt.getTime() > readDashboard.lastStrokedAt.getTime()) {
+                    readDashboard.lastStrokedAt = lastStrokedAt;
+                    if (readDashboard.lastReadAt == null) {
+                        readDashboard.lastReadAt = lastStrokedAt;
+                    }
+                    readDashboard.save();
+                }
+            }
+        }
+        if(lastReadAt == null) {
+            lastReadAt = lastStrokedAt;
+        }
+        save();
     }
 }

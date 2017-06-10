@@ -230,6 +230,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     public void onDrawerOpened(View drawerView) {
                         if(drawer.getDrawerItems().size() <= 0) {
                             presenter.loadDrawer();
+                        } else {
+                            presenter.selectCurrentDrawerItem();
                         }
                     }
 
@@ -552,7 +554,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         drawer.getSlider().post(new Runnable() {
             @Override
             public void run() {
-                drawer.setSelection(currentPostFeedId, false);
+                if(drawer.getCurrentSelection() != currentPostFeedId) {
+                    drawer.setSelection(currentPostFeedId, false);
+                }
             }
         });
     }
@@ -569,8 +573,14 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         PostFeedDrawerItem item = (PostFeedDrawerItem) drawer.getDrawerItem(postFeedId);
         if(item == null) return;
 
-        item.withUnreadMark(unread);
-        drawer.updateItem(item);
+        if(unread != item.isUnreadMarked()) {
+            item.withUnreadMark(unread);
+            drawer.updateItem(item);
+        }
+
+        if(selected != (drawer.getCurrentSelection() == postFeedId)) {
+            presenter.selectCurrentDrawerItem();
+        }
     }
 
     @Override
@@ -603,6 +613,14 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void openDrawer() {
         if(drawer == null) return;
         drawer.openDrawer();
+    }
+
+    @Override
+    public void selectDrawerItem(long currentPostFeedId) {
+        if(drawer == null) return;
+        if(drawer.getCurrentSelection() == currentPostFeedId) return;
+
+        drawer.setSelection(currentPostFeedId, false);
     }
 
     @Override

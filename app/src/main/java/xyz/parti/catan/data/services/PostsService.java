@@ -44,10 +44,7 @@ public interface PostsService {
 
     @GET("/api/v1/posts/{id}")
     Flowable<Response<Post>> getPost(@Path(value = "id") Long id);
-
-//    @FormUrlEncoded
-//    @POST("/api/v1/posts")
-//    Flowable<Response<Post>> createPost(@Field(value= "post[parti_id]") Long partiId, @Field(value="post[body]") String body);
+    
     @Multipart
     @POST("/api/v1/posts")
     Flowable<Response<Post>> createPost(

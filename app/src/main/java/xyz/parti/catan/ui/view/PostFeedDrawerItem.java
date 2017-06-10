@@ -3,13 +3,10 @@ package xyz.parti.catan.ui.view;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Paint;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mikepenz.materialdrawer.holder.StringHolder;
@@ -113,7 +110,7 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
         if (unreadMarked) {
             partiViewHolder.name.setPaintFlags(partiViewHolder.name.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
             //set the colors for textViews
-            partiViewHolder.name.setTextColor(DrawerUIUtils.getTextColorStateList(ContextCompat.getColor(ctx, (R.color.material_drawer_primary_text_unread)), ContextCompat.getColor(ctx, (R.color.material_drawer_selected_text))));
+            partiViewHolder.name.setTextColor(ContextCompat.getColor(ctx, R.color.material_drawer_primary_text_unread));
         } else {
             partiViewHolder.name.setPaintFlags(partiViewHolder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
             //set the colors for textViews
@@ -168,8 +165,8 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
         return this.type;
     }
 
-    public boolean isDashboard() {
-        return isDashboard;
+    public boolean isUnreadMarked() {
+        return unreadMarked;
     }
 
     static class PartiViewHolder extends RecyclerView.ViewHolder {

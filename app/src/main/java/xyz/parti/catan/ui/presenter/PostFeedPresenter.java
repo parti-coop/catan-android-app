@@ -18,7 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -158,7 +157,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             }
                             readPostFeed.save();
                             markUnreadOrNotPostFeed(readPostFeed);
-                            if(readPostFeed.isUnread() && currentPostFeedId == readPostFeed.partiId && !getView().isVisibleNewPostsSign()) {
+                            if(readPostFeed.isUnread() && currentPostFeedId == readPostFeed.postFeedId && !getView().isVisibleNewPostsSign()) {
                                 getView().showNewPostsSign();
                             }
                         } else if (response.code() == 403) {
@@ -550,6 +549,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             });
     }
 
+    public void selectCurrentDrawerItem() {
+        if(!isActive()) return;
+
+        getView().selectDrawerItem(currentPostFeedId);
+    }
+
     public void watchNewPosts() {
         if(newPostListener != null) {
             for(DatabaseReference partiFirebase : listenPartiFireBases) {
@@ -573,18 +578,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 if(getCurrentUser().id.equals(lastStrokedBy)) return;
 
                 Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
-                if(lastStrokedSecondTime == null || lastStrokedSecondTime < 0) {
-                    readPostFeed.lastStrokedAt = null;
-                } else {
-                    readPostFeed.lastStrokedAt = new Date(lastStrokedSecondTime * 1000);
-
-                    ReadPostFeed readDashboard = ReadPostFeed.forDashboard();
-                    if(readDashboard.lastStrokedAt == null || readPostFeed.lastStrokedAt.getTime() > readDashboard.lastStrokedAt.getTime()) {
-                        readDashboard.lastStrokedAt = readPostFeed.lastStrokedAt;
-                        readDashboard.save();
-                    }
-                }
-                readPostFeed.save();
+                readPostFeed.updateLastStrokedAtSeconds(lastStrokedSecondTime);
                 markUnreadOrNotPostFeed(readPostFeed);
 
                 if(readPostFeed.isUnread()) {
@@ -619,7 +613,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private void markUnreadOrNotPostFeed(ReadPostFeed readPostFeed) {
         if(!isActive()) return;
 
-        getView().markUnreadOrNotPostFeed(readPostFeed.partiId, readPostFeed.isUnread(), readPostFeed.partiId == currentPostFeedId);
+        getView().markUnreadOrNotPostFeed(readPostFeed.postFeedId, readPostFeed.isUnread(), readPostFeed.postFeedId == currentPostFeedId);
         if(!readPostFeed.isDashboard()) {
             getView().markUnreadOrNotPostFeed(Constants.POST_FEED_DASHBOARD, ReadPostFeed.forDashboard().isUnread(), Constants.POST_FEED_DASHBOARD == currentPostFeedId);
         }
@@ -692,14 +686,15 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPartiId);
         void ensureToHideDrawerDemo();
+        boolean canRefreshDrawer();
+        void openDrawer();
+        void selectDrawerItem(long currentPostFeedId);
 
         void markUnreadOrNotPostFeed(long partiId, boolean unread, boolean isSelected);
 
         void changeDashboardToolbar();
         void changePartiPostFeedToolbar(Parti parti);
 
-        boolean canRefreshDrawer();
-        void openDrawer();
         void showProfile(User user);
     }
 }
