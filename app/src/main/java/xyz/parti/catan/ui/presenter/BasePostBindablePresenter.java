@@ -14,6 +14,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
+import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
@@ -99,6 +100,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         if (response.isSuccessful()) {
                             post.toggleUpvoting();
                             changePost(post, Post.IS_UPVOTED_BY_ME);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
                         }
@@ -124,6 +127,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         if (response.isSuccessful()) {
                             post.toggleCommentUpvoting(comment);
                             changePost(post, new LatestCommentsBinder.CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
                         }
@@ -145,6 +150,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
                         if (response.isSuccessful()) {
                             reloadPostSurvey(post);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Feedback error : " + response.code());
                         }
@@ -167,6 +174,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         if (response.isSuccessful()) {
                             post.survey = response.body().survey;
                             changePost(post, post.survey);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Rebind survey error : " + response.code());
                         }
@@ -190,6 +199,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         if (response.isSuccessful()) {
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Agree error : " + response.code());
                         }
@@ -213,6 +224,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         if (response.isSuccessful()) {
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Disagree error : " + response.code());
                         }
@@ -279,7 +292,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     @Override
     public void onFailDownloadDocFileSource(String message) {
         if(getView() == null) return;
-        getView().reportError(message);
+        getView().showMessage(message);
     }
 
     @Override
@@ -303,5 +316,6 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void showDownloadedFile(Uri uri, String mimeType);
         void showPost(Post post);
         Context getContext();
+        void showMessage(String string);
     }
 }

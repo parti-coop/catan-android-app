@@ -380,6 +380,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {
                             if (response.isSuccessful()) {
                                 getView().showPost(response.body());
+                            } else if (response.code() == 403) {
+                                getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                             } else {
                                 getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
                             }
@@ -485,6 +487,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         if (response.isSuccessful()) {
                             feedAdapter.prependModel(response.body());
                             getView().scrollToTop();
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("savePost error : " + response.code());
                             getView().showPostForm(parti, body);

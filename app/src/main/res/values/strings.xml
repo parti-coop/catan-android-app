@@ -76,6 +76,7 @@
     <string name="login_social_not_found_user">아직 가입하지 않으셨습니다. 새로 가입하시겠습니까?</string>
     <string name="no_posts">게시글이 없습니다. 관심가는 빠띠에 가입해 보세요.</string>
     <string name="blocked_parti">해당 빠띠는 비공개로 숨겨졌습니다.</string>
+    <string name="blocked_post">해당 게시글의 빠띠는 비공개로 숨겨졌습니다.</string>
     <string name="go_to_parties_button">다른 빠띠 찾기</string>
     <string name="retry_button">다시 시도합니다</string>
     <string name="title_activity_push_message">알림</string>

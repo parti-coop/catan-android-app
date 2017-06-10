@@ -32,10 +32,6 @@ public interface PostsService {
     Flowable<Response<Page<Post>>> getDashboardAfter(
             @Query("last_id") long lastId);
 
-    @GET("/api/v1/posts/has_updated")
-    Flowable<Response<Update>> hasUpdated(
-            @Query("last_stroked_at") Date lastStrokedAt);
-
     @GET("/api/v1/posts/{id}/download_file/{file_source_id}")
     @Streaming
     Call<ResponseBody> downloadFile(

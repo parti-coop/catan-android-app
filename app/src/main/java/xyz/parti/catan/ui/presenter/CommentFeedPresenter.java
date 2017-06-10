@@ -17,6 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 import xyz.parti.catan.Constants;
+import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
@@ -188,6 +189,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                                 getView().showCommentList();
                             }
                             post.addComment(comment);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Create comment error : " + response.code());
                         }
@@ -242,6 +245,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         if (response.isSuccessful()) {
                             post.toggleCommentUpvoting(comment);
                             changeComment(comment, Comment.IS_UPVOTED_BY_ME);
+                        } else if (response.code() == 403) {
+                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
                         }
@@ -267,6 +272,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
     public interface View {
         void setSendingCommentForm();
         void setCompletedCommentForm();
+        void showMessage(String message);
         void showCommentList();
         void showNewCommentForm(Comment comment);
         Context getContext();

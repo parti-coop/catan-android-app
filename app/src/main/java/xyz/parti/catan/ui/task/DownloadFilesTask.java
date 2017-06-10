@@ -14,6 +14,7 @@ import java.io.OutputStream;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.model.PartiAccessToken;
@@ -27,6 +28,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     private final static long RESUT_CANCEL = -1L;
     private final static long RESUT_NO_DATA = -2L;
     private final static long RESUT_ERROR = -3L;
+    private static final Long RESUT_BLOCKED = -4L;
 
     private PostDownloadablePresenter presenter;
     private final PartiAccessToken partiAccessToken;
@@ -56,12 +58,19 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         PostsService postsService = ServiceBuilder.createNoRefreshService(PostsService.class, partiAccessToken);
         Call<ResponseBody> request = postsService.downloadFile(postId, fileSourceId);
         try {
-            ResponseBody body = request.execute().body();
-            if(body == null) {
-                return RESUT_NO_DATA;
+            Response<ResponseBody> response = request.execute();
+            if(response.isSuccessful()) {
+                ResponseBody body = response.body();
+                if (body == null) {
+                    return RESUT_NO_DATA;
+                }
+                return saveFile(body);
+            } else if(response.code() == 403) {
+                return RESUT_BLOCKED;
+            } else {
+                return RESUT_ERROR;
             }
 
-            return saveFile(body);
         } catch (IOException e) {
             Log.e(Constants.TAG, e.getMessage(), e);
             return RESUT_ERROR;
@@ -169,6 +178,8 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
                 message = "오류가 발생했습니다";
             } else if(size == RESUT_NO_DATA) {
                 message = "해당 파일이 없습니다";
+            } else if(size == RESUT_BLOCKED) {
+                message = "비공개된 빠띠의 파일은 다운로드 받을 수 없습니다";
             }
             presenter.onFailDownloadDocFileSource(message);
         } else {
