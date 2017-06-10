@@ -70,7 +70,6 @@ import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
-import xyz.parti.catan.ui.adapter.PostFormGroupItem;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
@@ -250,12 +249,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem item) {
                         if(item.getType() == R.id.drawer_item_dashbord) {
-                            presenter.showDashboardPostFeed();
+                            presenter.switchDashboardPostFeed();
                         } else if(item.getType() == R.id.drawer_item_parti) {
                             Object tagData = item.getTag();
                             if (tagData == null) return false;
                             if (!(tagData instanceof Parti)) return false;
-                            presenter.showPartiPostFeed((Parti) tagData);
+                            presenter.switchPartiPostFeed((Parti) tagData);
                         }
                         drawer.closeDrawer();
                         return true;

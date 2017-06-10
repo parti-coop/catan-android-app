@@ -297,10 +297,14 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     }
 
     private void refreshPosts() {
+        clearPostsAndShowDemo();
+        loadFirstPosts();
+    }
+
+    private void clearPostsAndShowDemo() {
         feedAdapter.clearAndAppendPostLineForm();
         feedAdapter.notifyDataSetChanged();
         getView().showPostListDemo();
-        loadFirstPosts();
     }
 
     public void showSettings() {
@@ -464,8 +468,13 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     public void savePost(final Parti parti, final String body, List<SelectedImage> fileSourcesAttachmentImages) {
         if(!isActive()) return;
 
-        getView().scrollToTop();
-        feedAdapter.prependLoader();
+        final boolean isCurrentParti = (currentPostFeedId == Constants.POST_FEED_DASHBOARD || parti.id.equals(currentPostFeedId));
+        if(isCurrentParti) {
+            getView().scrollToTop();
+            feedAdapter.addLoader(1);
+        } else {
+            switchPartiPostFeed(parti, false);
+        }
 
         RequestBody partiIdReq = RequestBody.create(okhttp3.MultipartBody.FORM, parti.id.toString());
         RequestBody bodyReq = RequestBody.create(okhttp3.MultipartBody.FORM, body);
@@ -483,15 +492,20 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {
                         if (!isActive()) return;
-                        feedAdapter.removeFirstMoldelHolder();
-                        if (response.isSuccessful()) {
-                            feedAdapter.prependModel(response.body());
-                            getView().scrollToTop();
-                        } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+
+                        if(isCurrentParti) {
+                            feedAdapter.removeMoldelHolderAt(1);
+                            if (response.isSuccessful()) {
+                                feedAdapter.addModel(1, response.body());
+                                getView().scrollToTop();
+                            } else if (response.code() == 403) {
+                                getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            } else {
+                                getView().reportError("savePost error : " + response.code());
+                                getView().showPostForm(parti, body);
+                            }
                         } else {
-                            getView().reportError("savePost error : " + response.code());
-                            getView().showPostForm(parti, body);
+                            loadFirstPosts();
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -646,7 +660,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         return result;
     }
 
-    public void showDashboardPostFeed() {
+    public void switchDashboardPostFeed() {
         if(!isActive()) return;
         if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) return;
 
@@ -657,7 +671,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         refreshPosts();
     }
 
-    public void showPartiPostFeed(Parti parti) {
+    public void switchPartiPostFeed(Parti parti) {
+        switchPartiPostFeed(parti, true);
+    }
+
+    public void switchPartiPostFeed(Parti parti, boolean needToLoadPost) {
         if(!isActive()) return;
         if(currentPostFeedId != Constants.POST_FEED_DASHBOARD && parti.id.equals(currentPostFeedId)) return;
 
@@ -665,7 +683,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         currentParti = parti;
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changePartiPostFeedToolbar(parti);
-        refreshPosts();
+        if(needToLoadPost) {
+            refreshPosts();
+        } else {
+            clearPostsAndShowDemo();
+        }
     }
 
     public interface View extends BasePostBindablePresenter.View {
