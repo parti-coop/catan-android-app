@@ -1,5 +1,7 @@
 package xyz.parti.catan.data.activerecord;
 
+import android.util.Log;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -29,7 +31,10 @@ public class ReadPostFeed extends Model {
 
     public boolean isUnread() {
         if(lastStrokedAt == null) return false;
-        if(lastReadAt == null &&lastStrokedAt != null ) return true;
+        if(lastReadAt == null && lastStrokedAt != null ) return true;
+        Log.d(Constants.TAG_TEST, "READ POST FEED id " + partiId);
+        Log.d(Constants.TAG_TEST, "READ POST FEED lastStrokedAt " + lastStrokedAt.getTime());
+        Log.d(Constants.TAG_TEST, "READ POST FEED lastReadAt " + lastReadAt.getTime());
         return (lastStrokedAt.getTime() > lastReadAt.getTime());
     }
 
@@ -47,19 +52,6 @@ public class ReadPostFeed extends Model {
             readPostFeed.partiId = partiId;
         }
         return readPostFeed;
-    }
-
-    public static List<Long> unreads() {
-        List<Long> result = new ArrayList<>();
-        
-        List<ReadPostFeed> all = new Select().from(ReadPostFeed.class).execute();
-        for(ReadPostFeed readPostFeed : all) {
-            if(readPostFeed.isUnread()) {
-                result.add(readPostFeed.partiId);
-            }
-        }
-
-        return result;
     }
 
     public static void destroyIfExist(long partiId) {

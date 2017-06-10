@@ -153,8 +153,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             feedAdapter.setMoreDataAvailable(page.has_more_item);
 
                             ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(currentPostFeedId);
-                            if (feedAdapter.getFirstModel() != null) {
-                                readPostFeed.lastReadAt = feedAdapter.getFirstModel().last_stroked_at;
+                            if (page.last_stroked_at != null) {
+                                readPostFeed.lastReadAt = page.last_stroked_at;
                             }
                             readPostFeed.save();
                             markUnreadOrNotPostFeed(readPostFeed);
