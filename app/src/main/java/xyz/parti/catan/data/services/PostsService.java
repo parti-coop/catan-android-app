@@ -44,7 +44,7 @@ public interface PostsService {
 
     @GET("/api/v1/posts/{id}")
     Flowable<Response<Post>> getPost(@Path(value = "id") Long id);
-    
+
     @Multipart
     @POST("/api/v1/posts")
     Flowable<Response<Post>> createPost(

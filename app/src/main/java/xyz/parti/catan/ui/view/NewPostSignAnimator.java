@@ -16,6 +16,7 @@ public class NewPostSignAnimator {
     private final Animation slideUp;
     private final Animation slideDown;
     private View view;
+    private boolean disable;
 
     public NewPostSignAnimator(@NonNull View view) {
         this.view = view;
@@ -78,7 +79,7 @@ public class NewPostSignAnimator {
     }
 
     public void show() {
-        if(isVisible() || isAnimationRunning()) {
+        if(disable || isVisible() || isAnimationRunning()) {
             return;
         }
         view.startAnimation(slideDown);
@@ -90,5 +91,10 @@ public class NewPostSignAnimator {
 
     private boolean isAnimationRunning() {
         return (slideDown.hasStarted() && !slideDown.hasEnded()) || (slideUp.hasStarted() && !slideUp.hasEnded());
+    }
+
+    public void setDisable(boolean disable) {
+        hideImmediately();
+        this.disable = disable;
     }
 }

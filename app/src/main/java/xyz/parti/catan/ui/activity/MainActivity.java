@@ -70,6 +70,7 @@ import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.adapter.PostFormGroupItem;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
@@ -364,6 +365,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
         PostFeedRecyclerViewAdapter feedAdapter = new PostFeedRecyclerViewAdapter(this, currentUser);
         feedAdapter.setPresenter(presenter);
+        feedAdapter.setHasStableIds(true);
         feedAdapter.setLoadMoreListener(new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -542,11 +544,22 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
         for(Group group: joindedParties.keySet()) {
             SectionDrawerItem groupItem = new GroupSectionDrawerItem().withName(group.title).withDivider(false).withTextColorRes(R.color.material_drawer_header_selection_text);
-            drawerItems.add(groupItem);
+
+            int indieCount = 1;
+            if(group.isIndie()) {
+                drawerItems.add(indieCount++, groupItem);
+            } else {
+                drawerItems.add(groupItem);
+            }
+
             for(Parti parti : joindedParties.get(group)) {
                 PostFeedDrawerItem item = PostFeedDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);
                 item.withTag(parti).withIdentifier(parti.id);
-                drawerItems.add(item);
+                if(group.isIndie()) {
+                    drawerItems.add(indieCount++, item);
+                } else {
+                    drawerItems.add(item);
+                }
             }
         }
 
@@ -715,9 +728,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         postListDemoLayout.setVisibility(View.GONE);
         postListRecyclerView.setVisibility(View.VISIBLE);
         noPostSignLayout.setVisibility(View.GONE);
+
         if(newPostsSignAnimator != null) {
             newPostsSignAnimator.hideImmediately();
+            newPostsSignAnimator.setDisable(false);
         }
+        postListSwipeRefreshLayout.setEnabled(true);
         postListSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -727,9 +743,11 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         noPostSignLayout.setVisibility(View.GONE);
         postListDemoLayout.setVisibility(View.VISIBLE);
         postListDemoLayout.startShimmerAnimation();
+
         if(newPostsSignAnimator != null) {
-            newPostsSignAnimator.hideImmediately();
+            newPostsSignAnimator.setDisable(true);
         }
+        postListSwipeRefreshLayout.setEnabled(false);
         postListSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -782,7 +800,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void showNewPostsSign() {
-        newPostsSignAnimator.show();
+        if(isVisibleNewPostsSign()) {
+            newPostsSignAnimator.show();
+        }
     }
 
     @Override
