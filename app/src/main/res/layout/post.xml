@@ -62,8 +62,7 @@
                 android:layout_width="@dimen/feed_item_user_image"
                 android:layout_height="@dimen/feed_item_user_image"
                 android:layout_gravity="center"
-                android:layout_marginRight="5dp"
-                android:src="@drawable/img_sample_user_image" />
+                android:layout_marginRight="5dp" />
 
             <LinearLayout
                 android:orientation="vertical"
