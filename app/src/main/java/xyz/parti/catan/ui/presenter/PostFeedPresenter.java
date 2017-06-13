@@ -480,6 +480,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         RequestBody partiIdReq = RequestBody.create(okhttp3.MultipartBody.FORM, parti.id.toString());
         RequestBody bodyReq = RequestBody.create(okhttp3.MultipartBody.FORM, body);
+        RequestBody isHtmlBodyReq = RequestBody.create(okhttp3.MultipartBody.FORM, "false");
 
         List<MultipartBody.Part> filesReq = new ArrayList<>();
         for(SelectedImage image : fileSourcesAttachmentImages) {
@@ -489,7 +490,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
 
         savePost = getRxGuardian().subscribe(savePost,
-                postsService.createPost(partiIdReq, bodyReq, filesReq),
+                postsService.createPost(partiIdReq, bodyReq, isHtmlBodyReq, filesReq),
                 new Consumer<Response<Post>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {

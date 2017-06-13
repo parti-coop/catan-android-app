@@ -46,5 +46,6 @@ public interface PostsService {
     Flowable<Response<Post>> createPost(
             @Part("post[parti_id]") RequestBody partiId,
             @Part("post[body]") RequestBody body,
+            @Part("post[is_html_body]") RequestBody isHtmlBody,
             @Part List<MultipartBody.Part> file_sources_attachments);
 }
