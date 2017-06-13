@@ -358,17 +358,19 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
 
         if(notificatiionId != -1) {
-            Log.d(Constants.TAG_TEST, "MAIN notificatiionId" + notificatiionId);
+            Log.d(Constants.TAG_TEST, "MAIN notificatiionId " + notificatiionId);
             NotificationsPreference repository = new NotificationsPreference(getView().getContext());
             repository.destroy(notificatiionId);
         }
 
         if(pushMessage == null) {
-            Log.d(Constants.TAG_TEST, "NULL pushMessage");
+            Log.d(Constants.TAG_TEST, "NULL pushMessage and reload");
+            switchDashboardPostFeed(true);
             return;
         }
         if(pushMessage.user_id != session.getCurrentUser().id) {
             Log.d(Constants.TAG_TEST, "ANOTHER USER");
+            switchDashboardPostFeed(true);
             return;
         }
 
@@ -473,7 +475,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             getView().scrollToTop();
             feedAdapter.addLoader(1);
         } else {
-            switchPartiPostFeed(parti, false);
+            switchPartiPostFeed(parti, false, true);
         }
 
         RequestBody partiIdReq = RequestBody.create(okhttp3.MultipartBody.FORM, parti.id.toString());
@@ -660,9 +662,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         return result;
     }
 
-    public void switchDashboardPostFeed() {
+    public void switchDashboardPostFeed(boolean force) {
         if(!isActive()) return;
-        if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) return;
+        if(!force) {
+            if (currentPostFeedId == Constants.POST_FEED_DASHBOARD) return;
+        }
 
         currentPostFeedId = Constants.POST_FEED_DASHBOARD;
         currentParti = null;
@@ -672,12 +676,15 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     }
 
     public void switchPartiPostFeed(Parti parti) {
-        switchPartiPostFeed(parti, true);
+        switchPartiPostFeed(parti, true, true);
     }
 
-    public void switchPartiPostFeed(Parti parti, boolean needToLoadPost) {
+    public void switchPartiPostFeed(Parti parti, boolean needToLoadPost, boolean force) {
         if(!isActive()) return;
-        if(currentPostFeedId != Constants.POST_FEED_DASHBOARD && parti.id.equals(currentPostFeedId)) return;
+        if(!force) {
+            if (currentPostFeedId != Constants.POST_FEED_DASHBOARD && parti.id.equals(currentPostFeedId))
+                return;
+        }
 
         currentPostFeedId = parti.id;
         currentParti = parti;

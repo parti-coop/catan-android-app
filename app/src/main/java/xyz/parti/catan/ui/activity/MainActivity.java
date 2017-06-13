@@ -249,7 +249,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem item) {
                         if(item.getType() == R.id.drawer_item_dashbord) {
-                            presenter.switchDashboardPostFeed();
+                            presenter.switchDashboardPostFeed(true);
                         } else if(item.getType() == R.id.drawer_item_parti) {
                             Object tagData = item.getTag();
                             if (tagData == null) return false;
