@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
-        android:id="@+id/layout_docs"
+        android:id="@+id/layout_flies_docs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_space"
         android:orientation="vertical">
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/layout_images"
+        android:id="@+id/layout_files_images"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_space"

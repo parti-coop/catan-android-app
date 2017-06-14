@@ -9,28 +9,28 @@
     android:background="@drawable/card_background"
     android:descendantFocusability="blocksDescendants">
     <FrameLayout
-        android:id="@+id/layout_image"
+        android:id="@+id/layout_link_image"
         android:layout_width="match_parent"
         android:layout_height="250dp">
         <ImageView
-            android:id="@+id/imageview_image"
+            android:id="@+id/imageview_link_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
         <ImageView
-            android:id="@+id/textview_video_sign"
+            android:id="@+id/textview_link_video_sign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
             android:src="@drawable/ic_play_circle_filled_white_36dp" />
     </FrameLayout>
     <View
-        android:id="@+id/view_divider"
+        android:id="@+id/view_link_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/style_color_default_border"/>
     <TextView
-        android:id="@+id/textview_title"
+        android:id="@+id/textview_link_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="3"
@@ -41,7 +41,7 @@
         android:textSize="18dp"
         android:visibility="gone" />
     <TextView
-        android:id="@+id/textview_body"
+        android:id="@+id/textview_link_body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="3"
@@ -50,7 +50,7 @@
         android:textColor="#666"
         android:visibility="gone" />
     <com.joanzapata.iconify.widget.IconTextView
-        android:id="@+id/textview_site_name"
+        android:id="@+id/textview_link_site_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"

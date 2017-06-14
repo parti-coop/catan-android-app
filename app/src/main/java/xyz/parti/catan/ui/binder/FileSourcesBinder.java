@@ -5,7 +5,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,9 +30,9 @@ public class FileSourcesBinder {
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
 
-    @BindView(R.id.layout_docs)
+    @BindView(R.id.layout_flies_docs)
     ViewGroup docsLayout;
-    @BindView(R.id.layout_images)
+    @BindView(R.id.layout_files_images)
     LinearLayout imagesLayout;
 
     public FileSourcesBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
@@ -46,6 +45,7 @@ public class FileSourcesBinder {
     public void bindData(Post post) {
         imagesLayout.removeAllViews();
         docsLayout.removeAllViews();
+
         drawImageFileSources(post.getImageFileSources(), post);
         drawDocFileSources(post.getDocFileSources(), post);
 
@@ -195,9 +195,9 @@ public class FileSourcesBinder {
     }
 
     static class DocFileSourceHolder {
-        @BindView(R.id.textview_name)
+        @BindView(R.id.textview_file_name)
         TextView nameTextView;
-        @BindView(R.id.textview_size)
+        @BindView(R.id.textview_file_size)
         TextView sizeTextView;
 
         DocFileSourceHolder(ViewGroup view) {

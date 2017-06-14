@@ -37,7 +37,7 @@ public class CommentView extends LinearLayout {
     CircleImageView userImageImageView;
     @BindView(R.id.textview_user_nickname)
     TextView userNicknameTextView;
-    @BindView(R.id.textview_body)
+    @BindView(R.id.textview_survey_body)
     TextView bodyTextView;
     @BindView(R.id.textview_created_at)
     LooselyRelativeTimeTextView createdAtTextView;

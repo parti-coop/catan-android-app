@@ -7,12 +7,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.facebook.stetho.common.StringUtil;
-import com.joanzapata.iconify.widget.IconTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,19 +24,18 @@ import xyz.parti.catan.helper.ImageHelper;
 public class LinkSourceBinder {
     @BindView(R.id.layout_references_link_source)
     LinearLayout referencesLinkSourceLayout;
-    @BindView(R.id.textview_title)
+    @BindView(R.id.textview_link_title)
     TextView titleTextView;
-    @BindView(R.id.textview_body)
+    @BindView(R.id.textview_link_body)
     TextView bodyTextView;
-    @BindView(R.id.textview_site_name)
+    @BindView(R.id.textview_link_site_name)
     TextView siteNameTextView;
-    @BindView(R.id.layout_image)
+    @BindView(R.id.layout_link_image)
     FrameLayout imageLayout;
-    @BindView(R.id.imageview_image)
+    @BindView(R.id.imageview_link_image)
     ImageView imageImageView;
-    @BindView(R.id.textview_video_sign)
+    @BindView(R.id.textview_link_video_sign)
     ImageView videoSignTextView;
-    private View rootView;
 
     public LinkSourceBinder(ViewGroup view) {
         LayoutInflater.from(view.getContext()).inflate(R.layout.references_link_source, view);

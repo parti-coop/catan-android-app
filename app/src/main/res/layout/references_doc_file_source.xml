@@ -20,14 +20,14 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
         <TextView
-            android:id="@+id/textview_name"
+            android:id="@+id/textview_file_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15dp"
             android:maxLines="1"
             android:ellipsize="end" />
         <TextView
-            android:id="@+id/textview_size"
+            android:id="@+id/textview_file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10dp"

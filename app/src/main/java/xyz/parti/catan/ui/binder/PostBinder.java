@@ -49,7 +49,7 @@ public class PostBinder {
     CircleImageView userImageImageView;
     @BindView(R.id.textview_created_at)
     LooselyRelativeTimeTextView createdAtTextView;
-    @BindView(R.id.textview_body)
+    @BindView(R.id.textview_survey_body)
     TextView bodyTextView;
     @BindView(R.id.textview_title)
     TextView titleTextView;

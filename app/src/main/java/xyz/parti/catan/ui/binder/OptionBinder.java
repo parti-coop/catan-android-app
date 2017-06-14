@@ -20,15 +20,15 @@ import xyz.parti.catan.data.model.Post;
  */
 
 class OptionBinder {
-    @BindView(R.id.textview_body)
+    @BindView(R.id.textview_survey_body)
     TextView bodyTextView;
-    @BindView(R.id.checkbox)
+    @BindView(R.id.survey_checkbox)
     CheckBox checkBox;
     @BindView(R.id.textview_feedbacks_count)
     TextView feedbacksCountTextView;
     @BindView(R.id.progressbar)
     ProgressBar progressBar;
-    @BindView(R.id.textview_selected_sign)
+    @BindView(R.id.textview_survey_selected_sign)
     IconTextView selectedSignTextView;
 
     private final PostBinder.PostBindablePresenter presenter;

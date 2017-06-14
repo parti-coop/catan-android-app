@@ -90,7 +90,7 @@
             android:lineSpacingMultiplier="1.1" />
 
         <TextView
-            android:id="@+id/textview_body"
+            android:id="@+id/textview_survey_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"

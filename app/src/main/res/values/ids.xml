@@ -10,5 +10,5 @@
     <item name="drawer_item_dashbord" type="id" />
     <item name="drawer_item_parti" type="id" />
     <item name="material_drawer_item_group" type="id" />
-    <item name="option" type="id" />
+    <item name="tag_option" type="id" />
 </resources>

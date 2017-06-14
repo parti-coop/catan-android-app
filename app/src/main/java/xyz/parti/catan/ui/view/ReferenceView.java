@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import xyz.parti.catan.R;
@@ -33,19 +32,10 @@ public class ReferenceView extends FrameLayout {
     }
 
     public void bindData(PostBinder.PostBindablePresenter presenter, Post post) {
-        reset();
-        if(post.file_sources != null) {
-            bindFileSources(presenter, post);
-        }
-        if(post.link_source != null) {
-            bindLinkSources(presenter, post);
-        }
-        if(post.poll != null) {
-            bindPoll(presenter, post);
-        }
-        if(post.survey != null) {
-            bindSurvey(presenter, post);
-        }
+        bindFileSources(presenter, post);
+        bindLinkSources(presenter, post);
+        bindPoll(presenter, post);
+        bindSurvey(presenter, post);
     }
 
     private void bindLinkSources(final PostBinder.PostBindablePresenter presenter, final Post post) {
@@ -62,6 +52,8 @@ public class ReferenceView extends FrameLayout {
                 }
             });
             linkSourceBinder.setVisibility(View.VISIBLE);
+        } else {
+            linkSourceBinder.setVisibility(GONE);
         }
     }
 
@@ -70,8 +62,12 @@ public class ReferenceView extends FrameLayout {
             fileSourcesBinder = new FileSourcesBinder(presenter, this);
         }
 
-        fileSourcesBinder.bindData(post);
-        fileSourcesBinder.setVisibility(View.VISIBLE);
+        if(post.file_sources != null) {
+            fileSourcesBinder.bindData(post);
+            fileSourcesBinder.setVisibility(View.VISIBLE);
+        } else {
+            fileSourcesBinder.setVisibility(View.GONE);
+        }
     }
 
     private void bindPoll(PostBinder.PostBindablePresenter presenter, final Post post) {
@@ -79,31 +75,24 @@ public class ReferenceView extends FrameLayout {
             pollBinder = new PollBinder(presenter, this);
         }
 
-        pollBinder.bindData(post);
-        pollBinder.setVisibility(View.VISIBLE);
+        if(post.poll != null) {
+            pollBinder.bindData(post);
+            pollBinder.setVisibility(View.VISIBLE);
+        } else {
+            pollBinder.setVisibility(GONE);
+        }
     }
 
     private void bindSurvey(PostBinder.PostBindablePresenter presenter, final Post post) {
+
         if(surveyBinder == null) {
             surveyBinder = new SurveyBinder(presenter, this);
         }
-
-        surveyBinder.bindData(post);
-        surveyBinder.setVisibility(View.VISIBLE);
-    }
-
-    private void reset() {
-        if(linkSourceBinder != null) {
-            linkSourceBinder.setVisibility(ViewGroup.GONE);
-        }
-        if(fileSourcesBinder != null) {
-            fileSourcesBinder.setVisibility(ViewGroup.GONE);
-        }
-        if(pollBinder != null) {
-            pollBinder.setVisibility(GONE);
-        }
-        if(surveyBinder != null) {
-            surveyBinder.setVisibility(GONE);
+        if(post.survey != null) {
+            surveyBinder.bindData(post);
+            surveyBinder.setVisibility(View.VISIBLE);
+        } else {
+            surveyBinder.setVisibility(View.GONE);
         }
     }
 }

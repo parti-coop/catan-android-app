@@ -1,7 +1,6 @@
 package xyz.parti.catan.ui.binder;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,7 +18,9 @@ import xyz.parti.catan.data.model.Post;
 public class SurveyBinder {
     @BindView(R.id.layout_references_survey)
     LinearLayout referencesSurveyLayout;
-    @BindView(R.id.textview_footnote)
+    @BindView(R.id.layout_survey_options)
+    LinearLayout optionsLayout;
+    @BindView(R.id.textview_survey_footnote)
     TextView footnoteTextView;
 
     private PostBinder.PostBindablePresenter presenter;
@@ -33,13 +34,8 @@ public class SurveyBinder {
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(Post post) {
-        for(int i = 0; i < referencesSurveyLayout.getChildCount(); i++) {
-            View childView = referencesSurveyLayout.getChildAt(i);
-            if(childView.getTag(R.id.option) != null) {
-                referencesSurveyLayout.removeViewAt(i);
-            }
-        }
+    public void bindData(final Post post) {
+        optionsLayout.removeAllViews();
         for(int i = 0; i < post.survey.options.length; i++) {
             Option option = post.survey.options[i];
             bindOption(post, option, i);
@@ -59,10 +55,10 @@ public class SurveyBinder {
     }
 
     private void bindOption(Post post, Option option, int index) {
-        LinearLayout optionLayout = (LinearLayout) inflater.inflate(R.layout.references_survey_option, referencesSurveyLayout, false);
+        LinearLayout optionLayout = (LinearLayout) inflater.inflate(R.layout.references_survey_option, optionsLayout, false);
         new OptionBinder(presenter, optionLayout).bindData(post, option);
-        optionLayout.setTag(R.id.option, option);
-        referencesSurveyLayout.addView(optionLayout, index);
+        optionLayout.setTag(R.id.tag_option, option);
+        optionsLayout.addView(optionLayout, index);
     }
 
     public void setVisibility(int visibility) {

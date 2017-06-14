@@ -13,20 +13,20 @@
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/checkbox"
+            android:id="@+id/survey_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="-5dp" />
 
         <com.joanzapata.iconify.widget.IconTextView
-            android:id="@+id/textview_selected_sign"
+            android:id="@+id/textview_survey_selected_sign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:text="{fa-check}" />
 
         <TextView
-            android:id="@+id/textview_body"
+            android:id="@+id/textview_survey_body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
