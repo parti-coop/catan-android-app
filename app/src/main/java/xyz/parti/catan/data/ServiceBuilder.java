@@ -3,6 +3,7 @@ package xyz.parti.catan.data;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -158,6 +159,7 @@ public class ServiceBuilder {
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Response Error 005 " + e.getMessage(), e);
+            Crashlytics.logException(e);
             throw new AuthFailError();
         }
     }
