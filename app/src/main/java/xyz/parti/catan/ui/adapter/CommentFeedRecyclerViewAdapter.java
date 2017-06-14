@@ -11,8 +11,8 @@ import java.util.List;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
-import xyz.parti.catan.ui.binder.CommentBinder;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
+import xyz.parti.catan.ui.view.CommentView;
 
 /**
  * Created by dalikim on 2017. 4. 30..
@@ -67,7 +67,7 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
                 if (holder instanceof CommentViewHolder) {
                     Comment model = getModel(position);
                     if(model == null) continue;
-                    ((CommentViewHolder)holder).getCommentBinder().rebindData(post, model, payload);
+                    ((CommentViewHolder)holder).getCommentView().rebindData(post, model, payload);
                 }
             }
         }
@@ -82,13 +82,14 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
     }
 
     private static class CommentViewHolder extends ModelViewHolder {
-        private final CommentBinder commentBinder;
+        private CommentView commentView;
         private CommentFeedRecyclerViewAdapter adapter;
 
-        CommentViewHolder(View view, CommentFeedRecyclerViewAdapter adapter, CommentBinder.CommentLikablePresenter presenter) {
+        CommentViewHolder(View view, CommentFeedRecyclerViewAdapter adapter, CommentView.Presenter presenter) {
             super(view);
             this.adapter = adapter;
-            this.commentBinder = new CommentBinder(view, presenter);
+            commentView = (CommentView)view;
+            commentView.attachPresenter(presenter);
         }
 
         @Override
@@ -98,11 +99,11 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
 
         public void bindData(Post post, Comment comment, int position) {
             boolean isLineVisible = !adapter.isLastPosition(position);
-            commentBinder.bindData(post, comment, isLineVisible);
+            commentView.bindData(post, comment, isLineVisible);
         }
 
-        CommentBinder getCommentBinder() {
-            return commentBinder;
+        CommentView getCommentView() {
+            return commentView;
         }
     }
 }

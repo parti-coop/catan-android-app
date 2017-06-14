@@ -28,16 +28,16 @@ import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
 import xyz.parti.catan.helper.ReportHelper;
-import xyz.parti.catan.ui.binder.CommentBinder;
 import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
+import xyz.parti.catan.ui.view.CommentView;
 
 /**
  * Created by dalikim on 2017. 5. 15..
  */
 
-abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter, CommentBinder.CommentLikablePresenter {
+abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter, CommentView.Presenter {
     private final UpvotesService upvotesService;
     private final FeedbacksService feedbacksService;
     private final VotingsService votingsService;
@@ -115,7 +115,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     }
 
     @Override
-    public void onClickLike(final Post post, final Comment comment) {
+    public void onClickLikeComment(final Post post, final Comment comment) {
         Flowable<Response<JsonNull>> call =  ( comment.is_upvoted_by_me ?
                 upvotesService.destroy("Comment", comment.id) : upvotesService.create("Comment", comment.id)
         );

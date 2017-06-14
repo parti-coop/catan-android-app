@@ -1,13 +1,19 @@
-package xyz.parti.catan.ui.binder;
+package xyz.parti.catan.ui.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,13 +24,15 @@ import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
-import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 
 /**
- * Created by dalikim on 2017. 4. 29..
+ * Created by dalikim on 2017. 6. 14..
  */
 
-public class CommentBinder {
+public class CommentView extends LinearLayout {
+    private Comment comment;
+    private WeakReference<Presenter> presenter = new WeakReference<Presenter>(null);
+
     @BindView(R.id.imageview_user_image)
     CircleImageView userImageImageView;
     @BindView(R.id.textview_user_nickname)
@@ -42,34 +50,44 @@ public class CommentBinder {
     @BindView(R.id.button_show_likes)
     Button showLikesButton;
 
-    private final View view;
-    private final Context context;
-    private final CommentLikablePresenter presenter;
-    private Comment comment;
+    public CommentView(@NonNull Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
 
-    public CommentBinder(View view, CommentLikablePresenter presenter) {
-        this.view = view;
-        this.context = view.getContext();
-        this.presenter = presenter;
-        ButterKnife.bind(this, view);
+    public CommentView(Context context) {
+        super(context);
+        init(context);
+    }
 
-        Object commentTagData = view.getTag(R.id.tag_latest_comment);
-        if(commentTagData != null) {
-            comment = (Comment) commentTagData;
+    private void init(@NonNull Context context) {
+        LayoutInflater.from(context).inflate(R.layout.view_comment, this);
+        ButterKnife.bind(this);
+        this.presenter = new WeakReference<>(null);
+    }
+
+    public void attachPresenter(Presenter presenter) {
+        this.presenter = new WeakReference<>(presenter);
+    }
+
+    public void detachPresenter() {
+        if(this.presenter != null && this.presenter.get() != null) {
+            this.presenter.clear();
+            this.presenter = null;
         }
     }
 
     public void bindData(Post post, Comment comment) {
-        this.comment = comment;
-        view.setTag(R.id.tag_latest_comment, comment);
-
         bindData(post, comment, true);
-        view.setVisibility(View.VISIBLE);
     }
+
     public void bindData(final Post post, final Comment comment, boolean isLineVisible) {
+        this.comment = comment;
+        setTag(R.id.tag_comment, comment);
+
         new ImageHelper(userImageImageView).loadInto(comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(comment.user.nickname);
-        new TextHelper(context).setTextViewHTML(bodyTextView, comment.body, comment.truncated_body);
+        new TextHelper(this.getContext()).setTextViewHTML(bodyTextView, comment.body, comment.truncated_body);
         createdAtTextView.setReferenceTime(comment.created_at.getTime());
 
         if(isLineVisible) {
@@ -80,25 +98,29 @@ public class CommentBinder {
         newCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onClickNewComment(post, comment);
+                if(presenter.get() == null) return;
+                presenter.get().onClickNewComment(post, comment);
             }
         });
 
         bindLike(post, comment);
+
+        setVisibility(View.VISIBLE);
     }
 
     private void bindLike(final Post post, final Comment comment) {
         if(comment.is_upvoted_by_me) {
             likeButton.setTypeface(null, Typeface.BOLD);
-            likeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
+            likeButton.setTextColor(ContextCompat.getColor(getContext(), R.color.style_color_accent));
         } else {
             likeButton.setTypeface(null, Typeface.NORMAL);
-            likeButton.setTextColor(ContextCompat.getColor(context, R.color.comment_button_text));
+            likeButton.setTextColor(ContextCompat.getColor(getContext(), R.color.comment_button_text));
         }
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onClickLike(post, comment);
+                if(presenter.get() == null) return;
+                presenter.get().onClickLikeComment(post, comment);
             }
         });
         if(comment.upvotes_count > 0) {
@@ -113,17 +135,17 @@ public class CommentBinder {
         if(payload.equals(Comment.IS_UPVOTED_BY_ME)) {
             bindLike(post, comment);
         } else {
-            Log.d(Constants.TAG, "CommentBinder : invalid playload");
+            Log.d(Constants.TAG, "CommentView : invalid playload");
         }
     }
 
     public void hideData() {
         this.comment = null;
-        view.setVisibility(View.GONE);
+        setVisibility(View.GONE);
     }
 
     public boolean isVisible() {
-        return view.getVisibility() == View.VISIBLE;
+        return getVisibility() == View.VISIBLE;
     }
 
     public Comment getComment() {
@@ -134,8 +156,8 @@ public class CommentBinder {
      * Created by dalikim on 2017. 5. 18..
      */
 
-    public interface CommentLikablePresenter {
-        void onClickLike(Post post, Comment comment);
+    public interface Presenter {
+        void onClickLikeComment(Post post, Comment comment);
         void onClickNewComment(Post post, Comment comment);
     }
 }

@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,7 +24,9 @@ import xyz.parti.catan.data.model.Survey;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
+import xyz.parti.catan.ui.view.CommentView;
 import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
+import xyz.parti.catan.ui.view.ReferenceView;
 
 /**
  * Created by dalikim on 2017. 5. 15..
@@ -35,10 +36,6 @@ public class PostBinder {
     private final Context context;
     private final PostBindablePresenter presenter;
     private final LatestCommentsBinder latestCommentsBinder;
-    private final LinkSourceBinder linkSourceBinder;
-    private final FileSourcesBinder fileSourcesBinder;
-    private final PollBinder pollBinder;
-    private final SurveyBinder surveyBinder;
 
     @BindView(R.id.imageview_parti_logo)
     ImageView partiLogoImageView;
@@ -58,8 +55,6 @@ public class PostBinder {
     TextView titleTextView;
     @BindView(R.id.textview_prefix_group_title)
     TextView prefixGroupTitleTextView;
-    @BindView(R.id.layout_references)
-    LinearLayout referencesLayout;
     @BindView(R.id.button_like)
     Button likeButton;
     @BindView(R.id.button_new_comment)
@@ -68,14 +63,8 @@ public class PostBinder {
     Button showLikesButton;
     @BindView(R.id.layout_comments_section)
     LinearLayout commentsSectionLayout;
-    @BindView(R.id.view_references_link_source)
-    View referencesLinkSourceView;
-    @BindView(R.id.view_references_file_sources)
-    View referencesFileSourcesView;
-    @BindView(R.id.view_references_poll)
-    View referencesPollView;
-    @BindView(R.id.view_references_survey)
-    View referencesSurveyView;
+    @BindView(R.id.referenceview)
+    ReferenceView referenceview;
 
     public PostBinder(Context context, View view, PostBindablePresenter presenter) {
         this.context = context;
@@ -83,82 +72,17 @@ public class PostBinder {
         ButterKnife.bind(this, view);
 
         latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout);
-        linkSourceBinder = new LinkSourceBinder(referencesLinkSourceView);
-        fileSourcesBinder = new FileSourcesBinder(presenter, referencesFileSourcesView);
-        pollBinder = new PollBinder(presenter, referencesPollView);
-        surveyBinder = new SurveyBinder(presenter, referencesSurveyView);
     }
 
     public void bindData(Post post) {
         bindBasic(post);
         bindLike(post);
         bindComments(post);
-        bindReferences(post);
+        referenceview.bindData(presenter, post);
     }
 
     private void bindComments(Post post) {
         latestCommentsBinder.bindData(post);
-    }
-
-    private void bindReferences(Post post) {
-        resetReferences();
-
-        bindFileSources(post);
-        bindLinkSources(post);
-        bindPoll(post);
-        bindSurvey(post);
-    }
-
-    private void resetReferences() {
-        referencesLayout.setVisibility(ViewGroup.GONE);
-    }
-
-    private void bindLinkSources(final Post post) {
-        if(post.link_source != null) {
-            linkSourceBinder.bindData(post.link_source);
-            referencesLinkSourceView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.onClickLinkSource(post);
-                }
-            });
-            referencesLinkSourceView.setVisibility(View.VISIBLE);
-            referencesLayout.setVisibility(ViewGroup.VISIBLE);
-        } else {
-            referencesLinkSourceView.setOnClickListener(null);
-            referencesLinkSourceView.setVisibility(View.GONE);
-        }
-    }
-
-    private void bindFileSources(Post post) {
-        if(post.file_sources != null) {
-            fileSourcesBinder.bindData(post);
-            referencesFileSourcesView.setVisibility(View.VISIBLE);
-            referencesLayout.setVisibility(ViewGroup.VISIBLE);
-        } else {
-            fileSourcesBinder.unbindData();
-            referencesFileSourcesView.setVisibility(View.GONE);
-        }
-    }
-
-    private void bindPoll(final Post post) {
-        if(post.poll != null) {
-            pollBinder.bindData(post);
-            referencesPollView.setVisibility(View.VISIBLE);
-            referencesLayout.setVisibility(ViewGroup.VISIBLE);
-        } else {
-            referencesPollView.setVisibility(View.GONE);
-        }
-    }
-
-    private void bindSurvey(final Post post) {
-        if(post.survey != null) {
-            surveyBinder.bindData(post);
-            referencesSurveyView.setVisibility(View.VISIBLE);
-            referencesLayout.setVisibility(ViewGroup.VISIBLE);
-        } else {
-            referencesSurveyView.setVisibility(View.GONE);
-        }
     }
 
     private void bindLike(final Post post) {
@@ -233,17 +157,17 @@ public class PostBinder {
         } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
             this.bindLike(post);
         } else if(payload instanceof Survey) {
-            this.bindReferences(post);
+            referenceview.bindData(presenter, post);
         } else if(payload instanceof Poll) {
-            this.bindReferences(post);
+            referenceview.bindData(presenter, post);
         } else if(payload instanceof LatestCommentsBinder.CommentDiff) {
-            new LatestCommentsBinder(presenter, commentsSectionLayout).rebindComment(post, (LatestCommentsBinder.CommentDiff) payload);
+            latestCommentsBinder.rebindComment(post, (LatestCommentsBinder.CommentDiff) payload);
         } else {
             Log.d(Constants.TAG, "PostFeedRecyclerView bind : invalid playload");
         }
     }
 
-    public interface PostBindablePresenter extends CommentBinder.CommentLikablePresenter {
+    public interface PostBindablePresenter extends CommentView.Presenter {
         void onClickLinkSource(Post post);
         void onClickNewComment(Post post);
         void onClickLike(Post post);

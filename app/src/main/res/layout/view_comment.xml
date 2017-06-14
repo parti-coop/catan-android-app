@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="12dp">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageview_user_image"
+            android:layout_width="@dimen/comment_user_image"
+            android:layout_height="@dimen/comment_user_image"
+            android:layout_gravity="top"
+            android:paddingRight="5dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/textview_user_nickname"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/textview_body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/button_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:paddingRight="0dp"
+                    android:paddingLeft="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/comment_button_text"
+                    android:background="@android:color/transparent"
+                    android:textSize="14dp"
+                    android:text="@string/like" />
+                <Button
+                    android:id="@+id/button_new_comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/comment_button_text"
+                    android:background="@android:color/transparent"
+                    android:textSize="14dp"
+                    android:text="@string/new_comment" />
+                <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
+                    android:id="@+id/textview_created_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:textColor="@color/comment_button_text" />
+                <com.joanzapata.iconify.widget.IconButton
+                    android:id="@+id/button_show_likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/style_color_accent"
+                    android:textSize="14dp"
+                    android:background="@android:color/transparent" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:id="@+id/view_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/comments_border"/>
+</merge>

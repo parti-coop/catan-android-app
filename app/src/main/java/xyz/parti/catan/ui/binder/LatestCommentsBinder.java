@@ -1,6 +1,7 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,10 +14,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.ImageHelper;
+import xyz.parti.catan.ui.view.CommentView;
 
 /**
  * Created by dalikim on 2017. 4. 29..
@@ -25,8 +28,6 @@ import xyz.parti.catan.helper.ImageHelper;
 public class LatestCommentsBinder {
     @BindView(R.id.textview_comments_load_more)
     TextView loadMoreTextView;
-    @BindView(R.id.layout_comments_list)
-    LinearLayout commentsListLayout;
     @BindView(R.id.imageview_new_comment_user_image)
     CircleImageView newCommentUserImageView;
     @BindView(R.id.textview_new_comment_input)
@@ -34,18 +35,14 @@ public class LatestCommentsBinder {
 
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
-    private final List<CommentBinder> commentBinders = new ArrayList<>();
+    private ViewGroup view;
+    private final List<CommentView> commentViews = new ArrayList<>();
 
     LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
+        this.view = view;
         ButterKnife.bind(this, view);
-
-        int commentCount = commentsListLayout.getChildCount();
-        for(int i = 0; i < commentCount; i++) {
-            View commentView = commentsListLayout.getChildAt(i);
-            commentBinders.add(new CommentBinder(commentView, presenter));
-        }
     }
 
     public void bindData(final Post post) {
@@ -63,12 +60,24 @@ public class LatestCommentsBinder {
             loadMoreTextView.setOnClickListener(null);
         }
 
-        List<Comment> lastComments = post.lastComments(commentBinders.size());
-        for(CommentBinder binder : commentBinders) {
-            binder.hideData();
+        List<Comment> lastComments = post.lastComments(3);
+        for(CommentView commentView : commentViews) {
+            commentView.hideData();
         }
         for(int i = 0; i < lastComments.size(); i++) {
-            bindComment(commentBinders.get(i), post, lastComments.get(i));
+            CommentView commentView;
+            if(i >= commentViews.size()) {
+                commentView = new CommentView(context);
+                commentView.attachPresenter(presenter);
+                LinearLayout.LayoutParams parmas = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                commentView.setLayoutParams(parmas);
+                commentView.setOrientation(LinearLayout.VERTICAL);
+                commentViews.add(commentView);
+                view.addView(commentView, 1 + i);
+            } else {
+                commentView = commentViews.get(i);
+            }
+            bindComment(commentView, post, lastComments.get(i));
         }
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
@@ -80,19 +89,19 @@ public class LatestCommentsBinder {
         });
     }
 
-    private void bindComment(CommentBinder commentBinder, Post post, Comment comment) {
-        commentBinder.bindData(post, comment);
+    private void bindComment(CommentView commentView, Post post, Comment comment) {
+        commentView.bindData(post, comment);
     }
 
     void rebindComment(Post post, CommentDiff commentDiff) {
         Comment comment = commentDiff.getComment();
         Object payload = commentDiff.getPayload();
 
-        for(CommentBinder commentBinder : commentBinders) {
-            if(! commentBinder.isVisible()) continue;
-            Comment taggingComment = commentBinder.getComment();
+        for(CommentView commentView : commentViews) {
+            if(! commentView.isVisible()) continue;
+            Comment taggingComment = commentView.getComment();
             if(taggingComment != null && taggingComment.id != null && taggingComment.id.equals(comment.id)) {
-                commentBinder.rebindData(post, comment, payload);
+                commentView.rebindData(post, comment, payload);
             }
         }
     }

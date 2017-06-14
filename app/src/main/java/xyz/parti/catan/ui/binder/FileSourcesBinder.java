@@ -2,10 +2,10 @@ package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,7 +26,7 @@ import xyz.parti.catan.ui.view.MatchParentWidthImageView;
  * Created by dalikim on 2017. 4. 4..
  */
 
-class FileSourcesBinder {
+public class FileSourcesBinder {
     private final static int HALF_IMAGE_SPACE = 5;
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
@@ -34,11 +34,12 @@ class FileSourcesBinder {
     @BindView(R.id.layout_docs)
     ViewGroup docsLayout;
     @BindView(R.id.layout_images)
-    ViewGroup imagesLayout;
+    LinearLayout imagesLayout;
 
-    FileSourcesBinder(PostBinder.PostBindablePresenter presenter, View view) {
+    public FileSourcesBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
+        LayoutInflater.from(context).inflate(R.layout.references_file_sources, view);
         ButterKnife.bind(this, view);
     }
 
@@ -47,6 +48,17 @@ class FileSourcesBinder {
         docsLayout.removeAllViews();
         drawImageFileSources(post.getImageFileSources(), post);
         drawDocFileSources(post.getDocFileSources(), post);
+
+        if(post.getImageFileSources().size() > 0) {
+            imagesLayout.setVisibility(View.VISIBLE);
+        } else {
+            imagesLayout.setVisibility(View.GONE);
+        }
+        if(post.getDocFileSources().size() > 0) {
+            docsLayout.setVisibility(View.VISIBLE);
+        } else {
+            docsLayout.setVisibility(View.GONE);
+        }
     }
 
     private void drawImageFileSources(List<FileSource> imageFileSources, final Post post) {
@@ -159,7 +171,7 @@ class FileSourcesBinder {
     private void drawDocFileSources(List<FileSource> docFileSources, final Post post) {
         for(final FileSource docFileSource: docFileSources) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            CardView fileSourcesLayout = (CardView) inflater.inflate(R.layout.references_doc_file_source, docsLayout, false);
+            LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_doc_file_source, docsLayout, false);
             new DocFileSourceHolder(fileSourcesLayout).bindData(docFileSource);
             docsLayout.addView(fileSourcesLayout);
 
@@ -175,6 +187,11 @@ class FileSourcesBinder {
     public void unbindData() {
         imagesLayout.removeAllViews();
         docsLayout.removeAllViews();
+    }
+
+    public void setVisibility(int visibility) {
+        this.imagesLayout.setVisibility(visibility);
+        this.docsLayout.setVisibility(visibility);
     }
 
     static class DocFileSourceHolder {

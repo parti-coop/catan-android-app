@@ -2,7 +2,9 @@ package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,6 +20,8 @@ import xyz.parti.catan.data.model.Post;
  */
 
 public class PollBinder {
+    @BindView(R.id.layout_references_poll)
+    LinearLayout referencePollLayout;
     @BindView(R.id.layout_agree_votes)
     LinearLayout agreeVotesLayout;
     @BindView(R.id.layout_disagree_votes)
@@ -32,9 +36,10 @@ public class PollBinder {
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
 
-    PollBinder(PostBinder.PostBindablePresenter presenter, View view) {
+    public PollBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
         this.presenter = presenter;
         this.context = view.getContext();
+        LayoutInflater.from(view.getContext()).inflate(R.layout.references_poll, view);
         ButterKnife.bind(this, view);
     }
 
@@ -103,5 +108,9 @@ public class PollBinder {
                 button.setBackground(ContextCompat.getDrawable(context, R.drawable.button_bg_transparent));
                 break;
         }
+    }
+
+    public void setVisibility(int visibility) {
+        this.referencePollLayout.setVisibility(visibility);
     }
 }

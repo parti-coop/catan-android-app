@@ -1,9 +1,12 @@
 package xyz.parti.catan.ui.binder;
 
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +25,8 @@ import xyz.parti.catan.helper.ImageHelper;
  */
 
 public class LinkSourceBinder {
+    @BindView(R.id.layout_references_link_source)
+    LinearLayout referencesLinkSourceLayout;
     @BindView(R.id.textview_title)
     TextView titleTextView;
     @BindView(R.id.textview_body)
@@ -29,13 +34,15 @@ public class LinkSourceBinder {
     @BindView(R.id.textview_site_name)
     TextView siteNameTextView;
     @BindView(R.id.layout_image)
-    RelativeLayout imageLayout;
+    FrameLayout imageLayout;
     @BindView(R.id.imageview_image)
     ImageView imageImageView;
     @BindView(R.id.textview_video_sign)
-    IconTextView videoSignTextView;
+    ImageView videoSignTextView;
+    private View rootView;
 
-    public LinkSourceBinder(View view) {
+    public LinkSourceBinder(ViewGroup view) {
+        LayoutInflater.from(view.getContext()).inflate(R.layout.references_link_source, view);
         ButterKnife.bind(this, view);
     }
 
@@ -71,5 +78,13 @@ public class LinkSourceBinder {
             imageImageView.setImageDrawable(null);
             imageLayout.setVisibility(View.GONE);
         }
+    }
+
+    public View getRootView() {
+        return referencesLinkSourceLayout;
+    }
+
+    public void setVisibility(int visibility) {
+        getRootView().setVisibility(visibility);
     }
 }

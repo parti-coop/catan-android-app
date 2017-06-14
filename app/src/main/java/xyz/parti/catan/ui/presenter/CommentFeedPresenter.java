@@ -27,13 +27,13 @@ import xyz.parti.catan.data.services.CommentsService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
-import xyz.parti.catan.ui.binder.CommentBinder;
+import xyz.parti.catan.ui.view.CommentView;
 
 /**
  * Created by dalikim on 2017. 5. 3..
  */
 
-public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> implements CommentBinder.CommentLikablePresenter {
+public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> implements CommentView.Presenter {
     private final Post post;
     private final CommentsService commentsService;
     private final UpvotesService upvotesService;
@@ -230,7 +230,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
     }
 
     @Override
-    public void onClickLike(final Post post, final Comment comment) {
+    public void onClickLikeComment(final Post post, final Comment comment) {
         if(!isActive()) return;
 
         feedAdapter.changeModel(comment, Comment.IS_UPVOTED_BY_ME);
