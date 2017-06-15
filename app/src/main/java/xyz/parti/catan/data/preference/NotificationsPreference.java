@@ -57,11 +57,20 @@ public class NotificationsPreference {
         }
     }
 
-    public HashMap<Integer, List<PushMessage>> addSingle(int id, PushMessage message) {
+    public HashMap<Integer, List<PushMessage>> addSingle(int id, PushMessage newMessage) {
         HashMap<Integer, List<PushMessage>> current = fetchAllSingles();
         List<PushMessage> pushMessages = new ArrayList<>();
-        pushMessages.add(message);
-        current.put(id, pushMessages);
+        pushMessages.add(newMessage);
+        List<PushMessage> oldPushMessages = current.put(id, pushMessages);
+
+        if(oldPushMessages != null) {
+            boolean isSound = newMessage.isSound;
+            for (PushMessage message : oldPushMessages) {
+                if (message.isSound) isSound = true;
+            }
+            newMessage.isSound = isSound;
+        }
+
         resetSingles(current);
         return current;
     }

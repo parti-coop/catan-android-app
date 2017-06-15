@@ -16,4 +16,6 @@ public class PushMessage {
     public String priority;
     public String url;
     public long user_id;
+    public boolean isSound = false;
+    public long timestamp = 0;
 }

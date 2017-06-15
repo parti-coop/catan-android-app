@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -60,6 +61,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         if(userIdData != null) {
             pushMessage.user_id = Long.parseLong(userIdData);
         }
+        pushMessage.timestamp = System.currentTimeMillis();
 
         Log.d(Constants.TAG_TEST, "Received id : " + data.get("id"));
         Log.d(Constants.TAG_TEST, "Received title : " + data.get("title"));
@@ -84,6 +86,12 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
 
     private void updateNotifications(PushMessage newPushMessage) {
+        long maxTimestamp = 0;
+        for(PushMessage message : getNotificationsRepository().fetchAllPushMessages()) {
+            if(message.isSound) maxTimestamp = Math.max(maxTimestamp, message.timestamp);
+        }
+        newPushMessage.isSound = (newPushMessage.timestamp - maxTimestamp > 30 * 1000);
+
         HashMap<Integer, List<PushMessage>> currentNotifications = getNotificationsRepository().fetchAllSingles();
         if(currentNotifications.size() + 1 >= MAX_SIZE) {
             makeMergedNotification(newPushMessage);
@@ -111,10 +119,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setTicker(pushMessage.body)
                 .setAutoCancel(true)
                 .setVisibility(VISIBILITY_PRIVATE)
-                .setSound(defaultSoundUri)
                 .setLights(173, 500, 2000)
                 .setContentIntent(buildIntentForNotification(id, pushMessage))
                 .setDeleteIntent(buildIntentForCancel(pushMessage));
+
+        if(pushMessage.isSound) {
+            notificationBuilder.setSound(defaultSoundUri);
+        }
 
         getNotificationManager().notify(id, notificationBuilder.build());
         return id;
@@ -153,11 +164,14 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setTicker(title)
                 .setAutoCancel(true)
                 .setVisibility(VISIBILITY_PRIVATE)
-                .setSound(defaultSoundUri)
                 .setLights(173, 500, 2000)
                 .setStyle(inbox)
                 .setContentIntent(buildIntentForMergedNotification(Constants.MERGED_NOTIFICATION_ID))
                 .setDeleteIntent(buildIntentForCancelAll());
+
+        if(newPushMessage.isSound) {
+            notificationBuilder.setSound(defaultSoundUri);
+        }
 
         getNotificationManager().notify(Constants.MERGED_NOTIFICATION_ID, notificationBuilder.build());
     }
