@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -54,7 +54,7 @@ public class SettingsActivity extends BaseActivity {
     private Setting settings = new Setting();
 
     @BindView(R.id.layout_prefs)
-    LinearLayout prefsLayout;
+    FrameLayout prefsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,17 +111,7 @@ public class SettingsActivity extends BaseActivity {
 
         SettingsFragmentBasic settingsFragmentBasic = new SettingsFragmentBasic();
         settingsFragmentBasic.setArguments(bundle);
-        ft.add(R.id.layout_pref_container_basic, settingsFragmentBasic);
-
-        SettingsFragmentInfo settingsFragmentInfo = new SettingsFragmentInfo();
-        ft.add(R.id.layout_pref_container_info, settingsFragmentInfo);
-
-        SettingsFragmentHelp settingsFragmentHelp = new SettingsFragmentHelp();
-        settingsFragmentHelp.setArguments(bundle);
-        ft.add(R.id.layout_pref_container_help, settingsFragmentHelp);
-
-        SettingsFragmentAccount settingsFragmentAccount = new SettingsFragmentAccount();
-        ft.add(R.id.layout_pref_container_account, settingsFragmentAccount);
+        ft.add(R.id.layout_prefs, settingsFragmentBasic);
 
         ft.commit();
     }
@@ -137,6 +127,9 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.preferences_basic);
+            addPreferencesFromResource(R.xml.preferences_info);
+            addPreferencesFromResource(R.xml.preferences_help);
+            addPreferencesFromResource(R.xml.preferences_account);
 
             Parcelable settingArg = getArguments().getParcelable("setting");
             if(settingArg != null) {
@@ -167,6 +160,15 @@ public class SettingsActivity extends BaseActivity {
         private void setUpAction() {
             setUpShowProfileAction();
             setUpReceivePushMessageAction();
+
+            Preference version = findPreference("pref_version");
+            version.setSummary(new AppVersionHelper(getActivity()).getCurrentVerion());
+
+            setUpLicenseAction();
+            setUpMenuAction("pref_help", setting.help_url);
+            setUpMenuAction("pref_terms", setting.terms_url);
+            setUpMenuAction("pref_privacy", setting.privacy_url);
+            setUpLogOutAction();
         }
 
         private void setUpReceivePushMessageAction() {
@@ -199,11 +201,6 @@ public class SettingsActivity extends BaseActivity {
             });
         }
 
-        private String getFirebaseInstanceToken() {
-            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-            return refreshedToken;
-        }
-
         private void setUpShowProfileAction() {
             Preference pref = findPreference("pref_show_profile");
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -214,129 +211,44 @@ public class SettingsActivity extends BaseActivity {
                                                   }
                                               });
         }
-    }
 
-    public static class SettingsFragmentHelp extends PreferenceFragmentCompat {
-        private Setting setting;
-
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            addPreferencesFromResource(R.xml.preferences_help);
-
-            Parcelable settingArg = getArguments().getParcelable("setting");
-            if(settingArg != null) {
-                setting = Parcels.unwrap(settingArg);
-            }
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
-            View view = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
-            if(view != null) {
-                setUpAction();
-            }
-            return view;
-        }
-
-        private void setUpAction() {
-            setUpMenuAction("pref_help", setting.help_url);
-            setUpMenuAction("pref_terms", setting.terms_url);
-            setUpMenuAction("pref_privacy", setting.privacy_url);
+        private void setUpLicenseAction() {
+            Preference pref = findPreference("pref_license");
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new LibsBuilder()
+                            .withActivityTheme(R.style.Theme_AppCompat_Light_NoActionBar)
+                            .withActivityTitle(getResources().getString(R.string.license))
+                            .withLicenseShown(true)
+                            .withLicenseDialog(true)
+                            .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android", "rxjava", "rxandroid", "material-dialogs", "FastAdapter", "matisse")
+                            .start(getActivity());
+                    return false;
+                }
+            });
         }
 
         private void setUpMenuAction(String pref_name, final String url) {
             Preference pref = findPreference(pref_name);
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                                                  @Override
-                                                  public boolean onPreferenceClick(Preference preference) {
-                                                      startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                                                      return false;
-                                                  }
-                                              });
-        }
-    }
-
-    public static class SettingsFragmentInfo extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            addPreferencesFromResource(R.xml.preferences_info);
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
-            View view = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
-            if(view != null) {
-                setUpAction();
-            }
-            return view;
-        }
-
-        private void setUpAction() {
-            Preference version = findPreference("pref_version");
-            version.setSummary(new AppVersionHelper(getActivity()).getCurrentVerion());
-
-            setUpLicenseAction();
-        }
-
-        private void setUpLicenseAction() {
-            Preference pref = findPreference("pref_license");
-            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                                                  @Override
-                                                  public boolean onPreferenceClick(Preference preference) {
-                                                      new LibsBuilder()
-                                                              .withActivityTheme(R.style.Theme_AppCompat_Light_NoActionBar)
-                                                              .withActivityTitle(getResources().getString(R.string.license))
-                                                              .withLicenseShown(true)
-                                                              .withLicenseDialog(true)
-                                                              .withLibraries("android_iconify", "parceler", "tedpermission", "fancybuttons", "stetho", "shimmer_android", "rxjava", "rxandroid", "material-dialogs", "FastAdapter", "matisse")
-                                                              .start(getActivity());
-                                                      return false;
-                                                  }
-                                              });
-        }
-    }
-
-    public static class SettingsFragmentAccount extends PreferenceFragmentCompat {
-        RxGuardian rxGuardian = new RxGuardian();
-
-        private SessionManager session;
-        private Disposable removeDeviceTokenPublisher;
-        private DeviceTokensService deviceTokensService;
-
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            addPreferencesFromResource(R.xml.preferences_account);
-
-            session = new SessionManager(getActivity());
-            deviceTokensService = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
-            View view = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
-            if(view != null) {
-                setUpLogOutAction();
-            }
-            return view;
-        }
-
-        @Override
-        public void onDestroy() {
-            if(rxGuardian != null) {
-                rxGuardian.unsubscribeAll();
-            }
-            super.onDestroy();
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    return false;
+                }
+            });
         }
 
         private void setUpLogOutAction() {
             Preference pref = findPreference("pref_logout");
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                                                  @Override
-                                                  public boolean onPreferenceClick(Preference preference) {
-                                                      confirmLogOut();
-                                                      return false;
-                                                  }
-                                              });
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    confirmLogOut();
+                    return false;
+                }
+            });
         }
 
         private void confirmLogOut() {
