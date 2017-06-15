@@ -42,14 +42,30 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void ensureValidNetwork() {
-        if(!new NetworkHelper(this).isValidNetwork() && willFinishIfNetworkDisconnect()) {
-            Intent intent = new Intent(this, DisconnectActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+        boolean isValidNetwork = new NetworkHelper(this).isValidNetwork();
+        if(isValidNetwork) {
+            if(willFinishIfNetworkConnect()) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
 
-            finish();
+                finish();
+            }
+        } else {
+            if(willFinishIfNetworkDisconnect()) {
+                Intent intent = new Intent(this, DisconnectActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                finish();
+            }
         }
+    }
+
+    private boolean willFinishIfNetworkConnect() {
+        return !willFinishIfNetworkDisconnect();
     }
 
     @Override
