@@ -36,34 +36,8 @@
             android:text="@string/no_comments"
             android:textColor="@color/text_muted" />
     </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
+    <xyz.parti.catan.ui.view.NewCommentForm
+        android:id="@+id/new_comment_form"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="@dimen/comment_elevation"
-        android:background="#fff">
-        <EditText
-            android:id="@+id/edittext_new_comment_input"
-            android:hint="@string/comment_form_placeholer"
-            android:background="@drawable/edittext_bg_comment"
-            android:paddingBottom="20dp"
-            android:textSize="14sp"
-            android:textColorHint="@color/comment_form_placeholer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="5" />
-        <com.joanzapata.iconify.widget.IconButton
-            android:id="@+id/button_new_comment_create"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="{fa-send}"
-            android:textColor="@color/text_muted"
-            android:layout_marginLeft="8dp"
-            android:elevation="4dp"
-            android:background="@android:color/transparent" />
-    </LinearLayout>
+        android:layout_height="wrap_content" />
 </LinearLayout>

@@ -32,17 +32,27 @@ public class LatestCommentsBinder {
     CircleImageView newCommentUserImageView;
     @BindView(R.id.textview_new_comment_input)
     TextView newCommentInputTextView;
+    @BindView(R.id.layout_new_comment_form)
+    LinearLayout newCommentFormLayout;
 
     private final PostBinder.PostBindablePresenter presenter;
     private final Context context;
     private ViewGroup view;
+    private boolean withNewCommentForm;
     private final List<CommentView> commentViews = new ArrayList<>();
 
-    LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
+    LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view, boolean withNewCommentForm) {
         this.presenter = presenter;
         this.context = view.getContext();
         this.view = view;
+        this.withNewCommentForm = withNewCommentForm;
         ButterKnife.bind(this, view);
+
+        if(withNewCommentForm) {
+            newCommentFormLayout.setVisibility(View.VISIBLE);
+        } else {
+            newCommentFormLayout.setVisibility(View.GONE);
+        }
     }
 
     public void bindData(final Post post) {
@@ -77,7 +87,8 @@ public class LatestCommentsBinder {
             } else {
                 commentView = commentViews.get(i);
             }
-            bindComment(commentView, post, lastComments.get(i));
+            boolean isLineVisible = withNewCommentForm || (i != lastComments.size() - 1);
+            bindComment(commentView, post, lastComments.get(i), isLineVisible);
         }
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
@@ -89,8 +100,8 @@ public class LatestCommentsBinder {
         });
     }
 
-    private void bindComment(CommentView commentView, Post post, Comment comment) {
-        commentView.bindData(post, comment);
+    private void bindComment(CommentView commentView, Post post, Comment comment, boolean isLineVisible) {
+        commentView.bindData(post, comment, isLineVisible);
     }
 
     void rebindComment(Post post, CommentDiff commentDiff) {

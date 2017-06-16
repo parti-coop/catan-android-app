@@ -67,11 +67,15 @@ public class PostBinder {
     ReferenceView referenceview;
 
     public PostBinder(Context context, View view, PostBindablePresenter presenter) {
+        this(context, view, presenter, true);
+    }
+
+    public PostBinder(Context context, View view, PostBindablePresenter presenter, boolean withCommentForm) {
         this.context = context;
         this.presenter = presenter;
         ButterKnife.bind(this, view);
 
-        latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout);
+        latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout, withCommentForm);
     }
 
     public void bindData(Post post) {

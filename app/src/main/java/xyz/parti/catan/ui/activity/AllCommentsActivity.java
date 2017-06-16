@@ -4,23 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-
-import com.joanzapata.iconify.widget.IconButton;
 
 import org.parceler.Parcels;
-
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +21,7 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
+import xyz.parti.catan.ui.view.NewCommentForm;
 
 /**
  * Created by dalikim on 2017. 4. 30..
@@ -46,10 +37,8 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     ViewGroup listWrapperView;
     @BindView(R.id.layout_no_comments_sign)
     ViewGroup noCommentsSignView;
-    @BindView(R.id.edittext_new_comment_input)
-    EditText newCommentInputEditText;
-    @BindView(R.id.button_new_comment_create)
-    IconButton newCommentCreateButton;
+    @BindView(R.id.new_comment_form)
+    NewCommentForm newCommentForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +74,16 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
             listWrapperView.setVisibility(View.GONE);
         }
         setUpComments(focusInput, post, comment);
-        setUpCommentForm();
+        setUpCommentForm(presenter);
 
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    private void setUpCommentForm(CommentFeedPresenter presenter) {
+        newCommentForm.attachPresenter(presenter);
     }
 
     private void setUpComments(boolean focusInput, Post post, Comment comment) {
@@ -132,72 +125,10 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         presenter.loadFirstComments();
 
         if(focusInput) {
-            focusForm(comment);
+            newCommentForm.focusForm(comment);
         }
     }
 
-    private void focusForm(Comment comment) {
-        newCommentInputEditText.post(new Runnable() {
-            @Override
-            public void run() {
-                newCommentInputEditText.setFocusableInTouchMode(true);
-                newCommentInputEditText.requestFocus();
-                newCommentInputEditText.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(newCommentInputEditText, 0);
-                    }
-                });
-            }
-        });
-        if(comment != null) {
-            String defaultComment = String.format(Locale.getDefault(), "@%s ", comment.user.nickname);
-            newCommentInputEditText.setText(defaultComment);
-            newCommentInputEditText.setSelection(defaultComment.length());
-        }
-    }
-
-    private void setUpCommentForm() {
-        disableCommentCreateButton();
-        newCommentCreateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onClickCommentCreateButton(newCommentInputEditText.getText().toString());
-            }
-        });
-
-        newCommentInputEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(TextUtils.isEmpty(charSequence)) {
-                    disableCommentCreateButton();
-                } else {
-                    enableCommentCreateButton();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-    }
-
-    void enableCommentCreateButton() {
-        newCommentCreateButton.setEnabled(true);
-        newCommentCreateButton.setTextColor(ContextCompat.getColor(this, R.color.style_color_primary));
-    }
-
-    void disableCommentCreateButton() {
-        newCommentCreateButton.setEnabled(false);
-        newCommentCreateButton.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
-    }
 
     @Override
     protected void onDestroy() {
@@ -209,9 +140,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     @Override
     public void setSendingCommentForm() {
-        disableCommentCreateButton();
-        newCommentInputEditText.setEnabled(false);
-        newCommentCreateButton.setText("{fa-circle-o-notch spin}");
+        newCommentForm.setSending();
         if(this.feedAdapter.getItemCount() > 0) {
             listRecyclerView.postDelayed(new Runnable() {
                 @Override
@@ -227,10 +156,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         if(this.feedAdapter.getItemCount() > 0) {
             listRecyclerView.smoothScrollToPosition(feedAdapter.getLastPosition());
         }
-        newCommentInputEditText.setText(null);
-        newCommentInputEditText.setEnabled(true);
-        newCommentCreateButton.setText("{fa-send}");
-        enableCommentCreateButton();
+        newCommentForm.setSendCompleted();
     }
 
     @Override
@@ -241,7 +167,7 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     @Override
     public void showNewCommentForm(Comment comment) {
-        focusForm(comment);
+        newCommentForm.focusForm(comment);
     }
 
     @Override

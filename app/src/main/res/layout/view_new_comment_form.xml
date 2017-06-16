@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brand_gray"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff">
+            <EditText
+                android:id="@+id/edittext_new_comment_input"
+                android:hint="@string/comment_form_placeholer"
+                android:background="@drawable/edittext_bg_comment"
+                android:paddingBottom="20dp"
+                android:textSize="14sp"
+                android:textColorHint="@color/comment_form_placeholer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="5" />
+            <com.joanzapata.iconify.widget.IconButton
+                android:id="@+id/button_new_comment_create"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="{fa-send}"
+                android:textColor="@color/text_muted"
+                android:layout_marginLeft="8dp"
+                android:elevation="4dp"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+    </LinearLayout>
+</merge>

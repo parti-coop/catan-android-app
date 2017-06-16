@@ -25,15 +25,15 @@ import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.services.CommentsService;
 import xyz.parti.catan.data.services.UpvotesService;
-import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.view.CommentView;
+import xyz.parti.catan.ui.view.NewCommentForm;
 
 /**
  * Created by dalikim on 2017. 5. 3..
  */
 
-public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> implements CommentView.Presenter {
+public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> implements CommentView.Presenter, NewCommentForm.Presenter {
     private final Post post;
     private final CommentsService commentsService;
     private final UpvotesService upvotesService;

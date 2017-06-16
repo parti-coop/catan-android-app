@@ -102,17 +102,6 @@
             android:id="@+id/referenceview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <!--<include-->
-            <!--android:id="@+id/view_references_link_source"-->
-            <!--layout="@layout/references_link_source"/>-->
-        <!--<include-->
-            <!--layout="@layout/references_file_sources"/>-->
-        <!--<include-->
-            <!--android:id="@+id/view_references_poll"-->
-            <!--layout="@layout/references_poll"/>-->
-        <!--<include-->
-            <!--android:id="@+id/view_references_survey"-->
-            <!--layout="@layout/references_survey"/>-->
 
         <View
             android:layout_width="match_parent"
@@ -181,6 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <LinearLayout
+                android:id="@+id/layout_new_comment_form"
                 android:orientation="horizontal"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"

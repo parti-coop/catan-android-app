@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
@@ -33,6 +34,7 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.presenter.PostPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
+import xyz.parti.catan.ui.view.NewCommentForm;
 
 /**
  * Created by dalikim on 2017. 5. 15..
@@ -42,8 +44,12 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     PostPresenter presenter;
     private ProgressDialog downloadProgressDialog;
 
+    @BindView(R.id.scrollview_post)
+    ScrollView postScrollView;
     @BindView(R.id.layout_post)
     LinearLayout postLayout;
+    @BindView(R.id.new_comment_form)
+    NewCommentForm newCommentForm;
 
     private PostBinder postBinder;
 
@@ -68,6 +74,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         presenter.attachView(this);
 
         setUpPost(post);
+        newCommentForm.attachPresenter(presenter);
 
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
@@ -81,7 +88,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         } else {
             this.downloadProgressDialog = new ProgressDialog(this);
         }
-        this.postBinder = new PostBinder(this, this.postLayout, this.presenter);
+        this.postBinder = new PostBinder(this, this.postLayout, this.presenter, false);
         this.postBinder.bindData(post);
     }
 
@@ -149,19 +156,12 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
 
     @Override
     public void showNewCommentForm(Post post) {
-        Intent intent = new Intent(this, AllCommentsActivity.class);
-        intent.putExtra("post", Parcels.wrap(post));
-        intent.putExtra("focusInput", true);
-        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
+        newCommentForm.focusForm(null);
     }
 
     @Override
     public void showNewCommentForm(Post post, Comment comment) {
-        Intent intent = new Intent(this, AllCommentsActivity.class);
-        intent.putExtra("post", Parcels.wrap(post));
-        intent.putExtra("comment", Parcels.wrap(comment));
-        intent.putExtra("focusInput", true);
-        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
+        newCommentForm.focusForm(comment);
     }
 
     @Override
@@ -268,5 +268,26 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         } else {
             this.postBinder.rebindData(post, payload);
         }
+    }
+
+    @Override
+    public void setSendingCommentForm() {
+        newCommentForm.setSending();
+    }
+
+    @Override
+    public void setCompletedCommentForm() {
+        newCommentForm.setSendCompleted();
+    }
+
+    @Override
+    public void showNewComment(Post post) {
+        postBinder.rebindData(post, Post.PLAYLOAD_LATEST_COMMENT);
+        postLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                postScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 }
