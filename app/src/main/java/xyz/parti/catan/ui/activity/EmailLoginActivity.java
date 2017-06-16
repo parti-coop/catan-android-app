@@ -18,6 +18,7 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.KeyboardHelper;
+import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;
 
@@ -89,11 +90,13 @@ public class EmailLoginActivity extends BaseActivity {
 
             @Override
             public void onFail() {
+                reportError(getResources().getString(R.string.login_fail));
                 progressToggler.toggle(false);
             }
 
             @Override
-            public void onError() {
+            public void onError(Throwable e) {
+                reportError(e);
                 progressToggler.toggle(false);
             }
         });

@@ -88,7 +88,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             feedAdapter.clearAndAppendModels(page.items);
                             feedAdapter.setMoreDataAvailable(page.has_more_item);
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "AllComments load first error : " + response.code());
+                            getView().reportError("AllComments load first error : " + response.code());
                             feedAdapter.setMoreDataAvailable(false);
                         }
                         feedAdapter.setLoadFinished();
@@ -100,7 +100,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             return;
                         }
 
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                         feedAdapter.setLoadFinished();
                     }
                 });
@@ -145,7 +145,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             }
                         } else {
                             feedAdapter.setMoreDataAvailable(false);
-                            ReportHelper.wtf(getView().getContext(), "AllComments load more error : " + response.code());
+                            getView().reportError("AllComments load more error : " + response.code());
                         }
                         feedAdapter.setLoadFinished();
                     }
@@ -158,7 +158,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
                         feedAdapter.setMoreDataAvailable(false);
                         feedAdapter.setLoadFinished();
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -192,7 +192,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Create comment error : " + response.code());
+                            getView().reportError("Create comment error : " + response.code());
                         }
                         getView().setCompletedCommentForm();
                         feedAdapter.setLoadFinished();
@@ -207,7 +207,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         getView().setCompletedCommentForm();
                         feedAdapter.setLoadFinished();
 
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -248,13 +248,13 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                            getView().reportError("Like error : " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -273,6 +273,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         void setSendingCommentForm();
         void setCompletedCommentForm();
         void showMessage(String message);
+        void reportError(String message);
+        void reportError(Throwable error);
         void showCommentList();
         void showNewCommentForm(Comment comment);
         Context getContext();

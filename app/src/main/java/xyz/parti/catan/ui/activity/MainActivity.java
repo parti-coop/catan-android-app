@@ -752,7 +752,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void ensureExpendedAppBar() {
-        appBarLayout.setExpanded(true);
+        appBarLayout.setExpanded(true, true);
     }
 
     @Override

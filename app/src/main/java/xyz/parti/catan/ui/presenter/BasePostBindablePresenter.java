@@ -103,13 +103,13 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                            getView().reportError("Like error : " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -130,13 +130,13 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Like error : " + response.code());
+                            getView().reportError("Like error : " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -153,13 +153,13 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Feedback error : " + response.code());
+                            getView().reportError("Feedback error : " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -190,6 +190,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickPollAgree(final Post post) {
+
         final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
         onClickPollAgreePublisher = getRxGuardian().subscribe(onClickPollAgreePublisher,
                 votingsService.voting(post.poll.id, newChoice),
@@ -202,13 +203,13 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Agree error : " + response.code());
+                            getView().reportError("Agree error : " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }
@@ -227,13 +228,13 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            ReportHelper.wtf(getView().getContext(), "Disagree error : " + response.code());
+                            getView().reportError("Disagree error : " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        ReportHelper.wtf(getView().getContext(), error);
+                        getView().reportError(error);
                     }
                 });
     }

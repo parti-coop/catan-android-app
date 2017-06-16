@@ -105,7 +105,6 @@ public class LoginTask {
                         Response<User> response = pair.second;
 
                         if (!response.isSuccessful()) {
-                            ReportHelper.wtf(context.getApplicationContext(), context.getResources().getString(R.string.login_fail));
                             afterLogin.onFail();
                             return;
                         }
@@ -125,8 +124,7 @@ public class LoginTask {
                         if (error instanceof NotFoundUserError) {
                             afterLogin.onNotFoundUser();
                         } else {
-                            ReportHelper.wtf(context.getApplicationContext(), error);
-                            afterLogin.onError();
+                            afterLogin.onError(error);
                         }
                     }
                 });
@@ -155,6 +153,6 @@ public class LoginTask {
         void onSuccess();
         void onNotFoundUser();
         void onFail();
-        void onError();
+        void onError(Throwable e);
     }
 }

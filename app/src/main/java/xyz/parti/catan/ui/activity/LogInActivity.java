@@ -153,11 +153,13 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             @Override
             public void onFail() {
+                reportError(getResources().getString(R.string.login_fail));
                 progressToggler.toggle(false);
             }
 
             @Override
-            public void onError() {
+            public void onError(Throwable e) {
+                reportError(getResources().getString(R.string.login_fail));
                 progressToggler.toggle(false);
             }
         });
@@ -318,7 +320,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
         // ConnectionResult to see possible error codes.
         Log.d(Constants.TAG, "onConnectionFailed:" + connectionResult);
-        ReportHelper.wtf(this, connectionResult.getErrorMessage());
+        reportError(connectionResult.getErrorMessage());
         progressToggler.toggle(false);
     }
 

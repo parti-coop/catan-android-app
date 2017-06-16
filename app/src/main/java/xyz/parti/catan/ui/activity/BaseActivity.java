@@ -134,7 +134,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void reportError(String message) {
-        ReportHelper.wtf(this.getApplicationContext(), message);
+        if(new NetworkHelper(this).isValidNetwork()) ReportHelper.wtf(this.getApplicationContext(), message);
     }
 
     public void showMessage(String message) {
@@ -142,6 +142,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void reportError(Throwable error) {
-        ReportHelper.wtf(this.getApplicationContext(), error);
+        if(new NetworkHelper(this).isValidNetwork()) ReportHelper.wtf(this.getApplicationContext(), error);
     }
 }
