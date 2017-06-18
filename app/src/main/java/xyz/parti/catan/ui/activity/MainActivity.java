@@ -199,6 +199,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         ensureExpendedAppBar();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ensureExpendedAppBar();
+    }
+
     private void checkAppVersion() {
         presenter.checkAppVersion();
     }
