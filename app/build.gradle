@@ -54,6 +54,8 @@ android {
             buildConfigField "String", "FIREBASE_DATABASE_PARTIES", "\"/production/parties\""
         }
         debug {
+            applicationIdSuffix '.debug'
+
             buildConfigField "String", var_api_base_url, "\"http://parti.dev\""
             signingConfig signingConfigs.config
 

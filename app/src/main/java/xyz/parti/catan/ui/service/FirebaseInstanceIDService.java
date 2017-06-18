@@ -10,6 +10,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
@@ -38,7 +39,7 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
         SessionManager session = new SessionManager(this);
         if(session.isLoggedIn() && PrefPushMessage.isReceivable(this)) {
             DeviceTokensService service = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
-            ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken),
+            ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken, BuildConfig.APPLICATION_ID),
                     new Consumer<Response<JsonNull>>() {
                         @Override
                         public void accept(@NonNull Response<JsonNull> response) throws Exception {

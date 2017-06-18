@@ -17,7 +17,7 @@ import retrofit2.http.Query;
 public interface DeviceTokensService {
     @FormUrlEncoded
     @POST("/api/v1/device_tokens")
-    Flowable<Response<JsonNull>> create(@Field("registration_id") String token);
+    Flowable<Response<JsonNull>> create(@Field("registration_id") String token, @Field("application_id") String applicationId);
 
     @DELETE("/api/v1/device_tokens")
     Flowable<Response<JsonNull>> destroy(@Query("registration_id") String token);

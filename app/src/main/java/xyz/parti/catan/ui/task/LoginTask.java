@@ -133,7 +133,7 @@ public class LoginTask {
     private void saveDeviceToken() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         DeviceTokensService service = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
-        ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken),
+        ceateTokenPublisher = rxGuardian.subscribe(ceateTokenPublisher, service.create(refreshedToken, BuildConfig.APPLICATION_ID),
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {

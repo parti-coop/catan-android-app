@@ -13,6 +13,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
+import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
@@ -62,7 +63,7 @@ public class ReceivablePushMessageCheckTask {
             @Override
             public void onClick(DialogInterface dialog, int whichs) {
                 String refreshedToken = getFirebaseInstanceToken();
-                createDeviceTokenPublisher = rxGuardian.subscribe(createDeviceTokenPublisher, deviceTokensService.create(refreshedToken),
+                createDeviceTokenPublisher = rxGuardian.subscribe(createDeviceTokenPublisher, deviceTokensService.create(refreshedToken, BuildConfig.APPLICATION_ID),
                         new Consumer<Response<JsonNull>>() {
                             @Override
                             public void accept(@NonNull Response<JsonNull> response) throws Exception {
