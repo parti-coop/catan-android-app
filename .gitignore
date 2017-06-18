@@ -65,3 +65,6 @@ app/google-services.json
 
 com_crashlytics_export_strings.xml
 crashlytics-build.properties
+app/libs/
+app/src/debug/
+app/src/release/

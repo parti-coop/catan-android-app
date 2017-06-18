@@ -52,6 +52,30 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_post_latest_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_space"
+            android:layout_marginLeft="@dimen/default_space"
+            android:layout_marginRight="@dimen/default_space"
+            android:orientation="horizontal"
+            android:padding="6dp"
+            android:background="@drawable/textview_bg_post_latest_activity"
+            android:visibility="gone" >
+            <TextView
+                android:id="@+id/textview_post_latest_activity_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_muted" />
+            <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
+                android:id="@+id/textview_post_latest_activity_at"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="6dp"
+                android:textColor="@color/text_muted" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

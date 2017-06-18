@@ -43,6 +43,12 @@ public class PostBinder {
     TextView partiTitleTextView;
     @BindView(R.id.textview_post_group_title)
     TextView groupTitleTextView;
+    @BindView(R.id.layout_post_latest_activity)
+    LinearLayout postLatestActivityLayout;
+    @BindView(R.id.textview_post_latest_activity_body)
+    TextView postLatestActivityBodyTextView;
+    @BindView(R.id.textview_post_latest_activity_at)
+    LooselyRelativeTimeTextView postLatestActivityAtTextView;
     @BindView(R.id.textview_post_user_nickname)
     TextView userNicknameTextView;
     @BindView(R.id.imageview_post_user_image)
@@ -127,6 +133,15 @@ public class PostBinder {
             groupTitleTextView.setVisibility(android.view.View.VISIBLE);
             groupTitleTextView.setText(post.parti.group.title);
         }
+
+        if(post.latest_stroked_activity != null && post.last_stroked_at != null) {
+            new TextHelper(context).setTextViewHTML(postLatestActivityBodyTextView, post.latest_stroked_activity);
+            postLatestActivityAtTextView.setReferenceTime(post.last_stroked_at.getTime());
+            postLatestActivityLayout.setVisibility(View.VISIBLE);
+        } else {
+            postLatestActivityLayout.setVisibility(View.GONE);
+        }
+
         new ImageHelper(userImageImageView).loadInto(post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
         userNicknameTextView.setText(post.user.nickname);
         createdAtTextView.setReferenceTime(post.created_at.getTime());

@@ -36,6 +36,7 @@ public class Post implements RecyclableModel {
     public Survey survey;
     public Share share;
     public FileSource[] file_sources;
+    public String latest_stroked_activity;
 
     private transient List<FileSource> _imageFileSources = null;
     private transient List<FileSource> _docFileSources = null;
