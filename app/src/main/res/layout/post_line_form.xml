@@ -21,12 +21,14 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/imageview_post_line_user_image"
             android:layout_centerVertical="true"
+            android:textColor="@color/text_muted"
             android:text="@string/new_post_placeholder" />
         <com.joanzapata.iconify.widget.IconTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:textColor="@color/text_muted"
             android:text="{fa-camera}" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

@@ -50,7 +50,7 @@
     <string name="drawer_close">메뉴를 닫습니다</string>
 
     <string name="comment_form_placeholer">댓글을 입력하세요...</string>
-    <string name="load_more_comments">개의 댓글 모두 보기</string>
+    <string name="load_more_comments">%s개의 댓글 모두 보기</string>
     <string name="no_comments">가장 먼저 댓글을 남겨 보세요</string>
 
     <string name="new_comment">댓글달기</string>

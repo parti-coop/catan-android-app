@@ -41,6 +41,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import butterknife.BindView;
@@ -53,6 +54,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Parti;
+import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.adapter.PostFormGroupItem;
 import xyz.parti.catan.ui.adapter.PostFormImageItem;
@@ -101,7 +103,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         presenter = new PostFormPresenter(session);
         presenter.attachView(PostFormActivity.this);
 
-        setupForm();
+        setupForm(session.getCurrentUser());
         setupPreviewImages();
     }
 
@@ -131,12 +133,13 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         previewImagesRecyclerView.setAdapter(previewImagesAdapter);
     }
 
-    private void setupForm() {
+    private void setupForm(User user) {
         if(getIntent() != null) {
             String body = getIntent().getStringExtra("body");
             if(body != null) {
                 editTextVew.setText(body);
             }
+            editTextVew.setHint(String.format(Locale.getDefault(), getResources().getString(R.string.new_post_placeholder), user.nickname));
             Parti parti = Parcels.unwrap(getIntent().getParcelableExtra("parti"));
             if(parti != null) {
                 presenter.setDefaultParti(parti);

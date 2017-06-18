@@ -2,7 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="MaterialDrawerTheme.Light">
-        <!-- Customize your theme here. -->
+        <item name="android:textColor">#000</item>
         <item name="colorPrimary">@color/style_color_primary</item>
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>
@@ -11,6 +11,7 @@
     </style>
 
     <style name="AppDialogWhenLarge" parent="Theme.AppCompat.Light.DialogWhenLarge">
+        <item name="android:textColor">#000</item>
         <item name="colorPrimary">@color/style_color_primary</item>
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>

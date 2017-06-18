@@ -73,6 +73,7 @@
                     android:layout_height="wrap_content" />
                 <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
                     android:id="@+id/textview_post_created_at"
+                    android:textColor="@color/text_muted"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -166,6 +167,7 @@
             <TextView
                 android:id="@+id/textview_comments_load_more"
                 android:text="@string/load_more_comments"
+                android:textColor="@color/text_muted"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:layout_width="wrap_content"

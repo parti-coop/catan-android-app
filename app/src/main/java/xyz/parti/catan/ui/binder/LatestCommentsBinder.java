@@ -1,7 +1,6 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,11 +9,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
@@ -58,7 +57,7 @@ public class LatestCommentsBinder {
     public void bindData(final Post post, boolean showLastComments) {
         if (post.hasMoreComments()) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
-            loadMoreTextView.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
+            loadMoreTextView.setText(String.format(Locale.getDefault(), context.getResources().getString(R.string.load_more_comments), String.valueOf(post.comments_count)));
             loadMoreTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

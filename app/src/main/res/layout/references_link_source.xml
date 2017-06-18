@@ -36,7 +36,7 @@
         android:maxLines="3"
         android:ellipsize="end"
         android:padding="8dp"
-        android:textColor="#222"
+        android:textColor="@color/brand_gray_dark"
         android:textStyle="bold"
         android:textSize="18dp"
         android:visibility="gone" />
@@ -47,7 +47,7 @@
         android:maxLines="3"
         android:ellipsize="end"
         android:padding="8dp"
-        android:textColor="#666"
+        android:textColor="@color/brand_gray_dark"
         android:visibility="gone" />
     <com.joanzapata.iconify.widget.IconTextView
         android:id="@+id/textview_link_site_name"
@@ -56,7 +56,7 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:padding="8dp"
-        android:textColor="#888"
+        android:textColor="@color/brand_gray_dark"
         android:textAllCaps="true"
         android:visibility="gone" />
 </LinearLayout>

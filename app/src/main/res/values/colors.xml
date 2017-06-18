@@ -15,7 +15,7 @@
     <color name="style_color_default_border">@color/brand_gray_light</color>
 
     <color name="dashboard_image_border">#FFF</color>
-    <color name="text_muted">@color/brand_gray</color>
+    <color name="text_muted">@color/brand_gray_less_dark</color>
     <color name="default_text_view_link">#303F9F</color>
     <color name="comments_background">@color/brand_gray_light</color>
     <color name="post_border">@color/brand_gray_light</color>
