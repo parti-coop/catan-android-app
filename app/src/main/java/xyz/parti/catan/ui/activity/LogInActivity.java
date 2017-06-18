@@ -72,7 +72,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
         ButterKnife.bind(this);
 
-        partiLoginTask = setUpLoginTask();
+        partiLoginTask = setupLoginTask();
         facebookAuthClient = initFacebook();
         twitterAuthClient = initTwitter();
         progressToggler = new ProgressToggler(panelLayout, statusProgressBar);
@@ -126,7 +126,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
     @NonNull
-    private LoginTask setUpLoginTask() {
+    private LoginTask setupLoginTask() {
         return new LoginTask(this, new LoginTask.After() {
             @Override
             public void onSuccess() {

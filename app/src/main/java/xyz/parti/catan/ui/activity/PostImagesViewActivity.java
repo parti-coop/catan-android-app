@@ -36,7 +36,7 @@ public class PostImagesViewActivity extends BaseActivity {
     LooselyRelativeTimeTextView postCreatedAtTextView;
     @BindView(R.id.textview_post_desc)
     TextView postDescTextView;
-    @BindView(R.id.textview_user_nickname)
+    @BindView(R.id.textview_post_user_nickname)
     TextView userNicknameTextView;
 
     @Override

@@ -10,8 +10,12 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -34,6 +38,8 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.presenter.PostPresenter;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
+import xyz.parti.catan.ui.view.CommentView;
+import xyz.parti.catan.ui.view.MaxHeightScrollView;
 import xyz.parti.catan.ui.view.NewCommentForm;
 
 /**
@@ -47,7 +53,9 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     @BindView(R.id.scrollview_post)
     ScrollView postScrollView;
     @BindView(R.id.layout_post)
-    LinearLayout postLayout;
+    ConstraintLayout postLayout;
+    @BindView(R.id.layout_sticky_comment)
+    FrameLayout stickyCommentLayout;
     @BindView(R.id.new_comment_form)
     NewCommentForm newCommentForm;
 
@@ -70,10 +78,16 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
             finish();
             return;
         }
+
         presenter = new PostPresenter(post, session);
         presenter.attachView(this);
 
-        setUpPost(post);
+        boolean hasStickyComment = (post.sticky_comment != null);
+        if (hasStickyComment) {
+            setupStickyComment(post);
+        }
+        setupPost(post, hasStickyComment);
+
         newCommentForm.attachPresenter(presenter);
 
         ActionBar actionBar = getSupportActionBar();
@@ -82,14 +96,14 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         }
     }
 
-    private void setUpPost(Post post) {
+    private void setupPost(Post post, boolean hasStickyComment) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.downloadProgressDialog = new ProgressDialog(this, R.style.AppProgressDialog);
         } else {
             this.downloadProgressDialog = new ProgressDialog(this);
         }
         this.postBinder = new PostBinder(this, this.postLayout, this.presenter, false);
-        this.postBinder.bindData(post);
+        this.postBinder.bindData(post, !hasStickyComment);
     }
 
     @Override
@@ -115,6 +129,10 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
                 return;
             }
             if(this.presenter != null) {
+                if(post.sticky_comment != null) {
+                    post.sticky_comment = null;
+                }
+                stickyCommentLayout.setVisibility(View.GONE);
                 presenter.changePost(post);
             }
         }
@@ -122,18 +140,18 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
 
     @Override
     public void onBackPressed() {
-        setUpNewCommentsResult();
+        setupNewCommentsResult();
         super.onBackPressed();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        setUpNewCommentsResult();
+        setupNewCommentsResult();
         finish();
         return super.onSupportNavigateUp();
     }
 
-    private void setUpNewCommentsResult() {
+    private void setupNewCommentsResult() {
         Intent intent = new Intent();
         intent.putExtra("post", Parcels.wrap(presenter.getPost()));
         setResult(MainActivity.REQUEST_UPDATE_POST, intent);
@@ -157,6 +175,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     @Override
     public void showNewCommentForm(Post post) {
         newCommentForm.focusForm(null);
+        stickyCommentLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -287,6 +306,40 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
             @Override
             public void run() {
                 postScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+        stickyCommentLayout.setVisibility(View.GONE);
+    }
+
+    public void setupStickyComment(Post post) {
+        if(post.sticky_comment == null) return;
+
+        final CommentView commentView = new CommentView(this);
+        commentView.attachPresenter(presenter);
+        commentView.setPadding(getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0, getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0);
+        commentView.bindData(post, post.sticky_comment, false);
+
+        final MaxHeightScrollView scrollView = new MaxHeightScrollView(PostActivity.this);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        scrollView.addView(commentView);
+
+        View line = new View(this);
+        line.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                2));
+        line.setBackgroundColor(ContextCompat.getColor(this, R.color.brand_gray));
+
+        stickyCommentLayout.addView(line);
+        stickyCommentLayout.addView(scrollView);
+
+        stickyCommentLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                int maxHeight = getResources().getDimensionPixelSize(R.dimen.sticky_comment_max_height);
+                int currentHeight = commentView.getHeight();
+                scrollView.setMaxHeight(Math.min(maxHeight, currentHeight));
             }
         });
     }

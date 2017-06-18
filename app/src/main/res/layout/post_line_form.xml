@@ -11,15 +11,15 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/post_card_padding">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageview_user_image"
+            android:id="@+id/imageview_post_line_user_image"
             android:layout_width="@dimen/feed_item_user_image"
             android:layout_height="@dimen/feed_item_user_image"
             android:layout_marginRight="5dp" />
         <TextView
-            android:id="@+id/textview_user_nickname"
+            android:id="@+id/textview_post_line_user_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/imageview_user_image"
+            android:layout_toRightOf="@id/imageview_post_line_user_image"
             android:layout_centerVertical="true"
             android:text="@string/new_post_placeholder" />
         <com.joanzapata.iconify.widget.IconTextView

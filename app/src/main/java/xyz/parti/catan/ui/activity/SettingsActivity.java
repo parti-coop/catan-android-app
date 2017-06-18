@@ -66,10 +66,10 @@ public class SettingsActivity extends BaseActivity {
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setUp();
+        setup();
     }
 
-    private void setUp() {
+    private void setup() {
         SettingsService settingsService = ServiceBuilder.createUnsignedService(SettingsService.class);
         settingPublisher = rxGuardian.subscribe(settingPublisher,
                 settingsService.getAll(),
@@ -81,14 +81,14 @@ public class SettingsActivity extends BaseActivity {
                         } else {
                             Log.d(Constants.TAG, "Setting Info Error");
                         }
-                        setUpFragment();
+                        setupFragment();
                         prefsLayout.setVisibility(View.VISIBLE);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
                         Log.e(Constants.TAG, "Setting Info Exception", error);
-                        setUpFragment();
+                        setupFragment();
                         prefsLayout.setVisibility(View.VISIBLE);
                     }
                 }
@@ -103,7 +103,7 @@ public class SettingsActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    private void setUpFragment() {
+    private void setupFragment() {
         Bundle bundle = new Bundle();
         bundle.putParcelable("setting", Parcels.wrap(settings));
 
@@ -144,7 +144,7 @@ public class SettingsActivity extends BaseActivity {
         public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
             View view = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
             if(view != null) {
-                setUpAction();
+                setupAction();
             }
             return view;
         }
@@ -157,21 +157,21 @@ public class SettingsActivity extends BaseActivity {
             super.onDestroy();
         }
 
-        private void setUpAction() {
-            setUpShowProfileAction();
-            setUpReceivePushMessageAction();
+        private void setupAction() {
+            setupShowProfileAction();
+            setupReceivePushMessageAction();
 
             Preference version = findPreference("pref_version");
             version.setSummary(new AppVersionHelper(getActivity()).getCurrentVerion());
 
-            setUpLicenseAction();
-            setUpMenuAction("pref_help", setting.help_url);
-            setUpMenuAction("pref_terms", setting.terms_url);
-            setUpMenuAction("pref_privacy", setting.privacy_url);
-            setUpLogOutAction();
+            setupLicenseAction();
+            setupMenuAction("pref_help", setting.help_url);
+            setupMenuAction("pref_terms", setting.terms_url);
+            setupMenuAction("pref_privacy", setting.privacy_url);
+            setupLogOutAction();
         }
 
-        private void setUpReceivePushMessageAction() {
+        private void setupReceivePushMessageAction() {
             Preference pref = findPreference(Constants.PREF_VALUE_KEY_RECEIVE_PUSH_MESSAGE);
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
@@ -201,7 +201,7 @@ public class SettingsActivity extends BaseActivity {
             });
         }
 
-        private void setUpShowProfileAction() {
+        private void setupShowProfileAction() {
             Preference pref = findPreference("pref_show_profile");
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                                                   @Override
@@ -212,7 +212,7 @@ public class SettingsActivity extends BaseActivity {
                                               });
         }
 
-        private void setUpLicenseAction() {
+        private void setupLicenseAction() {
             Preference pref = findPreference("pref_license");
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -229,7 +229,7 @@ public class SettingsActivity extends BaseActivity {
             });
         }
 
-        private void setUpMenuAction(String pref_name, final String url) {
+        private void setupMenuAction(String pref_name, final String url) {
             Preference pref = findPreference(pref_name);
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -240,7 +240,7 @@ public class SettingsActivity extends BaseActivity {
             });
         }
 
-        private void setUpLogOutAction() {
+        private void setupLogOutAction() {
             Preference pref = findPreference("pref_logout");
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override

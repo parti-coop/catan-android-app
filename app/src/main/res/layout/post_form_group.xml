@@ -10,8 +10,6 @@
         android:id="@+id/textview_group_title"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/imageview_parti_logo"
         android:gravity="center_vertical"
         android:ellipsize="end"
         android:maxLines="1"

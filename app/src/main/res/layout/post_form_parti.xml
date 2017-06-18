@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/imageview_parti_logo"
+        android:layout_toRightOf="@id/imageview_parti_logo"
         android:ellipsize="end"
         android:maxLines="1"
         tools:text="ddd" />
@@ -30,8 +30,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_alignLeft="@+id/imageview_parti_logo"
-        android:layout_below="@+id/imageview_parti_logo"
+        android:layout_alignLeft="@id/imageview_parti_logo"
+        android:layout_below="@id/imageview_parti_logo"
         android:layout_marginTop="@dimen/parti_list_padding"
         android:background="@color/brand_gray_light" />
 </RelativeLayout>

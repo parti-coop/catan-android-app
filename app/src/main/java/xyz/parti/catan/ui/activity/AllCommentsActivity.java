@@ -73,8 +73,8 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
             noCommentsSignView.setVisibility(View.VISIBLE);
             listWrapperView.setVisibility(View.GONE);
         }
-        setUpComments(focusInput, post, comment);
-        setUpCommentForm(presenter);
+        setupComments(focusInput, post, comment);
+        setupCommentForm(presenter);
 
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
@@ -82,11 +82,11 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
         }
     }
 
-    private void setUpCommentForm(CommentFeedPresenter presenter) {
+    private void setupCommentForm(CommentFeedPresenter presenter) {
         newCommentForm.attachPresenter(presenter);
     }
 
-    private void setUpComments(boolean focusInput, Post post, Comment comment) {
+    private void setupComments(boolean focusInput, Post post, Comment comment) {
         feedAdapter = new CommentFeedRecyclerViewAdapter(this, post);
         feedAdapter.setLoadMoreListener(new LoadMoreRecyclerViewAdapter.OnLoadMoreListener() {
             @Override
@@ -177,18 +177,18 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
     @Override
     public void onBackPressed() {
-        setUpNewCommentsResult();
+        setupNewCommentsResult();
         super.onBackPressed();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        setUpNewCommentsResult();
+        setupNewCommentsResult();
         finish();
         return super.onSupportNavigateUp();
     }
 
-    private void setUpNewCommentsResult() {
+    private void setupNewCommentsResult() {
         Intent intent = new Intent();
         intent.putExtra("post", Parcels.wrap(presenter.getPost()));
         setResult(MainActivity.REQUEST_UPDATE_POST, intent);

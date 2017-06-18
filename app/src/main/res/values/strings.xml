@@ -95,7 +95,7 @@
     <string name="dialog_title_choice_parti_on_post_form">빠띠 선택</string>
     <string name="save">올리기</string>
     <string name="error_gif">파일 용량이 너무 큽니다. %1$sM 이하의 파일을 선택해 주세요</string>
-    <string name="new_post_placeholder">무슨 이야기를 나누실래요?</string>
+    <string name="new_post_placeholder">%s님, 무슨 이야기를 나누실래요?</string>
     <string name="title_activity_image_picker">사진 선택</string>
     <string name="merged_notification_title">새로운 소식 %d개</string>
 

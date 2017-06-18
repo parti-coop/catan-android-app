@@ -30,6 +30,7 @@ public class Post implements RecyclableModel {
     public Long upvotes_count;
     public Long comments_count;
     public Comment[] latest_comments;
+    public Comment sticky_comment;
     public LinkSource link_source;
     public Poll poll;
     public Survey survey;

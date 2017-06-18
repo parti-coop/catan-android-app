@@ -72,9 +72,9 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
     private PostFormPresenter presenter;
     PartiChoiceFragment partiChoiceFragment;
 
-    @BindView(R.id.textview_parti_title)
+    @BindView(R.id.textview_post_form_parti_title)
     TextView partiTitleTextView;
-    @BindView(R.id.imageview_parti_logo)
+    @BindView(R.id.imageview_post_form_parti_logo)
     ImageView partiLogoImageView;
     @BindView(R.id.edittext_body)
     EditText editTextVew;
@@ -101,11 +101,11 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         presenter = new PostFormPresenter(session);
         presenter.attachView(PostFormActivity.this);
 
-        setUpForm();
-        setUpPreviewImages();
+        setupForm();
+        setupPreviewImages();
     }
 
-    private void setUpPreviewImages() {
+    private void setupPreviewImages() {
         LinearLayoutManager recyclerViewLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         previewImagesRecyclerView.setLayoutManager(recyclerViewLayout);
 
@@ -131,7 +131,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
         previewImagesRecyclerView.setAdapter(previewImagesAdapter);
     }
 
-    private void setUpForm() {
+    private void setupForm() {
         if(getIntent() != null) {
             String body = getIntent().getStringExtra("body");
             if(body != null) {
@@ -383,7 +383,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
             View view = inflater.inflate(R.layout.fragment_parti_choice, null);
             ButterKnife.bind(this, view);
 
-            setUpParties();
+            setupParties();
             builder.setView(view);
 
             builder.setTitle(R.string.dialog_title_choice_parti_on_post_form);
@@ -401,7 +401,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
             return dialog;
         }
 
-        private void setUpParties() {
+        private void setupParties() {
             progressToggler = new ProgressToggler(partiChoiceListRecycler, statusProgressBar);
 
             fastAdapter = new FastItemAdapter<>();

@@ -16,11 +16,11 @@ import xyz.parti.catan.helper.ImageHelper;
  */
 
 public class DrawerNavigationHeaderBinder {
-    @BindView(R.id.imageview_user_image)
+    @BindView(R.id.imageview_current_user_image)
     CircleImageView userImageImageView;
-    @BindView(R.id.textview_user_nickname)
+    @BindView(R.id.textview_current_user_nickname)
     TextView userNicknameTextView;
-    @BindView(R.id.textview_user_email)
+    @BindView(R.id.textview_current_user_email)
     TextView userEmailTextView;
 
     public DrawerNavigationHeaderBinder(View view) {

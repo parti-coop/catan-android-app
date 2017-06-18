@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -147,8 +149,10 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
     static class PostLineFormViewHolder extends ModelViewHolder {
         private final PostFeedPresenter presenter;
-        @BindView(R.id.imageview_user_image)
+        @BindView(R.id.imageview_post_line_user_image)
         CircleImageView userImageImageView;
+        @BindView(R.id.textview_post_line_user_nickname)
+        TextView userNicknameTextView;
 
         PostLineFormViewHolder(android.view.View view, PostFeedPresenter presenter) {
             super(view);
@@ -158,6 +162,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
         void bindData(User user){
             new ImageHelper(userImageImageView).loadInto(user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+            userNicknameTextView.setText(String.format(Locale.getDefault(), presenter.getView().getContext().getResources().getString(R.string.new_post_placeholder), user.nickname));
         }
 
         @OnClick(R.id.layout_post_line_form)

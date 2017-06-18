@@ -41,6 +41,9 @@ public interface PostsService {
     @GET("/api/v1/posts/{id}")
     Flowable<Response<Post>> getPost(@Path(value = "id") Long id);
 
+    @GET("/api/v1/posts/by_sticky_comment")
+    Flowable<Response<Post>> getPostByStickyCommentId(@Query("comment_id") long commentId);
+
     @Multipart
     @POST("/api/v1/posts")
     Flowable<Response<Post>> createPost(

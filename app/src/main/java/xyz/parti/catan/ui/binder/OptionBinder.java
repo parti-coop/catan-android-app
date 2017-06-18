@@ -20,7 +20,7 @@ import xyz.parti.catan.data.model.Post;
  */
 
 class OptionBinder {
-    @BindView(R.id.textview_survey_body)
+    @BindView(R.id.textview_option_body)
     TextView bodyTextView;
     @BindView(R.id.survey_checkbox)
     CheckBox checkBox;

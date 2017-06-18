@@ -67,6 +67,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Disposable loadFirstPostsPublisher;
     private Disposable loadMorePostsPublisher;
     private Disposable receivePushMessageForPostPublisher;
+    private Disposable receivePushMessageForCommentPublisher;
     private Disposable savePost;
     private Disposable loadDrawer;
     private Disposable loadParti;
@@ -398,6 +399,30 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             getView().reportError(error);
                         }
                     });
+        } else if("comment".equals(pushMessage.type) && pushMessage.param != null) {
+            long commentId = Long.parseLong(pushMessage.param);
+            if(commentId <= 0) {
+                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                return;
+            }
+            receivePushMessageForCommentPublisher = getRxGuardian().subscribe(receivePushMessageForCommentPublisher, postsService.getPostByStickyCommentId(commentId),
+                    new Consumer<Response<Post>>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {
+                            if (response.isSuccessful()) {
+                                getView().showPost(response.body());
+                            } else if (response.code() == 403) {
+                                getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            } else {
+                                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                            }
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                            getView().reportError(error);
+                        }
+                    });
         } else if (pushMessage.url != null && !TextUtils.isEmpty(pushMessage.url)) {
             getView().showUrl(Uri.parse(pushMessage.url));
         }
@@ -555,7 +580,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         for (Parti parti : joindedParties) {
                             preloadImage(parti.logo_url);
                         }
-                        getView().setUpDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
+                        getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
                     }
                     getView().ensureToHideDrawerDemo();
 
@@ -718,7 +743,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showPostForm(Parti parti, String body);
         void scrollToTop();
 
-        void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPartiId);
+        void setupDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, long currentPartiId);
         void ensureToHideDrawerDemo();
         boolean canRefreshDrawer();
         void openDrawer();

@@ -29,7 +29,8 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_empty_box_brand_gray" />
+            android:src="@drawable/ic_empty_box_brand_gray"
+            android:tint="@color/brand_gray"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

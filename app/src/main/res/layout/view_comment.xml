@@ -8,7 +8,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginTop="12dp">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageview_user_image"
+            android:id="@+id/imageview_comment_user_image"
             android:layout_width="@dimen/comment_user_image"
             android:layout_height="@dimen/comment_user_image"
             android:layout_gravity="top"
@@ -18,12 +18,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/textview_user_nickname"
+                android:id="@+id/textview_comment_user_nickname"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <TextView
-                android:id="@+id/textview_survey_body"
+                android:id="@+id/textview_comment_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <Button
-                    android:id="@+id/button_like"
+                    android:id="@+id/button_comment_like"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -58,7 +58,7 @@
                     android:textSize="14dp"
                     android:text="@string/new_comment" />
                 <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
-                    android:id="@+id/textview_created_at"
+                    android:id="@+id/textview_comment_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -66,7 +66,7 @@
                     android:paddingRight="0dp"
                     android:textColor="@color/comment_button_text" />
                 <com.joanzapata.iconify.widget.IconButton
-                    android:id="@+id/button_show_likes"
+                    android:id="@+id/button_show_comment_likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="0dp"
@@ -80,7 +80,7 @@
         </LinearLayout>
     </LinearLayout>
     <View
-        android:id="@+id/view_divider"
+        android:id="@+id/view_comment_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="2dp"

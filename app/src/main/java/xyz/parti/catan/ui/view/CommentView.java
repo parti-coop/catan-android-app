@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,21 +34,21 @@ public class CommentView extends LinearLayout {
     private Comment comment;
     private WeakReference<Presenter> presenter = new WeakReference<Presenter>(null);
 
-    @BindView(R.id.imageview_user_image)
+    @BindView(R.id.imageview_comment_user_image)
     CircleImageView userImageImageView;
-    @BindView(R.id.textview_user_nickname)
+    @BindView(R.id.textview_comment_user_nickname)
     TextView userNicknameTextView;
-    @BindView(R.id.textview_survey_body)
+    @BindView(R.id.textview_comment_body)
     TextView bodyTextView;
-    @BindView(R.id.textview_created_at)
+    @BindView(R.id.textview_comment_created_at)
     LooselyRelativeTimeTextView createdAtTextView;
     @BindView(R.id.button_new_comment)
     Button newCommentButton;
-    @BindView(R.id.view_divider)
+    @BindView(R.id.view_comment_divider)
     View dividerView;
-    @BindView(R.id.button_like)
+    @BindView(R.id.button_comment_like)
     Button likeButton;
-    @BindView(R.id.button_show_likes)
+    @BindView(R.id.button_show_comment_likes)
     Button showLikesButton;
 
     public CommentView(@NonNull Context context, AttributeSet attrs) {
@@ -58,10 +59,13 @@ public class CommentView extends LinearLayout {
     public CommentView(Context context) {
         super(context);
         init(context);
+        LinearLayout.LayoutParams parmas = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        setLayoutParams(parmas);
     }
 
     private void init(@NonNull Context context) {
         LayoutInflater.from(context).inflate(R.layout.view_comment, this);
+        setOrientation(LinearLayout.VERTICAL);
         ButterKnife.bind(this);
         this.presenter = new WeakReference<>(null);
     }

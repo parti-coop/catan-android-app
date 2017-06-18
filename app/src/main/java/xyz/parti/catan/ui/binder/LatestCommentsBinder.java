@@ -55,8 +55,8 @@ public class LatestCommentsBinder {
         }
     }
 
-    public void bindData(final Post post) {
-        if(post.hasMoreComments()) {
+    public void bindData(final Post post, boolean showLastComments) {
+        if (post.hasMoreComments()) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
             loadMoreTextView.setText("" + post.comments_count + context.getText(R.string.load_more_comments));
             loadMoreTextView.setOnClickListener(new View.OnClickListener() {
@@ -71,24 +71,24 @@ public class LatestCommentsBinder {
         }
 
         List<Comment> lastComments = post.lastComments(3);
-        for(CommentView commentView : commentViews) {
+        for (CommentView commentView : commentViews) {
             commentView.hideData();
         }
-        for(int i = 0; i < lastComments.size(); i++) {
-            CommentView commentView;
-            if(i >= commentViews.size()) {
-                commentView = new CommentView(context);
-                commentView.attachPresenter(presenter);
-                LinearLayout.LayoutParams parmas = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                commentView.setLayoutParams(parmas);
-                commentView.setOrientation(LinearLayout.VERTICAL);
-                commentViews.add(commentView);
-                view.addView(commentView, 1 + i);
-            } else {
-                commentView = commentViews.get(i);
+
+        if (showLastComments) {
+            for (int i = 0; i < lastComments.size(); i++) {
+                CommentView commentView;
+                if (i >= commentViews.size()) {
+                    commentView = new CommentView(context);
+                    commentView.attachPresenter(presenter);
+                    commentViews.add(commentView);
+                    view.addView(commentView, 1 + i);
+                } else {
+                    commentView = commentViews.get(i);
+                }
+                boolean isLineVisible = withNewCommentForm || (i != lastComments.size() - 1);
+                bindComment(commentView, post, lastComments.get(i), isLineVisible);
             }
-            boolean isLineVisible = withNewCommentForm || (i != lastComments.size() - 1);
-            bindComment(commentView, post, lastComments.get(i), isLineVisible);
         }
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);

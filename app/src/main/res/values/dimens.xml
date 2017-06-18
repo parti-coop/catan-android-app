@@ -21,6 +21,7 @@
     <dimen name="parti_list_padding">10dp</dimen>
     <dimen name="comment_send_button">12sp</dimen>
     <dimen name="grid_expected_size">120dp</dimen>
+    <dimen name="sticky_comment_max_height">250dp</dimen>
 
     <dimen name="action_user_image">20dp</dimen>
 

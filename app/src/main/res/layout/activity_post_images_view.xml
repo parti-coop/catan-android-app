@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/textview_user_nickname"
+                android:id="@+id/textview_post_user_nickname"
                 android:textColor="#fff"
                 android:paddingRight="8dp"
                 android:maxWidth="200dp"

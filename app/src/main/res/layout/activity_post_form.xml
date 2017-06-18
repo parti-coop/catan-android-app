@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/default_space">
                 <ImageView
-                    android:id="@+id/imageview_parti_logo"
+                    android:id="@+id/imageview_post_form_parti_logo"
                     android:layout_width="@dimen/post_form_parti_logo"
                     android:layout_height="@dimen/post_form_parti_logo"
                     android:layout_centerVertical="true"
@@ -35,11 +35,11 @@
                     android:src="@drawable/img_sample_parti_logo" />
 
                 <TextView
-                    android:id="@+id/textview_parti_title"
+                    android:id="@+id/textview_post_form_parti_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/imageview_parti_logo"
+                    android:layout_toRightOf="@id/imageview_post_form_parti_logo"
                     android:layout_marginRight="@dimen/default_space"
                     android:ellipsize="end"
                     android:maxLines="1"
@@ -49,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/textview_parti_title"
+                    android:layout_toRightOf="@id/textview_post_form_parti_title"
                     android:text="{fa-angle-down}" />
             </RelativeLayout>
             <android.support.v7.widget.AppCompatEditText

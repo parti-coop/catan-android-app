@@ -44,7 +44,7 @@ public class EmailLoginActivity extends BaseActivity {
         setContentView(R.layout.activity_email_login);
         ButterKnife.bind(EmailLoginActivity.this);
 
-        partiLoginTask = setUpLoginTask();
+        partiLoginTask = setupLoginTask();
         progressToggler = new ProgressToggler(formView, statusProgressBar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -63,7 +63,7 @@ public class EmailLoginActivity extends BaseActivity {
     }
 
     @NonNull
-    private LoginTask setUpLoginTask() {
+    private LoginTask setupLoginTask() {
         return new LoginTask(this, new LoginTask.After() {
             @Override
             public void onSuccess() {

@@ -45,9 +45,8 @@ public class NewCommentForm extends FrameLayout {
         ButterKnife.bind(this);
         this.presenter = new WeakReference<>(null);
 
-        setUpCommentForm();
+        setupCommentForm();
     }
-
 
     public void focusForm(Comment comment) {
         newCommentInputEditText.post(new Runnable() {
@@ -71,7 +70,7 @@ public class NewCommentForm extends FrameLayout {
         }
     }
 
-    private void setUpCommentForm() {
+    private void setupCommentForm() {
         disableCommentCreateButton();
         newCommentInputEditText.addTextChangedListener(new TextWatcher() {
             @Override

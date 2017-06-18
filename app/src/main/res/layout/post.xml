@@ -16,7 +16,7 @@
             android:padding="@dimen/post_card_padding"
             android:background="@drawable/border_bottom_on_white_bg">
             <ImageView
-                android:id="@+id/imageview_parti_logo"
+                android:id="@+id/imageview_post_parti_logo"
                 android:layout_width="@dimen/feed_item_parti_logo"
                 android:layout_height="@dimen/feed_item_parti_logo"
                 android:layout_gravity="center"
@@ -25,7 +25,7 @@
                 android:gravity="left"
                 android:src="@drawable/img_sample_parti_logo" />
             <TextView
-                android:id="@+id/textview_parti_title"
+                android:id="@+id/textview_post_parti_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="220dp"
@@ -43,7 +43,7 @@
                 android:layout_marginRight="5dp"
                 android:text="@string/dashboard_post_prefix_group_title" />
             <TextView
-                android:id="@+id/textview_group_title"
+                android:id="@+id/textview_post_group_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -57,7 +57,7 @@
             android:orientation="horizontal"
             android:padding="@dimen/post_card_padding">
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageview_user_image"
+                android:id="@+id/imageview_post_user_image"
                 android:layout_width="@dimen/feed_item_user_image"
                 android:layout_height="@dimen/feed_item_user_image"
                 android:layout_gravity="center"
@@ -68,11 +68,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/textview_user_nickname"
+                    android:id="@+id/textview_post_user_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
-                    android:id="@+id/textview_created_at"
+                    android:id="@+id/textview_post_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -80,7 +80,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textview_title"
+            android:id="@+id/textview_post_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
@@ -90,7 +90,7 @@
             android:lineSpacingMultiplier="1.1" />
 
         <TextView
-            android:id="@+id/textview_survey_body"
+            android:id="@+id/textview_post_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
@@ -117,7 +117,7 @@
             android:layout_marginLeft="@dimen/post_card_padding"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/button_like"
+                android:id="@+id/button_post_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -128,7 +128,7 @@
                 android:textSize="14dp"
                 android:text="@string/like" />
             <Button
-                android:id="@+id/button_new_comment"
+                android:id="@+id/button_new_post_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -139,7 +139,7 @@
                 android:textSize="14dp"
                 android:text="@string/new_comment" />
             <com.joanzapata.iconify.widget.IconButton
-                android:id="@+id/button_show_likes"
+                android:id="@+id/button_show_post_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -167,6 +167,7 @@
                 android:id="@+id/textview_comments_load_more"
                 android:text="@string/load_more_comments"
                 android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <LinearLayout

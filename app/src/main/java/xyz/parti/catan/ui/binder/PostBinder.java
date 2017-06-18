@@ -37,29 +37,29 @@ public class PostBinder {
     private final PostBindablePresenter presenter;
     private final LatestCommentsBinder latestCommentsBinder;
 
-    @BindView(R.id.imageview_parti_logo)
+    @BindView(R.id.imageview_post_parti_logo)
     ImageView partiLogoImageView;
-    @BindView(R.id.textview_parti_title)
+    @BindView(R.id.textview_post_parti_title)
     TextView partiTitleTextView;
-    @BindView(R.id.textview_group_title)
+    @BindView(R.id.textview_post_group_title)
     TextView groupTitleTextView;
-    @BindView(R.id.textview_user_nickname)
+    @BindView(R.id.textview_post_user_nickname)
     TextView userNicknameTextView;
-    @BindView(R.id.imageview_user_image)
+    @BindView(R.id.imageview_post_user_image)
     CircleImageView userImageImageView;
-    @BindView(R.id.textview_created_at)
+    @BindView(R.id.textview_post_created_at)
     LooselyRelativeTimeTextView createdAtTextView;
-    @BindView(R.id.textview_survey_body)
+    @BindView(R.id.textview_post_body)
     TextView bodyTextView;
-    @BindView(R.id.textview_title)
+    @BindView(R.id.textview_post_title)
     TextView titleTextView;
     @BindView(R.id.textview_prefix_group_title)
     TextView prefixGroupTitleTextView;
-    @BindView(R.id.button_like)
+    @BindView(R.id.button_post_like)
     Button likeButton;
-    @BindView(R.id.button_new_comment)
+    @BindView(R.id.button_new_post_comment)
     Button newCommentButton;
-    @BindView(R.id.button_show_likes)
+    @BindView(R.id.button_show_post_likes)
     Button showLikesButton;
     @BindView(R.id.layout_comments_section)
     LinearLayout commentsSectionLayout;
@@ -79,14 +79,18 @@ public class PostBinder {
     }
 
     public void bindData(Post post) {
+        bindData(post, true);
+    }
+
+    public void bindData(Post post, boolean showLastComments) {
         bindBasic(post);
         bindLike(post);
-        bindComments(post);
+        bindComments(post, showLastComments);
         referenceview.bindData(presenter, post);
     }
 
-    private void bindComments(Post post) {
-        latestCommentsBinder.bindData(post);
+    private void bindComments(Post post, boolean showLastComments) {
+        latestCommentsBinder.bindData(post, showLastComments);
     }
 
     private void bindLike(final Post post) {
@@ -157,7 +161,7 @@ public class PostBinder {
 
     public void rebindData(Post post, Object payload) {
         if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
-            this.bindComments(post);
+            this.bindComments(post, true);
         } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
             this.bindLike(post);
         } else if(payload instanceof Survey) {

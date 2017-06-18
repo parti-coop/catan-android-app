@@ -142,11 +142,11 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     presenter = new PostFeedPresenter(session);
                     presenter.attachView(MainActivity.this);
                     checkAppVersion();
-                    setUpToolbar();
-                    setUpFeed(session.getCurrentUser());
-                    setUpCheckNewPost();
-                    setUpDrawerBar();
-                    setUpSwipeRefresh();
+                    setupToolbar();
+                    setupFeed(session.getCurrentUser());
+                    setupCheckNewPost();
+                    setupDrawerBar();
+                    setupSwipeRefresh();
 
                     receivePushMessageIntent(getIntent());
                     checkReceivablePushMessage();
@@ -206,7 +206,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         presenter.checkReceivablePushMessage();
     }
 
-    private void setUpSwipeRefresh() {
+    private void setupSwipeRefresh() {
         postListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -220,7 +220,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 android.R.color.holo_red_light);
     }
 
-    private void setUpDrawerBar() {
+    private void setupDrawerBar() {
         drawer = new DrawerBuilder()
                 .withTranslucentStatusBar(false)
                 .withActivity(this)
@@ -304,7 +304,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         presenter.receivePushMessage(notificatiionId, pushMessage);
     }
 
-    private void setUpCheckNewPost() {
+    private void setupCheckNewPost() {
         newPostsSignAnimator = new NewPostSignAnimator(this.newPostsSignLayout);
 
         postListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -347,7 +347,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         });
     }
 
-    private void setUpToolbar() {
+    private void setupToolbar() {
         setSupportActionBar(appToolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -355,7 +355,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         appToolbar.setNavigationIcon(R.drawable.ic_menu_white);
     }
 
-    private void setUpFeed(User currentUser) {
+    private void setupFeed(User currentUser) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.downloadProgressDialog = new ProgressDialog(this, R.style.AppProgressDialog);
         } else {
@@ -536,7 +536,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void setUpDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, final long currentPostFeedId) {
+    public void setupDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, final long currentPostFeedId) {
         List<IDrawerItem> drawerItems = new ArrayList<>();
         PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forDashboard().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url).withIdentifier(Constants.POST_FEED_DASHBOARD);
         drawerItems.add(dashboardItem);
