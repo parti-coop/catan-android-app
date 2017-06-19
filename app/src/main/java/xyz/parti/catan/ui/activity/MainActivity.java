@@ -142,6 +142,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     checkAppVersion();
                     setupToolbar();
                     setupFeed(session.getCurrentUser());
+
                     setupCheckNewPost();
                     setupDrawerBar();
                     setupSwipeRefresh();
@@ -303,7 +304,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             return;
         }
         PushMessage pushMessage = Parcels.unwrap(intent.getParcelableExtra("pushMessage"));
-        int notificatiionId = intent.getIntExtra("notificationId", -1);
+        int notificatiionId = intent.getIntExtra("notificationId", Constants.NO_NOTIFICATION_ID);
 
         presenter.receivePushMessage(notificatiionId, pushMessage);
     }
@@ -353,6 +354,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     private void setupToolbar() {
         setSupportActionBar(appToolbar);
+
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
@@ -402,6 +404,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
         postListSwipeRefreshLayout.setEnabled(false);
         postListDemoLayout.startShimmerAnimation();
+
+        presenter.syncToolbarWithPostFeed();
     }
 
     @Override

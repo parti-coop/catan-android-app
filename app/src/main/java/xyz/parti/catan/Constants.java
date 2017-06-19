@@ -24,6 +24,7 @@ public class Constants {
     public static final String PREF_NAME_LAST_POST_FEED = "xyz.parti.catan.LAST_POST_FEED";
     public static final String PREF_NAME_JOINED_PARTIES = "xyz.parti.catan.JOINED_PARTIES";
 
+    public static final int NO_NOTIFICATION_ID = -1;
     public static final int MERGED_NOTIFICATION_ID = 0;
     public final static long POST_FEED_DASHBOARD = 0;
 }

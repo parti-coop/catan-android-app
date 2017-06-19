@@ -109,18 +109,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         lastPostFeedPreference = new LastPostFeedPreference(getView().getContext());
 
         currentPostFeedId = lastPostFeedPreference.fetch();
-        playWithPostFeed(new OnLoadPostFeed() {
-            @Override
-            public void onDashbard() {
-                getView().changeDashboardToolbar();
-            }
-
-
-            @Override
-            public void onParti(Parti parti) {
-                getView().changePartiPostFeedToolbar(parti);
-            }
-        });
     }
 
     @Override
@@ -378,11 +366,13 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             return;
         }
 
-        if(notificatiionId != -1) {
-            CatanLog.d("MAIN notificatiionId " + notificatiionId);
-            NotificationsPreference repository = new NotificationsPreference(getView().getContext());
-            repository.destroy(notificatiionId);
+        if(notificatiionId == Constants.NO_NOTIFICATION_ID) {
+            return;
         }
+
+        CatanLog.d("MAIN notificatiionId " + notificatiionId);
+        NotificationsPreference repository = new NotificationsPreference(getView().getContext());
+        repository.destroy(notificatiionId);
 
         if(pushMessage == null) {
             CatanLog.d("NULL pushMessage and reload");
@@ -460,12 +450,29 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showProfile(getCurrentUser());
     }
 
-    interface OnLoadPostFeed {
+    public void syncToolbarWithPostFeed() {
+        if(!isActive()) return;
+
+        playWithPostFeed(new PostFeedPresenter.OnLoadPostFeed() {
+            @Override
+            public void onDashbard() {
+                getView().changeDashboardToolbar();
+            }
+
+            @Override
+            public void onParti(Parti parti) {
+                getView().changePartiPostFeedToolbar(parti);
+            }
+        });
+    }
+
+
+    public interface OnLoadPostFeed {
         void onDashbard();
         void onParti(Parti parti);
     }
 
-    private void playWithPostFeed(final OnLoadPostFeed callback) {
+    public void playWithPostFeed(final OnLoadPostFeed callback) {
         if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) {
             callback.onDashbard();
             return;
@@ -775,15 +782,15 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void switchDashboardPostFeed(boolean force) {
         if(!isActive()) return;
-        if(!force) {
-            if (currentPostFeedId == Constants.POST_FEED_DASHBOARD) return;
-        }
 
         currentPostFeedId = Constants.POST_FEED_DASHBOARD;
         currentParti = null;
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changeDashboardToolbar();
-        refreshPosts();
+
+        if(force || currentPostFeedId != Constants.POST_FEED_DASHBOARD) {
+            refreshPosts();
+        }
     }
 
     public void switchPartiPostFeed(Parti parti) {
@@ -792,19 +799,17 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void switchPartiPostFeed(Parti parti, boolean needToLoadPost, boolean force) {
         if(!isActive()) return;
-        if(!force) {
-            if (currentPostFeedId != Constants.POST_FEED_DASHBOARD && parti.id.equals(currentPostFeedId))
-                return;
-        }
 
         currentPostFeedId = parti.id;
         currentParti = parti;
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changePartiPostFeedToolbar(parti);
-        if(needToLoadPost) {
-            refreshPosts();
-        } else {
-            clearPostsAndShowDemo();
+        if(force || !parti.id.equals(currentPostFeedId)) {
+            if (needToLoadPost) {
+                refreshPosts();
+            } else {
+                clearPostsAndShowDemo();
+            }
         }
     }
 
