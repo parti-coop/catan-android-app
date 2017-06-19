@@ -22,7 +22,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +53,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mehdi.sakout.fancybuttons.FancyButton;
-import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
@@ -65,6 +63,7 @@ import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
@@ -134,9 +133,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             session.checkLogin(new SessionManager.OnCheckListener() {
                 @Override
                 public void onLoggedIn() {
-                    if (BuildConfig.DEBUG) {
-                        Log.d(Constants.TAG, "이미 로그인되어 있음");
-                    }
+                    CatanLog.d("이미 로그인되어 있음");
+
                     ButterKnife.bind(MainActivity.this);
 
                     presenter = new PostFeedPresenter(session);
@@ -714,7 +712,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void showDownloadedFile(Uri uri, String mimeType) {
-        Log.d(Constants.TAG, "Show File MimeType : " + mimeType);
+        CatanLog.d("Show File MimeType : " + mimeType);
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         newIntent.setDataAndType(uri, mimeType);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

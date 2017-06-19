@@ -1,7 +1,5 @@
 package xyz.parti.catan.data;
 
-import android.util.Log;
-
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -15,7 +13,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
-import xyz.parti.catan.Constants;
+import xyz.parti.catan.helper.CatanLog;
 
 /**
  * Created by dalikim on 2017. 4. 4..
@@ -57,7 +55,7 @@ public class UnsafeOkHttpClient {
                         }
                     }).build();
         } catch (Exception e) {
-            Log.e(Constants.TAG, e.getMessage(), e);
+            CatanLog.e(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }

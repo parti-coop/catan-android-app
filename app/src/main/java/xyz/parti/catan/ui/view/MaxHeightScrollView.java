@@ -2,12 +2,9 @@ package xyz.parti.catan.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ScrollView;
 
-import java.util.logging.LogManager;
-
-import xyz.parti.catan.Constants;
+import xyz.parti.catan.helper.CatanLog;
 
 /**
  * Created by dalikim on 2017. 6. 17..
@@ -41,7 +38,7 @@ public class MaxHeightScrollView extends ScrollView {
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.AT_MOST);
             getLayoutParams().height = heightSize;
         } catch (Exception e) {
-            Log.e(Constants.TAG, "onMesure : Error forcing height", e);
+            CatanLog.e("onMesure : Error forcing height", e);
         } finally {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }

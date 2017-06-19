@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Option;
@@ -22,6 +20,7 @@ import xyz.parti.catan.data.model.Poll;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.Survey;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.ui.view.CommentView;
@@ -186,7 +185,7 @@ public class PostBinder {
         } else if(payload instanceof LatestCommentsBinder.CommentDiff) {
             latestCommentsBinder.rebindComment(post, (LatestCommentsBinder.CommentDiff) payload);
         } else {
-            Log.d(Constants.TAG, "PostFeedRecyclerView bind : invalid playload");
+            CatanLog.d("PostFeedRecyclerView bind : invalid playload");
         }
     }
 

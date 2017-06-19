@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -38,9 +37,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import xyz.parti.catan.BuildConfig;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;
 
@@ -216,7 +214,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void success(Result<TwitterSession> loginResult) {
                 if(BuildConfig.DEBUG) {
-                    Log.d(Constants.TAG, "트위터 로그인 성공");
+                    CatanLog.d("트위터 로그인 성공");
                 }
                 TwitterAuthToken accessToken = loginResult.data.getAuthToken();
                 partiLoginTask.loginSocial("twitter", accessToken.token, accessToken.secret);
@@ -225,7 +223,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void failure(TwitterException error) {
                 progressToggler.toggle(false);
-                Log.e(Constants.TAG, error.getMessage(), error);
+                CatanLog.e(error.getMessage(), error);
             }
         });
     }
@@ -267,16 +265,14 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     private void googleActivityResult(GoogleSignInResult result) {
         if(result.getSignInAccount() == null) {
-            Log.d(Constants.TAG, "구글 인증 정보 없음");
+            CatanLog.d("구글 인증 정보 없음");
         }
         if(result.isSuccess() && result.getSignInAccount() != null) {
-            if(BuildConfig.DEBUG) {
-                Log.d(Constants.TAG, "구글 로그인 성공");
-            }
+            CatanLog.d("구글 로그인 성공");
             String token = result.getSignInAccount().getIdToken();
             partiLoginTask.loginSocial("google_oauth2", token);
         } else {
-            Log.d(Constants.TAG, result.getStatus().toString());
+            CatanLog.d(result.getStatus().toString());
             progressToggler.toggle(false);
             Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_google_login, Toast.LENGTH_LONG).show();
         }
@@ -287,9 +283,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                if(BuildConfig.DEBUG) {
-                    Log.d(Constants.TAG, "페이스북 로그인 성공");
-                }
+                CatanLog.d("페이스북 로그인 성공");
                 AccessToken accessToken = loginResult.getAccessToken();
                 partiLoginTask.loginSocial("facebook", accessToken.getToken());
             }
@@ -304,7 +298,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             public void onError(FacebookException error) {
                 progressToggler.toggle(false);
                 Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
-                Log.e(Constants.TAG, error.getMessage(), error);
+                CatanLog.e(error.getMessage(), error);
             }
         });
         return callbackManager;
@@ -319,7 +313,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         // Could not connect to Google Play Services.  The user needs to select an account,
         // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
         // ConnectionResult to see possible error codes.
-        Log.d(Constants.TAG, "onConnectionFailed:" + connectionResult);
+        CatanLog.d("onConnectionFailed:" + connectionResult);
         reportError(connectionResult.getErrorMessage());
         progressToggler.toggle(false);
     }

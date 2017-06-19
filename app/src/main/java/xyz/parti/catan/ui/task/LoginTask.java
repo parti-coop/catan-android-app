@@ -1,7 +1,6 @@
 package xyz.parti.catan.ui.task;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -17,8 +16,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
-import xyz.parti.catan.Constants;
-import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PartiAccessToken;
@@ -26,7 +23,7 @@ import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.AuthTokenService;
 import xyz.parti.catan.data.services.DeviceTokensService;
 import xyz.parti.catan.data.services.UsersService;
-import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.RxGuardian;
 
 /**
@@ -112,7 +109,7 @@ public class LoginTask {
                         User user = response.body();
                         session.createLoginSession(user, token);
                         if (BuildConfig.DEBUG) {
-                            Log.d(Constants.TAG, user.nickname + "(으)로 로그인");
+                            CatanLog.d(user.nickname + "(으)로 로그인");
                         }
                         afterLogin.onSuccess();
 
@@ -137,12 +134,12 @@ public class LoginTask {
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
-                        Log.d(Constants.TAG, "Reset Instance ID");
+                        CatanLog.d("Reset Instance ID");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        Log.e(Constants.TAG, "Error to reset Instance ID", error);
+                        CatanLog.e("Error to reset Instance ID", error);
                     }
                 });
     }

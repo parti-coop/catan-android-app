@@ -1,15 +1,11 @@
 package xyz.parti.catan.data.dao;
 
-import android.icu.text.MessagePattern;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.Parti;
 
 /**

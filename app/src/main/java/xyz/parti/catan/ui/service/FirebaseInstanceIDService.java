@@ -1,7 +1,5 @@
 package xyz.parti.catan.ui.service;
 
-import android.util.Log;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.gson.JsonNull;
@@ -11,10 +9,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 import xyz.parti.catan.BuildConfig;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.services.DeviceTokensService;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.helper.RxGuardian;
 
@@ -30,7 +28,7 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(Constants.TAG, "FirebaseInstanceIDService - Refreshed token: " + refreshedToken);
+        CatanLog.d("FirebaseInstanceIDService - Refreshed token: " + refreshedToken);
 
         sendRegistrationToServer(refreshedToken);
     }
@@ -43,12 +41,12 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
                     new Consumer<Response<JsonNull>>() {
                         @Override
                         public void accept(@NonNull Response<JsonNull> response) throws Exception {
-                            Log.d(Constants.TAG, "FirebaseInstanceIDService - Reset Instance ID");
+                            CatanLog.d("FirebaseInstanceIDService - Reset Instance ID");
                         }
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(@NonNull Throwable error) throws Exception {
-                            Log.e(Constants.TAG, "FirebaseInstanceIDService - Error to reset Instance ID", error);
+                            CatanLog.e("FirebaseInstanceIDService - Error to reset Instance ID", error);
                         }
                     });
         }

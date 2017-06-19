@@ -1,15 +1,14 @@
 package xyz.parti.catan.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.RecyclableModel;
+import xyz.parti.catan.helper.CatanLog;
 
 /**
  * Created by dalikim on 2017. 4. 30..
@@ -96,7 +95,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
                 return;
             }
         }
-        Log.d(Constants.TAG, "Not found model in LoadMoreRecyclerView : " + model.toString());
+        CatanLog.d("Not found model in LoadMoreRecyclerView : " + model.toString());
     }
 
     private void prepareChangedModels(List<InfinitableModelHolder<T>> holders) {

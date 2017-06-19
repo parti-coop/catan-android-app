@@ -1,7 +1,6 @@
 package xyz.parti.catan.ui.presenter;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -16,7 +15,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
@@ -25,6 +23,7 @@ import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.services.CommentsService;
 import xyz.parti.catan.data.services.UpvotesService;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.view.CommentView;
 import xyz.parti.catan.ui.view.NewCommentForm;
@@ -70,7 +69,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
     public void loadFirstComments() {
         if(feedAdapter == null) {
-            Log.d(Constants.TAG, "moreCommentsPublisher : feedAdapter is null");
+            CatanLog.d("moreCommentsPublisher : feedAdapter is null");
             return;
         }
 
@@ -108,13 +107,13 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
     public void loadMoreComments() {
         if(feedAdapter == null) {
-            Log.d(Constants.TAG, "moreCommentsPublisher : feedAdapter is null");
+            CatanLog.d("moreCommentsPublisher : feedAdapter is null");
             return;
         }
 
         Comment comment = feedAdapter.getFirstModel();
         if(comment == null) {
-            Log.d(Constants.TAG, "moreCommentsPublisher : first comment is null");
+            CatanLog.d("moreCommentsPublisher : first comment is null");
             return;
         }
         feedAdapter.prependLoader();

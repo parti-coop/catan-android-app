@@ -1,7 +1,6 @@
 package xyz.parti.catan.data;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -19,9 +18,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import xyz.parti.catan.BuildConfig;
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.services.AuthTokenService;
+import xyz.parti.catan.helper.CatanLog;
 
 /**
  * Created by dalikim on 2017. 3. 27..
@@ -123,7 +122,7 @@ public class ServiceBuilder {
                 PartiAccessToken currentToken = session.getPartiAccessToken();
                 String currentAccessToken = currentToken.access_token; //get currently stored token
                 if(currentAccessToken == null) {
-                    Log.e(Constants.TAG, "Response Error 004");
+                    CatanLog.d("Response Error 004");
                     return response;
                 } else if(currentAccessToken.equals(originalAccessToken)) { //compare current token with token that was stored before, if it was not updated - do update
                     Call<PartiAccessToken> tokenCall = tokenService.getRefreshAccessToken(currentToken.refresh_token,
@@ -158,7 +157,7 @@ public class ServiceBuilder {
                 throw new AuthFailError();
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Response Error 005 " + e.getMessage(), e);
+            CatanLog.e("Response Error 005 " + e.getMessage(), e);
             Crashlytics.logException(e);
             throw new AuthFailError();
         }

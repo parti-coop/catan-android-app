@@ -1,7 +1,5 @@
 package xyz.parti.catan.helper;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +11,6 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
-import xyz.parti.catan.Constants;
 
 /**
  * Created by dalikim on 2017. 5. 10..

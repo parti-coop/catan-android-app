@@ -30,9 +30,11 @@ public class CatanApplication extends MultiDexApplication {
 
         new JoinedPartiesPreference(this).reset();
 
-        Stetho.initialize(Stetho.newInitializerBuilder(this)
-                .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).withMetaTables().build())
-                .build());
+        if(BuildConfig.DEBUG) {
+            Stetho.initialize(Stetho.newInitializerBuilder(this)
+                    .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                    .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).withMetaTables().build())
+                    .build());
+        }
     }
 }

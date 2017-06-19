@@ -6,15 +6,14 @@ import android.content.SharedPreferences;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
 import io.realm.Realm;
-import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.LogInActivity;
 
@@ -47,9 +46,7 @@ public class SessionManager {
             result.refresh_token = pref.getString(KEY_REFRESH_TOKEN, null);
             result.token_type = pref.getString(KEY_TOKEN_TYPE, null);
             result.expires_in = pref.getLong(KEY_EXPIRES_IN, 0);
-            if(BuildConfig.DEBUG) {
-                Log.d(Constants.TAG, "getPartiAccessToken");
-            }
+            CatanLog.d("getPartiAccessToken");
             return result;
         }
         return null;
@@ -70,9 +67,7 @@ public class SessionManager {
      * Create login session
      * */
     public void createLoginSession(User user, PartiAccessToken accessToken){
-        if(BuildConfig.DEBUG) {
-            Log.d(Constants.TAG, "createLoginSession");
-        }
+        CatanLog.d("createLoginSession");
         editor.putString(KEY_SESSION_VERSION, CURRENT_SESSION_VERSION);
         editor.putBoolean(KEY_IS_LOGIN, true);
         editor.putLong(KEY_USER_ID, user.id);
@@ -89,9 +84,7 @@ public class SessionManager {
      * Create login session
      * */
     public void updateAccessToken(PartiAccessToken accessToken){
-        if(BuildConfig.DEBUG) {
-            Log.d(Constants.TAG, "updateAccessToken");
-        }
+        CatanLog.d("updateAccessToken");
         editor.putString(KEY_ACCESS_TOKEN, accessToken.access_token);
         editor.putString(KEY_REFRESH_TOKEN, accessToken.refresh_token);
         editor.putString(KEY_TOKEN_TYPE, accessToken.token_type);
@@ -160,7 +153,7 @@ public class SessionManager {
             editor.clear();
             editor.commit();
         } catch (Exception e) {
-            Log.e(Constants.TAG, e.getMessage(), e);
+            CatanLog.e(e.getMessage(), e);
         }
     }
 
@@ -172,7 +165,7 @@ public class SessionManager {
             editor.clear();
             editor.commit();
         } catch (Exception e) {
-            Log.e(Constants.TAG, e.getMessage(), e);
+            CatanLog.e(e.getMessage(), e);
         }
     }
 

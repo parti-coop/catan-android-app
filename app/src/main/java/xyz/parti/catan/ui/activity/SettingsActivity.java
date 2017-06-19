@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +42,7 @@ import xyz.parti.catan.data.model.Setting;
 import xyz.parti.catan.data.services.DeviceTokensService;
 import xyz.parti.catan.data.services.SettingsService;
 import xyz.parti.catan.helper.AppVersionHelper;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.RxGuardian;
 
 /**
@@ -80,7 +80,7 @@ public class SettingsActivity extends BaseActivity {
                         if (response.isSuccessful()) {
                             settings = response.body();
                         } else {
-                            Log.d(Constants.TAG, "Setting Info Error");
+                            CatanLog.d("Setting Info Error");
                         }
                         setupFragment();
                         prefsLayout.setVisibility(View.VISIBLE);
@@ -88,7 +88,7 @@ public class SettingsActivity extends BaseActivity {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
-                        Log.e(Constants.TAG, "Setting Info Exception", error);
+                        CatanLog.e("Setting Info Exception", error);
                         setupFragment();
                         prefsLayout.setVisibility(View.VISIBLE);
                     }
@@ -184,7 +184,7 @@ public class SettingsActivity extends BaseActivity {
                                 new Consumer<Response<JsonNull>>() {
                                     @Override
                                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
-                                        Log.d(Constants.TAG, "Create Instance ID");
+                                        CatanLog.d("Create Instance ID");
                                     }
                                 });
                     } else {
@@ -193,7 +193,7 @@ public class SettingsActivity extends BaseActivity {
                                 new Consumer<Response<JsonNull>>() {
                                     @Override
                                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
-                                        Log.d(Constants.TAG, "Destroy Instance ID");
+                                        CatanLog.d("Destroy Instance ID");
                                     }
                                 });
                     }
@@ -264,13 +264,13 @@ public class SettingsActivity extends BaseActivity {
                             new Consumer<Response<JsonNull>>() {
                                 @Override
                                 public void accept(@NonNull Response<JsonNull> response) throws Exception {
-                                    Log.d(Constants.TAG, "Destroy Instance ID");
+                                    CatanLog.d("Destroy Instance ID");
                                     realLogout();
                                 }
                             }, new Consumer<Throwable>() {
                                 @Override
                                 public void accept(@NonNull Throwable error) throws Exception {
-                                    Log.e(Constants.TAG, "Error to destroy Instance ID", error);
+                                    CatanLog.e("Error to destroy Instance ID", error);
                                     realLogout();
                                 }
                             });

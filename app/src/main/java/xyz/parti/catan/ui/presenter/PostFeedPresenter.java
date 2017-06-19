@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -50,6 +49,7 @@ import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.data.services.PartiesService;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.helper.AppVersionHelper;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
@@ -374,23 +374,23 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void receivePushMessage(int notificatiionId, PushMessage pushMessage) {
         if(!isActive()) {
-            Log.d(Constants.TAG, "NOT active");
+            CatanLog.d("NOT active");
             return;
         }
 
         if(notificatiionId != -1) {
-            Log.d(Constants.TAG, "MAIN notificatiionId " + notificatiionId);
+            CatanLog.d("MAIN notificatiionId " + notificatiionId);
             NotificationsPreference repository = new NotificationsPreference(getView().getContext());
             repository.destroy(notificatiionId);
         }
 
         if(pushMessage == null) {
-            Log.d(Constants.TAG, "NULL pushMessage and reload");
+            CatanLog.d("NULL pushMessage and reload");
             switchDashboardPostFeed(true);
             return;
         }
         if(pushMessage.user_id != session.getCurrentUser().id) {
-            Log.d(Constants.TAG, "ANOTHER USER");
+            CatanLog.d("ANOTHER USER");
             switchDashboardPostFeed(true);
             return;
         }
@@ -573,7 +573,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         File file = new File(image.path);
         if(!file.exists()) {
-            Log.d(Constants.TAG, "Not found file : " + image.path);
+            CatanLog.d("Not found file : " + image.path);
             return null;
         }
         RequestBody requestFile = RequestBody.create(MediaType.parse(getView().getContext().getContentResolver().getType(image.uri)), file);
@@ -721,7 +721,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(Constants.TAG, databaseError.getMessage(), databaseError.toException());
+                CatanLog.e(databaseError.getMessage(), databaseError.toException());
             }
         };
 

@@ -3,7 +3,6 @@ package xyz.parti.catan.ui.task;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.os.EnvironmentCompat;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -19,6 +18,7 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.services.PostsService;
+import xyz.parti.catan.helper.CatanLog;
 
 /**
  * Created by dalikim on 2017. 4. 25..
@@ -72,7 +72,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
             }
 
         } catch (IOException e) {
-            Log.e(Constants.TAG, e.getMessage(), e);
+            CatanLog.e(e.getMessage(), e);
             return RESUT_ERROR;
         }
     }
@@ -108,7 +108,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
             }
             return downloadedSize;
         } catch(Throwable e) {
-            Log.e(Constants.TAG, e.getMessage(), e);
+            CatanLog.e(e.getMessage(), e);
             throw e;
         } finally {
             try {
@@ -125,7 +125,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         // Handle the situation that user's external storage is not ready
         if (!Environment.MEDIA_MOUNTED.equals(EnvironmentCompat.getStorageState(storageDir))) {
-            Log.d(Constants.TAG, "External storage is not ready");
+            CatanLog.d("External storage is not ready");
             return null;
         }
 

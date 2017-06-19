@@ -1,10 +1,8 @@
 package xyz.parti.catan.helper;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
-import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 
 /**
@@ -14,11 +12,11 @@ import xyz.parti.catan.R;
 public class ReportHelper {
     public static void wtf(Context context, String msg) {
         Toast.makeText(context.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-        Log.wtf(Constants.TAG, msg);
+        CatanLog.d(msg);
     }
 
     public static void wtf(Context context, Throwable t) {
         Toast.makeText(context.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-        Log.wtf(Constants.TAG, t);
+        CatanLog.e(t);
     }
 }

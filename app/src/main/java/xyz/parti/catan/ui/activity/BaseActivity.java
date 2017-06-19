@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -16,7 +15,7 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import io.fabric.sdk.android.Fabric;
 import xyz.parti.catan.BuildConfig;
-import xyz.parti.catan.Constants;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.helper.ReportHelper;
 
@@ -97,11 +96,9 @@ public class BaseActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent){
             //In my case the LoginActivity is visible after logout, so i don't finish the Login Activity
             if(willFinishIfLogOut()){
-                if(BuildConfig.DEBUG) {
-                    Log.d(Constants.TAG, "Skip destroying after logout");
-                }
+                CatanLog.d("Skip destroying after logout");
             }else{
-                Log.d(Constants.TAG, "Destroying after logout");
+                CatanLog.d("Destroying after logout");
                 finish();
             }
         }
@@ -111,11 +108,9 @@ public class BaseActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             //In my case the LoginActivity is visible after logout, so i don't finish the Login Activity
             if (willFinishIfNetworkDisconnect()) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(Constants.TAG, "Skip destroying after disconnect");
-                }
+                CatanLog.d("Skip destroying after disconnect");
             } else {
-                Log.d(Constants.TAG, "Destroying after disconnect");
+                CatanLog.d("Destroying after disconnect");
                 finish();
             }
 

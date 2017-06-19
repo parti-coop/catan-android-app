@@ -1,16 +1,13 @@
 package xyz.parti.catan.ui.service;
 
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -28,6 +25,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.preference.NotificationsPreference;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.ui.activity.MainActivity;
 import xyz.parti.catan.ui.receivers.CancelNotificationReceiver;
@@ -63,22 +61,22 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
         pushMessage.timestamp = System.currentTimeMillis();
 
-        Log.d(Constants.TAG, "Received id : " + data.get("id"));
-        Log.d(Constants.TAG, "Received title : " + data.get("title"));
-        Log.d(Constants.TAG, "Received body : " + data.get("body"));
-        Log.d(Constants.TAG, "Received priority : " + data.get("priority"));
-        Log.d(Constants.TAG, "Received type : " + data.get("type"));
-        Log.d(Constants.TAG, "Received param : " + data.get("param"));
-        Log.d(Constants.TAG, "Received url : " + data.get("url"));
+        CatanLog.d("Received id : " + data.get("id"));
+        CatanLog.d("Received title : " + data.get("title"));
+        CatanLog.d("Received body : " + data.get("body"));
+        CatanLog.d("Received priority : " + data.get("priority"));
+        CatanLog.d("Received type : " + data.get("type"));
+        CatanLog.d("Received param : " + data.get("param"));
+        CatanLog.d("Received url : " + data.get("url"));
 
         SessionManager session = new SessionManager(this);
         if(!session.isLoggedIn() || session.getCurrentUser().id != pushMessage.user_id) {
-            Log.d(Constants.TAG, "Message : User NOT match");
+            CatanLog.d("Message : User NOT match");
             return;
         }
 
         if(!PrefPushMessage.isReceivable(this)) {
-            Log.d(Constants.TAG, "Message : Disable by user");
+            CatanLog.d("Message : Disable by user");
             return;
         }
 

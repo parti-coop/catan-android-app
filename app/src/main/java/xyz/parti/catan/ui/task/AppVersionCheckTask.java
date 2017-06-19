@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -14,6 +13,7 @@ import retrofit2.Response;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.services.AppVersionService;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.RxGuardian;
 
 /**
@@ -64,13 +64,13 @@ public class AppVersionCheckTask {
                             }
                             action.run(lastVersion);
                         } else {
-                            Log.d(Constants.TAG, "실패 " + response.code());
+                            CatanLog.d("실패 " + response.code());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
-                        Log.e(Constants.TAG, "getNewVersionIfAvailable 오류 ", error);
+                        CatanLog.e("getNewVersionIfAvailable 오류 ", error);
                     }
                 });
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonNull;
@@ -19,6 +18,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.services.DeviceTokensService;
+import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.helper.RxGuardian;
 
@@ -67,7 +67,7 @@ public class ReceivablePushMessageCheckTask {
                         new Consumer<Response<JsonNull>>() {
                             @Override
                             public void accept(@NonNull Response<JsonNull> response) throws Exception {
-                                Log.d(Constants.TAG, "Create Instance ID");
+                                CatanLog.d("Create Instance ID");
                                 PrefPushMessage.setReceivable(context);
                             }
                         });
