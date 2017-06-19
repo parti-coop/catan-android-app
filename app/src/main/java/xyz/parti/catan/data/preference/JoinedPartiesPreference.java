@@ -33,7 +33,7 @@ public class JoinedPartiesPreference {
     }
 
     public long fetchChangedAt() {
-        return Long.parseLong(preferences.getString(Constants.PREF_VALUE_KEY_CHANGED_AT_TIMESTAMPE, "-1"));
+        return Long.parseLong(preferences.getString(Constants.PREF_VALUE_KEY_CHANGED_AT_TIMESTAMPE, "0"));
     }
 
     public long fetchCurrent() {
