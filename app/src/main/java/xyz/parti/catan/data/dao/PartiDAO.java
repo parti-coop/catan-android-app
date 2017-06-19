@@ -31,7 +31,6 @@ public class PartiDAO {
         result.addChangeListener(new RealmChangeListener<RealmResults<Parti>>() {
             @Override
             public void onChange(RealmResults<Parti> list) {
-                Log.d(Constants.TAG_TEST, "TEST");
                 listener.onChange(realm.copyFromRealm(list));
             }
         });
@@ -41,9 +40,6 @@ public class PartiDAO {
         result.removeAllChangeListeners();
     }
 
-    public void save(final List<Parti> parties) {
-        save(parties, null);
-    }
     public void save(final List<Parti> parties, Realm.Transaction.OnSuccess onSuccess) {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override

@@ -35,13 +35,14 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
-import xyz.parti.catan.data.activerecord.ReadPostFeed;
 import xyz.parti.catan.data.dao.PartiDAO;
+import xyz.parti.catan.data.dao.ReadPostFeedDAO;
 import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
+import xyz.parti.catan.data.model.ReadPostFeed;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.preference.JoinedPartiesPreference;
 import xyz.parti.catan.data.preference.LastPostFeedPreference;
@@ -85,6 +86,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private LastPostFeedPreference lastPostFeedPreference;
     private final Realm realm;
     private final PartiDAO partiDAO;
+    private final ReadPostFeedDAO readPostFeedDAO;
     private PartiDAO.ChangeListener partiDAOListener;
 
     public PostFeedPresenter(SessionManager session) {
@@ -96,6 +98,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         realm = Realm.getDefaultInstance();
         partiDAO = new PartiDAO(realm);
+        readPostFeedDAO = new ReadPostFeedDAO(realm);
     }
 
     @Override
@@ -169,11 +172,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             feedAdapter.clearAndAppendModels(page.items, 1);
                             feedAdapter.setMoreDataAvailable(page.has_more_item);
 
-                            ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(currentPostFeedId);
+                            ReadPostFeed readPostFeed = readPostFeedDAO.forPartiOrDashboard(currentPostFeedId);
                             if (page.last_stroked_at != null) {
                                 readPostFeed.lastReadAt = page.last_stroked_at;
+                                readPostFeedDAO.save(readPostFeed);
                             }
-                            readPostFeed.save();
                             markUnreadOrNotPostFeed(readPostFeed);
                             if(readPostFeed.isUnread() && currentPostFeedId == readPostFeed.postFeedId && !getView().isVisibleNewPostsSign()) {
                                 getView().showNewPostsSign();
@@ -371,23 +374,23 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void receivePushMessage(int notificatiionId, PushMessage pushMessage) {
         if(!isActive()) {
-            Log.d(Constants.TAG_TEST, "NOT active");
+            Log.d(Constants.TAG, "NOT active");
             return;
         }
 
         if(notificatiionId != -1) {
-            Log.d(Constants.TAG_TEST, "MAIN notificatiionId " + notificatiionId);
+            Log.d(Constants.TAG, "MAIN notificatiionId " + notificatiionId);
             NotificationsPreference repository = new NotificationsPreference(getView().getContext());
             repository.destroy(notificatiionId);
         }
 
         if(pushMessage == null) {
-            Log.d(Constants.TAG_TEST, "NULL pushMessage and reload");
+            Log.d(Constants.TAG, "NULL pushMessage and reload");
             switchDashboardPostFeed(true);
             return;
         }
         if(pushMessage.user_id != session.getCurrentUser().id) {
-            Log.d(Constants.TAG_TEST, "ANOTHER USER");
+            Log.d(Constants.TAG, "ANOTHER USER");
             switchDashboardPostFeed(true);
             return;
         }
@@ -607,6 +610,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                                 ensuerInitDrawer();
                             }
                         });
+                        readPostFeedDAO.init(list);
                     } else {
                         getView().ensureToHideDrawerDemo();
                         watchNewPosts();
@@ -658,7 +662,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         partiDAOListener = new PartiDAO.ChangeListener() {
             @Override
             public void onChange(List<Parti> list) {
-                Log.d(Constants.TAG_TEST, "RELOAD!!!!");
                 if (!isActive()) return;
                 if (!getView().canRefreshDrawer()) return;
                 joindedParties.clear();
@@ -693,17 +696,20 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 if(dataSnapshot.getKey() == null) return;
                 long postFeedId = Long.parseLong(dataSnapshot.getKey());
                 if(!isJoinedParti(postFeedId)) {
-                    ReadPostFeed.destroyIfExist(postFeedId);
+                    readPostFeedDAO.destroyIfExist(postFeedId);
                     return;
                 }
 
-                ReadPostFeed readPostFeed = ReadPostFeed.forPartiOrDashboard(postFeedId);
+                ReadPostFeed readPostFeed = readPostFeedDAO.forPartiOrDashboard(postFeedId);
 
                 Long lastStrokedBy = dataSnapshot.child("last_stroked_by").getValue(Long.class);
                 if(getCurrentUser().id.equals(lastStrokedBy)) return;
 
                 Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
-                readPostFeed.updateLastStrokedAtSeconds(lastStrokedSecondTime);
+                if(lastStrokedSecondTime == null) {
+                    lastStrokedSecondTime = new Long(-1);
+                }
+                readPostFeedDAO.updateLastStrokedAtSeconds(readPostFeed, lastStrokedSecondTime.longValue());
                 markUnreadOrNotPostFeed(readPostFeed);
 
                 if(readPostFeed.isUnread()) {
@@ -740,7 +746,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         getView().markUnreadOrNotPostFeed(readPostFeed.postFeedId, readPostFeed.isUnread(), readPostFeed.postFeedId == currentPostFeedId);
         if(!readPostFeed.isDashboard()) {
-            getView().markUnreadOrNotPostFeed(Constants.POST_FEED_DASHBOARD, ReadPostFeed.forDashboard().isUnread(), Constants.POST_FEED_DASHBOARD == currentPostFeedId);
+            getView().markUnreadOrNotPostFeed(Constants.POST_FEED_DASHBOARD, readPostFeedDAO.forDashboard().isUnread(), Constants.POST_FEED_DASHBOARD == currentPostFeedId);
         }
     }
 

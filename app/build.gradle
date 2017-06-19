@@ -147,7 +147,6 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.9.2@aar') {
         transitive = true
     }
-    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 
     compile project(':matisse')
 

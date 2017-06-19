@@ -63,13 +63,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
         pushMessage.timestamp = System.currentTimeMillis();
 
-        Log.d(Constants.TAG_TEST, "Received id : " + data.get("id"));
-        Log.d(Constants.TAG_TEST, "Received title : " + data.get("title"));
-        Log.d(Constants.TAG_TEST, "Received body : " + data.get("body"));
-        Log.d(Constants.TAG_TEST, "Received priority : " + data.get("priority"));
-        Log.d(Constants.TAG_TEST, "Received type : " + data.get("type"));
-        Log.d(Constants.TAG_TEST, "Received param : " + data.get("param"));
-        Log.d(Constants.TAG_TEST, "Received url : " + data.get("url"));
+        Log.d(Constants.TAG, "Received id : " + data.get("id"));
+        Log.d(Constants.TAG, "Received title : " + data.get("title"));
+        Log.d(Constants.TAG, "Received body : " + data.get("body"));
+        Log.d(Constants.TAG, "Received priority : " + data.get("priority"));
+        Log.d(Constants.TAG, "Received type : " + data.get("type"));
+        Log.d(Constants.TAG, "Received param : " + data.get("param"));
+        Log.d(Constants.TAG, "Received url : " + data.get("url"));
 
         SessionManager session = new SessionManager(this);
         if(!session.isLoggedIn() || session.getCurrentUser().id != pushMessage.user_id) {

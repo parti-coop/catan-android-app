@@ -586,10 +586,14 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void markUnreadOrNotPostFeed(long postFeedId, boolean unread, boolean selected) {
-        if(drawer == null) return;
+        if(drawer == null) {
+            return;
+        }
 
         PostFeedDrawerItem item = (PostFeedDrawerItem) drawer.getDrawerItem(postFeedId);
-        if(item == null) return;
+        if(item == null) {
+            return;
+        }
 
         if(unread != item.isUnreadMarked()) {
             item.withUnreadMark(unread);

@@ -4,20 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import com.activeandroid.query.Delete;
 import com.google.gson.Gson;
 
+import io.realm.Realm;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
-import xyz.parti.catan.data.activerecord.ReadPostFeed;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.User;
-import xyz.parti.catan.data.preference.LastPostFeedPreference;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.LogInActivity;
 
@@ -146,7 +143,13 @@ public class SessionManager {
         removePreferences(this.context, Constants.PREF_NAME_NOTIFICATIONS);
         removePreferences(this.context, Constants.PREF_NAME_LAST_POST_FEED);
 
-        new Delete().from(ReadPostFeed.class).execute();
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.deleteAll();
+        } finally {
+            realm.close();
+        }
+
         NotificationManagerCompat.from(this.context.getApplicationContext()).cancelAll();
     }
 

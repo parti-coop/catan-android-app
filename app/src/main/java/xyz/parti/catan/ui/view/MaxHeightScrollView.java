@@ -41,7 +41,7 @@ public class MaxHeightScrollView extends ScrollView {
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.AT_MOST);
             getLayoutParams().height = heightSize;
         } catch (Exception e) {
-            Log.e(Constants.TAG_TEST, "onMesure : Error forcing height", e);
+            Log.e(Constants.TAG, "onMesure : Error forcing height", e);
         } finally {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }

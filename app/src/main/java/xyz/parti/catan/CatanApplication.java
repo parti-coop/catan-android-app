@@ -2,8 +2,6 @@ package xyz.parti.catan;
 
 import android.support.multidex.MultiDexApplication;
 
-import com.activeandroid.ActiveAndroid;
-import com.activeandroid.Configuration;
 import com.facebook.stetho.Stetho;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
@@ -12,7 +10,6 @@ import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import timber.log.Timber;
-import xyz.parti.catan.data.activerecord.ReadPostFeed;
 import xyz.parti.catan.data.preference.JoinedPartiesPreference;
 
 public class CatanApplication extends MultiDexApplication {
@@ -22,14 +19,13 @@ public class CatanApplication extends MultiDexApplication {
         Timber.plant(new Timber.DebugTree());
         Iconify.with(new FontAwesomeModule());
 
-        Configuration dbConfiguration = new Configuration.Builder(this)
-                .setDatabaseName("Catan")
-                .addModelClass(ReadPostFeed.class)
-                .create();
-        ActiveAndroid.initialize(dbConfiguration);
-
         Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder().schemaVersion(1).build();
+
+        RealmConfiguration.Builder builder = new RealmConfiguration.Builder();
+        if(BuildConfig.DEBUG) {
+            builder.deleteRealmIfMigrationNeeded();
+        }
+        RealmConfiguration config = builder.build();
         Realm.setDefaultConfiguration(config);
 
         new JoinedPartiesPreference(this).reset();
