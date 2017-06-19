@@ -4,14 +4,19 @@ import android.support.annotation.NonNull;
 
 import org.parceler.Parcel;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by dalikim on 2017. 3. 28..
  */
 
 @Parcel
-public class Group implements Comparable<Group> {
-    private static final String INDIE_SLUG = "indie";
+public class Group extends RealmObject implements Comparable<Group> {
+    public static final String INDIE_SLUG = "indie";
+
     public String title;
+    @PrimaryKey
     public String slug;
 
     public boolean isIndie() {

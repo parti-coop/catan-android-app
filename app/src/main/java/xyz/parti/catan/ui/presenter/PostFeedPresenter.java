@@ -18,12 +18,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.realm.Realm;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -34,12 +36,14 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.activerecord.ReadPostFeed;
+import xyz.parti.catan.data.dao.PartiDAO;
 import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.data.preference.JoinedPartiesPreference;
 import xyz.parti.catan.data.preference.LastPostFeedPreference;
 import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.data.services.PartiesService;
@@ -71,6 +75,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Disposable savePost;
     private Disposable loadDrawer;
     private Disposable loadParti;
+    private Disposable reloadDrawer;
     private AppVersionCheckTask appVersionCheckTask;
     private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
     private List<Parti> joindedParties = new ArrayList<>();
@@ -78,6 +83,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Parti currentParti;
     private ValueEventListener newPostListener;
     private LastPostFeedPreference lastPostFeedPreference;
+    private final Realm realm;
+    private final PartiDAO partiDAO;
+    private PartiDAO.ChangeListener partiDAOListener;
 
     public PostFeedPresenter(SessionManager session) {
         super(session);
@@ -85,6 +93,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         postsService = ServiceBuilder.createService(PostsService.class, session);
         partiesService = ServiceBuilder.createService(PartiesService.class, session);
         partiesFirebaseRoot = FirebaseDatabase.getInstance().getReference(BuildConfig.FIREBASE_DATABASE_PARTIES);
+
+        realm = Realm.getDefaultInstance();
+        partiDAO = new PartiDAO(realm);
     }
 
     @Override
@@ -119,6 +130,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
         if(receivablePushMessageCheckTask != null) {
             receivablePushMessageCheckTask.cancel();
+        }
+        if(partiDAO != null) {
+            partiDAO.unwatchAll();
+        }
+        if(realm != null && !realm.isClosed()) {
+            realm.close();
         }
     }
 
@@ -444,6 +461,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void onDashbard();
         void onParti(Parti parti);
     }
+
     private void playWithPostFeed(final OnLoadPostFeed callback) {
         if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) {
             callback.onDashbard();
@@ -567,24 +585,32 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             lastPostFeedPreference.save(currentPostFeedId);
         }
 
+        if(!needToUpgardeDrawer()) {
+            getView().ensureToHideDrawerDemo();
+            ensuerInitDrawer();
+            return;
+        }
+
         loadDrawer = getRxGuardian().subscribe(loadDrawer,
             partiesService.getMyJoined(),
             new Consumer<Response<Parti[]>>() {
                 @Override
-                public void accept(@io.reactivex.annotations.NonNull Response<Parti[]> response) throws Exception {
+                public void accept(@io.reactivex.annotations.NonNull final Response<Parti[]> response) throws Exception {
                     if (!isActive()) return;
-                    if (!getView().canRefreshDrawer()) return;
-                    if (response.isSuccessful()) {
-                        joindedParties.clear();
-                        joindedParties.addAll(Arrays.asList(response.body()));
-                        for (Parti parti : joindedParties) {
-                            preloadImage(parti.logo_url);
-                        }
-                        getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
-                    }
-                    getView().ensureToHideDrawerDemo();
 
-                    watchNewPosts();
+                    if (response.isSuccessful()) {
+                        final List<Parti> list = new ArrayList<>(Arrays.asList(response.body()));
+                        partiDAO.save(list, new Realm.Transaction.OnSuccess() {
+                            @Override
+                            public void onSuccess() {
+                                new JoinedPartiesPreference(getView().getContext()).sync();
+                                ensuerInitDrawer();
+                            }
+                        });
+                    } else {
+                        getView().ensureToHideDrawerDemo();
+                        watchNewPosts();
+                    }
                 }
             }, new Consumer<Throwable>() {
                 @Override
@@ -593,6 +619,59 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     getView().ensureToHideDrawerDemo();
                 }
             });
+    }
+
+    public void reloadDrawer() {
+        if(!isActive()) return;
+
+        reloadDrawer = getRxGuardian().subscribe(reloadDrawer,
+                partiesService.getMyJoinedPartiesChangedAt(),
+                new Consumer<Response<Date>>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull final Response<Date> response) throws Exception {
+                        if (!isActive()) return;
+                        if (response.isSuccessful()) {
+                            new JoinedPartiesPreference(getView().getContext()).saveChangedAt(response.body().getTime());
+                            if(needToUpgardeDrawer()) {
+                                loadDrawer();
+                                return;
+                            }
+                        }
+                        getView().ensureToHideDrawerDemo();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                        getView().ensureToHideDrawerDemo();
+                    }
+                });
+    }
+
+    private boolean needToUpgardeDrawer() {
+        return new JoinedPartiesPreference(getView().getContext()).needToUpgrade();
+    }
+
+    private void ensuerInitDrawer() {
+        if(partiDAOListener != null) return;
+
+        partiDAOListener = new PartiDAO.ChangeListener() {
+            @Override
+            public void onChange(List<Parti> list) {
+                Log.d(Constants.TAG_TEST, "RELOAD!!!!");
+                if (!isActive()) return;
+                if (!getView().canRefreshDrawer()) return;
+                joindedParties.clear();
+                joindedParties.addAll(list);
+                for (Parti parti : joindedParties) {
+                    preloadImage(parti.logo_url);
+                }
+                getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
+                getView().ensureToHideDrawerDemo();
+                watchNewPosts();
+            }
+        };
+        partiDAO.watchAll(partiDAOListener);
     }
 
     public void selectCurrentDrawerItem() {
@@ -649,7 +728,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     private boolean isJoinedParti(long currentId) {
         for(Parti parti : this.joindedParties) {
-            if(parti.id.equals(currentId)) {
+            if(parti.id == currentId) {
                 return true;
             }
         }

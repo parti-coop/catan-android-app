@@ -235,7 +235,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     @Override
                     public void onDrawerOpened(View drawerView) {
                         if(drawer.getDrawerItems().size() <= 0) {
-                            presenter.loadDrawer();
+                            presenter.reloadDrawer();
                         } else {
                             presenter.selectCurrentDrawerItem();
                         }
@@ -243,7 +243,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
                     @Override
                     public void onDrawerClosed(View drawerView) {
-                        presenter.loadDrawer();
+                        presenter.reloadDrawer();
                     }
 
                     @Override
@@ -543,7 +543,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void setupDrawerItems(User currentUser, TreeMap<Group, List<Parti>> joindedParties, final long currentPostFeedId) {
-        List<IDrawerItem> drawerItems = new ArrayList<>();
+        final List<IDrawerItem> drawerItems = new ArrayList<>();
         PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forDashboard().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url).withIdentifier(Constants.POST_FEED_DASHBOARD);
         drawerItems.add(dashboardItem);
 
