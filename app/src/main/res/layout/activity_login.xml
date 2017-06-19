@@ -12,110 +12,115 @@
         android:layout_centerInParent="true"
         android:visibility="gone" />
 
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/layout_coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <ImageView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="100dp"
-            android:src="@drawable/login_logo" />
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/layout_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingRight="40dp"
-            android:paddingLeft="40dp"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="100dp"
+                android:src="@drawable/login_logo" />
 
-            <mehdi.sakout.fancybuttons.FancyButton
-                android:id="@+id/button_login_by_facebook"
+            <LinearLayout
+                android:id="@+id/layout_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                fancy:fb_borderColor="#FFFFFF"
-                fancy:fb_borderWidth="1dp"
-                fancy:fb_defaultColor="#3b5999"
-                fancy:fb_focusColor="#4e69a2"
-                fancy:fb_fontIconSize="20sp"
-                fancy:fb_fontIconResource="&#xf082;"
-                fancy:fb_iconPosition="left"
-                fancy:fb_radius="30dp"
-                fancy:fb_text="@string/login_by_facebook_button"
-                fancy:fb_textColor="#FFFFFF" />
+                android:paddingRight="40dp"
+                android:paddingLeft="40dp"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
 
-            <mehdi.sakout.fancybuttons.FancyButton
-                android:id="@+id/button_login_by_twitter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                fancy:fb_borderColor="#FFFFFF"
-                fancy:fb_borderWidth="1dp"
-                fancy:fb_defaultColor="#0084b4"
-                fancy:fb_focusColor="#329cc3"
-                fancy:fb_fontIconSize="20sp"
-                fancy:fb_fontIconResource="&#xf099;"
-                fancy:fb_iconPosition="left"
-                fancy:fb_radius="30dp"
-                fancy:fb_text="@string/login_by_twitter_button"
-                fancy:fb_textColor="#FFFFFF" />
+                <mehdi.sakout.fancybuttons.FancyButton
+                    android:id="@+id/button_login_by_facebook"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    fancy:fb_borderColor="#FFFFFF"
+                    fancy:fb_borderWidth="1dp"
+                    fancy:fb_defaultColor="#3b5999"
+                    fancy:fb_focusColor="#4e69a2"
+                    fancy:fb_fontIconSize="20sp"
+                    fancy:fb_fontIconResource="&#xf082;"
+                    fancy:fb_iconPosition="left"
+                    fancy:fb_radius="30dp"
+                    fancy:fb_text="@string/login_by_facebook_button"
+                    fancy:fb_textColor="#FFFFFF" />
 
-            <mehdi.sakout.fancybuttons.FancyButton
-                android:id="@+id/button_login_by_google"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                fancy:fb_borderColor="#FFFFFF"
-                fancy:fb_borderWidth="1dp"
-                fancy:fb_defaultColor="#d23c2f"
-                fancy:fb_focusColor="#ea4335"
-                fancy:fb_fontIconSize="20sp"
-                fancy:fb_fontIconResource="&#xf1a0;"
-                fancy:fb_iconPosition="left"
-                fancy:fb_radius="30dp"
-                fancy:fb_text="@string/login_by_google_button"
-                fancy:fb_textColor="#FFFFFF" />
+                <mehdi.sakout.fancybuttons.FancyButton
+                    android:id="@+id/button_login_by_twitter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    fancy:fb_borderColor="#FFFFFF"
+                    fancy:fb_borderWidth="1dp"
+                    fancy:fb_defaultColor="#0084b4"
+                    fancy:fb_focusColor="#329cc3"
+                    fancy:fb_fontIconSize="20sp"
+                    fancy:fb_fontIconResource="&#xf099;"
+                    fancy:fb_iconPosition="left"
+                    fancy:fb_radius="30dp"
+                    fancy:fb_text="@string/login_by_twitter_button"
+                    fancy:fb_textColor="#FFFFFF" />
 
-            <mehdi.sakout.fancybuttons.FancyButton
-                android:id="@+id/button_login_by_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                fancy:fb_borderColor="#FFFFFF"
-                fancy:fb_borderWidth="1dp"
-                fancy:fb_defaultColor="#89b700"
-                fancy:fb_focusColor="#a3d119"
-                fancy:fb_fontIconSize="20sp"
-                fancy:fb_fontIconResource="&#xf0e0;"
-                fancy:fb_iconPosition="left"
-                fancy:fb_radius="30dp"
-                fancy:fb_text="@string/login_by_email_button"
-                fancy:fb_textColor="#FFFFFF" />
+                <mehdi.sakout.fancybuttons.FancyButton
+                    android:id="@+id/button_login_by_google"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    fancy:fb_borderColor="#FFFFFF"
+                    fancy:fb_borderWidth="1dp"
+                    fancy:fb_defaultColor="#d23c2f"
+                    fancy:fb_focusColor="#ea4335"
+                    fancy:fb_fontIconSize="20sp"
+                    fancy:fb_fontIconResource="&#xf1a0;"
+                    fancy:fb_iconPosition="left"
+                    fancy:fb_radius="30dp"
+                    fancy:fb_text="@string/login_by_google_button"
+                    fancy:fb_textColor="#FFFFFF" />
 
-            <com.joanzapata.iconify.widget.IconButton
-                android:id="@+id/button_sign_up"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/sign_up_link"
-                android:textColor="#fff"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </RelativeLayout>
+                <mehdi.sakout.fancybuttons.FancyButton
+                    android:id="@+id/button_login_by_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    fancy:fb_borderColor="#FFFFFF"
+                    fancy:fb_borderWidth="1dp"
+                    fancy:fb_defaultColor="#89b700"
+                    fancy:fb_focusColor="#a3d119"
+                    fancy:fb_fontIconSize="20sp"
+                    fancy:fb_fontIconResource="&#xf0e0;"
+                    fancy:fb_iconPosition="left"
+                    fancy:fb_radius="30dp"
+                    fancy:fb_text="@string/login_by_email_button"
+                    fancy:fb_textColor="#FFFFFF" />
+
+                <com.joanzapata.iconify.widget.IconButton
+                    android:id="@+id/button_sign_up"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/sign_up_link"
+                    android:textColor="#fff"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

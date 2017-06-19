@@ -16,8 +16,8 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +30,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -67,6 +66,7 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
+import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
@@ -84,8 +84,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     Toolbar appToolbar;
     @BindView(R.id.recyclerview_post_list)
     RecyclerView postListRecyclerView;
-    @BindView(R.id.drawer_layout_root)
-    DrawerLayout rootDrawerLayout;
+    @BindView(R.id.layout_coordinator)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.appbarlayout)
     AppBarLayout appBarLayout;
     @BindView(R.id.swipe_refresh_layout_post_list)
@@ -725,7 +725,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         try {
             startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this.getApplicationContext(), "다운로드된 파일을 열 수 있는 프로그램이 없습니다.", Toast.LENGTH_LONG).show();
+            showMessage(R.string.not_found_app_for_downloaded_file);
         }
     }
 
@@ -776,15 +776,16 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void showNewVersionMessage(String newVersion) {
-        Snackbar.make(rootDrawerLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000)
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, String.format(getResources().getString(R.string.new_version), newVersion), 30 * 1000)
                 .setAction(R.string.ok,
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 new IntentHelper(MainActivity.this).startPlayStore(getPackageName());
                             }
-                        })
-                .show();
+                        });
+        StyleHelper.forSnackbar(this, snackbar);
+        snackbar.show();
     }
 
     @Override

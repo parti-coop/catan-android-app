@@ -37,7 +37,7 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
  */
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
-    private static final int MAX_SIZE = 3;
+    private static final int MAX_SIZE = 6;
     private NotificationManagerCompat notificationManager;
     private NotificationsPreference notificationsRepository;
 

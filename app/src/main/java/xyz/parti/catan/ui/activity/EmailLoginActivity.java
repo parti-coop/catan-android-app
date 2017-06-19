@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
@@ -18,7 +19,7 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.KeyboardHelper;
-import xyz.parti.catan.helper.ReportHelper;
+import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;
 
@@ -30,6 +31,8 @@ public class EmailLoginActivity extends BaseActivity {
     EditText passwordEditText;
     @BindView(R.id.progressbar_status)
     ProgressBar statusProgressBar;
+    @BindView(R.id.layout_coordinator)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.scrollview_form)
     View formView;
     @BindView(R.id.button_submit)
@@ -76,7 +79,7 @@ public class EmailLoginActivity extends BaseActivity {
             @Override
             public void onNotFoundUser() {
                 progressToggler.toggle(false);
-                Snackbar.make(formView, String.format(getResources().getString(R.string.login_password_not_found_user)), 30 * 1000)
+                Snackbar snackbar = Snackbar.make(coordinatorLayout, String.format(getResources().getString(R.string.login_password_not_found_user)), 30 * 1000)
                         .setAction(R.string.ok,
                                 new View.OnClickListener() {
                                     @Override
@@ -84,8 +87,9 @@ public class EmailLoginActivity extends BaseActivity {
                                         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
                                         startActivity(i);
                                     }
-                                })
-                        .show();
+                                });
+                StyleHelper.forSnackbar(EmailLoginActivity.this, snackbar);
+                snackbar.show();
             }
 
             @Override

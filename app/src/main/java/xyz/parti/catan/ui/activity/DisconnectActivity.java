@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -44,7 +43,7 @@ public class DisconnectActivity extends BaseActivity {
         if(new NetworkHelper(this).isValidNetwork()) {
             cleanUp();
         } else {
-            Toast.makeText(this.getApplicationContext(), R.string.fail_to_connect, Toast.LENGTH_LONG).show();
+            showMessage(R.string.fail_to_connect);
         }
     }
 

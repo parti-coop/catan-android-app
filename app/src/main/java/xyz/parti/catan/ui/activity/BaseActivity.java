@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -15,9 +16,9 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import io.fabric.sdk.android.Fabric;
 import xyz.parti.catan.BuildConfig;
+import xyz.parti.catan.R;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.NetworkHelper;
-import xyz.parti.catan.helper.ReportHelper;
 
 /**
  * Created by dalikim on 2017. 4. 7..
@@ -129,14 +130,24 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void reportError(String message) {
-        if(new NetworkHelper(this).isValidNetwork()) ReportHelper.wtf(this.getApplicationContext(), message);
+        if(new NetworkHelper(this).isValidNetwork()) {
+            Toast.makeText(this.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
+            CatanLog.d(message);
+        }
+    }
+
+    public void reportError(Throwable error) {
+        if(new NetworkHelper(this).isValidNetwork()) {
+            Toast.makeText(this.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
+            CatanLog.e(error);
+        }
     }
 
     public void showMessage(String message) {
         Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    public void reportError(Throwable error) {
-        if(new NetworkHelper(this).isValidNetwork()) ReportHelper.wtf(this.getApplicationContext(), error);
+    public void showMessage(@StringRes int idRes) {
+        Toast.makeText(this.getApplicationContext(), getResources().getText(idRes), Toast.LENGTH_LONG).show();
     }
 }

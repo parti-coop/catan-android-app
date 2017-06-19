@@ -1,9 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
     tools:context="xyz.parti.catan.ui.activity.EmailLoginActivity"
     android:background="#966fd6">
 
@@ -17,62 +16,71 @@
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
 
-    <ScrollView
-        android:id="@+id/scrollview_form"
-        android:layout_centerInParent="true"
-        android:paddingRight="40dp"
-        android:paddingLeft="40dp"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/layout_coordinator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:id="@+id/emailLoginForm"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scrollview_form"
+            android:paddingRight="40dp"
+            android:paddingLeft="40dp"
+            android:fillViewport="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <android.support.design.widget.TextInputLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/textview_email"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/emailLoginForm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_email"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1" />
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/textview_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_email"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1" />
 
-                <EditText
-                    android:id="@+id/edittext_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_password"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1" />
+                    </android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/button_submit"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="#6b37c1"
-                android:textColor="#fff"
-                android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+                        <EditText
+                            android:id="@+id/edittext_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_password"
+                            android:imeActionId="@+id/login"
+                            android:imeActionLabel="@string/action_sign_in_short"
+                            android:imeOptions="actionUnspecified"
+                            android:inputType="textPassword"
+                            android:maxLines="1" />
 
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                    </android.support.design.widget.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/button_submit"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="#6b37c1"
+                        android:textColor="#fff"
+                        android:text="@string/action_sign_in"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

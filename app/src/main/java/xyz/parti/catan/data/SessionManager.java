@@ -138,7 +138,9 @@ public class SessionManager {
 
         Realm realm = Realm.getDefaultInstance();
         try {
+            realm.beginTransaction();
             realm.deleteAll();
+            realm.commitTransaction();
         } finally {
             realm.close();
         }

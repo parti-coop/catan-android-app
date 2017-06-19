@@ -10,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -39,6 +38,7 @@ import butterknife.OnClick;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.CatanLog;
+import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.task.LoginTask;
 import xyz.parti.catan.ui.view.ProgressToggler;
 
@@ -137,7 +137,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void onNotFoundUser() {
                 progressToggler.toggle(false);
-                Snackbar.make(panelLayout, getResources().getString(R.string.login_social_not_found_user), 10 * 1000)
+                Snackbar snackbar = Snackbar.make(panelLayout, getResources().getString(R.string.login_social_not_found_user), 30 * 1000)
                         .setAction(R.string.ok,
                                 new View.OnClickListener() {
                                     @Override
@@ -145,8 +145,9 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
                                         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://parti.xyz/users/pre_sign_up"));
                                         startActivity(i);
                                     }
-                                })
-                        .show();
+                                });
+                StyleHelper.forSnackbar(LogInActivity.this, snackbar);
+                snackbar.show();
             }
 
             @Override
@@ -192,7 +193,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
                             }
                         } catch (android.content.ActivityNotFoundException ignore) {
-                            Toast.makeText(getApplicationContext(), R.string.not_support_device, Toast.LENGTH_LONG).show();
+                            showMessage(R.string.not_support_device);
                             finish();
                         }
                     }
@@ -236,7 +237,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             if(googleApiAvailability.isUserResolvableError(status)) {
                 showGoogleServiceErrorMessage();
             } else {
-                Toast.makeText(getApplicationContext(), R.string.not_support_device, Toast.LENGTH_LONG).show();
+                showMessage(R.string.not_support_device);
             }
             return;
         }
@@ -274,7 +275,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         } else {
             CatanLog.d(result.getStatus().toString());
             progressToggler.toggle(false);
-            Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_google_login, Toast.LENGTH_LONG).show();
+            showMessage(R.string.error_google_login);
         }
     }
 
@@ -291,13 +292,13 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void onCancel() {
                 progressToggler.toggle(false);
-                Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                showMessage(R.string.error_login);
             }
 
             @Override
             public void onError(FacebookException error) {
                 progressToggler.toggle(false);
-                Toast.makeText(LogInActivity.this.getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                showMessage(R.string.error_login);
                 CatanLog.e(error.getMessage(), error);
             }
         });

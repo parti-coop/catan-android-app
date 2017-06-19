@@ -27,7 +27,6 @@ import xyz.parti.catan.data.services.FeedbacksService;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
-import xyz.parti.catan.helper.ReportHelper;
 import xyz.parti.catan.ui.binder.LatestCommentsBinder;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.DownloadFilesTask;

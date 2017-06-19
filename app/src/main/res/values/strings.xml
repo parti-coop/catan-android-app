@@ -41,7 +41,7 @@
     <string name="doc_file_source_download_permission_denied">다운로드 하기 위한 권한이 필요합니다.\n[설정] > [권한] 에서 저장소에 접근할 수 있는 권한을 허용할 수 있습니다.</string>
     <string name="image_pick_permission_rationale">이미지를 선택하기 위해 저장소에 접근할 수 있는 권한이 필요합니다</string>
     <string name="image_pick_permission_denied">이미지를 선택하기 위해 저장소에 접근할 수 있는 권한이 필요합니다.\n[설정] > [권한] 에서 저장소에 접근할 수 있는 권한을 허용할 수 있습니다.</string>
-
+    <string name="not_found_app_for_downloaded_file">다운로드된 파일을 열 수 있는 프로그램이 없습니다.</string>
     <string name="error_login">로그인이 취소되었습니다</string>
     <string name="error_google_login">로그인이 취소되었습니다.\n [설정]에서 구글 계정을 다시 확인해 주세요.</string>
     <string name="error_any">앗! 뭔가 잘못되었어요</string>

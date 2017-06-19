@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -266,7 +265,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         try {
             startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this.getApplicationContext(), "다운로드된 파일을 열 수 있는 프로그램이 없습니다.", Toast.LENGTH_LONG).show();
+            showMessage(R.string.not_found_app_for_downloaded_file);
         }
     }
 
