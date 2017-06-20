@@ -55,7 +55,7 @@ public class LatestCommentsBinder {
     }
 
     public void bindData(final Post post, boolean showLastComments) {
-        if (post.hasMoreComments()) {
+        if (post.hasMoreComments() || (!showLastComments && post.comments_count > 1)) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
             loadMoreTextView.setText(String.format(Locale.getDefault(), context.getResources().getString(R.string.load_more_comments), String.valueOf(post.comments_count)));
             loadMoreTextView.setOnClickListener(new View.OnClickListener() {
@@ -113,23 +113,6 @@ public class LatestCommentsBinder {
             if(taggingComment != null && taggingComment.id != null && taggingComment.id.equals(comment.id)) {
                 commentView.rebindData(post, comment, payload);
             }
-        }
-    }
-
-    public static class CommentDiff {
-        private final Comment comment;
-        private final String payload;
-
-        public CommentDiff(Comment comment, String payload) {
-            this.comment = comment;
-            this.payload = payload;
-        }
-
-        public Comment getComment() {
-            return comment;
-        }
-        String getPayload() {
-            return payload;
         }
     }
 }

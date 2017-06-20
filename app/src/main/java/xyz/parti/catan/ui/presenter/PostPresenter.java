@@ -10,6 +10,7 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.services.CommentsService;
+import xyz.parti.catan.ui.binder.CommentDiff;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.view.NewCommentForm;
 
@@ -43,10 +44,18 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
     }
 
     @Override
-    public void changePost(Post post, Object playload) {
+    public void changePost(Post post, Object payload) {
         if(!isActive()) return;
+
         this.post = post;
-        getView().changePost(post, playload);
+        if(this.post.sticky_comment != null && payload != null && payload instanceof CommentDiff) {
+            CommentDiff commentDiff = (CommentDiff) payload;
+           if(this.post.sticky_comment.id.equals(commentDiff.getComment().id)) {
+               getView().changeStickyComment(post, commentDiff.getComment(), commentDiff.getPayload());
+           }
+        }
+
+        getView().changePost(post, payload);
     }
 
     @Override
@@ -96,5 +105,6 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
         void setSendingCommentForm();
         void setCompletedCommentForm();
         void showNewComment(Post post);
+        void changeStickyComment(Post post, Comment comment, Object payload);
     }
 }

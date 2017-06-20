@@ -59,6 +59,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     NewCommentForm newCommentForm;
 
     private PostBinder postBinder;
+    private CommentView stickeyCommentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -310,19 +311,25 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         stickyCommentLayout.setVisibility(View.GONE);
     }
 
+    @Override
+    public void changeStickyComment(Post post, Comment comment, Object payload) {
+        if(stickeyCommentView == null) return;
+        stickeyCommentView.rebindData(post, comment, payload);
+    }
+
     public void setupStickyComment(Post post) {
         if(post.sticky_comment == null) return;
 
-        final CommentView commentView = new CommentView(this);
-        commentView.attachPresenter(presenter);
-        commentView.setPadding(getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0, getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0);
-        commentView.bindData(post, post.sticky_comment, false);
+        stickeyCommentView = new CommentView(this);
+        stickeyCommentView.attachPresenter(presenter);
+        stickeyCommentView.setPadding(getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0, getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0);
+        stickeyCommentView.bindData(post, post.sticky_comment, false);
 
         final MaxHeightScrollView scrollView = new MaxHeightScrollView(PostActivity.this);
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
-        scrollView.addView(commentView);
+        scrollView.addView(stickeyCommentView);
 
         View line = new View(this);
         line.setLayoutParams(new LinearLayout.LayoutParams(
@@ -337,7 +344,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
             @Override
             public void run() {
                 int maxHeight = getResources().getDimensionPixelSize(R.dimen.sticky_comment_max_height);
-                int currentHeight = commentView.getHeight();
+                int currentHeight = stickeyCommentView.getHeight();
                 scrollView.setMaxHeight(Math.min(maxHeight, currentHeight));
             }
         });

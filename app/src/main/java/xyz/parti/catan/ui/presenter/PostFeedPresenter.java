@@ -273,10 +273,10 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     }
 
     @Override
-    public void changePost(Post post, Object playload) {
+    public void changePost(Post post, Object payload) {
         if(!isActive()) return;
 
-        feedAdapter.changeModel(post, playload);
+        feedAdapter.changeModel(post, payload);
     }
 
     @Override

@@ -27,7 +27,7 @@ import xyz.parti.catan.data.services.FeedbacksService;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
-import xyz.parti.catan.ui.binder.LatestCommentsBinder;
+import xyz.parti.catan.ui.binder.CommentDiff;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.CommentView;
@@ -57,7 +57,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         postsService = ServiceBuilder.createService(PostsService.class, session);
     }
 
-    protected abstract void changePost(Post post, Object playload);
+    protected abstract void changePost(Post post, Object payload);
 
     public void changePost(Post post) {
         changePost(post, null);
@@ -125,7 +125,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
                         if (response.isSuccessful()) {
                             post.toggleCommentUpvoting(comment);
-                            changePost(post, new LatestCommentsBinder.CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
+                            changePost(post, new CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
                         } else if (response.code() == 403) {
                             getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {

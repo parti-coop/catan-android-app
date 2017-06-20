@@ -138,7 +138,7 @@ public class CommentView extends LinearLayout {
         if(payload.equals(Comment.IS_UPVOTED_BY_ME)) {
             bindLike(post, comment);
         } else {
-            CatanLog.d("CommentView : invalid playload");
+            CatanLog.d("CommentView : invalid payload");
         }
     }
 

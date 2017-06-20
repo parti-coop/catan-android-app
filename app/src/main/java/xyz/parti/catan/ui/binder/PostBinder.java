@@ -182,10 +182,10 @@ public class PostBinder {
             referenceview.bindData(presenter, post);
         } else if(payload instanceof Poll) {
             referenceview.bindData(presenter, post);
-        } else if(payload instanceof LatestCommentsBinder.CommentDiff) {
-            latestCommentsBinder.rebindComment(post, (LatestCommentsBinder.CommentDiff) payload);
+        } else if(payload instanceof CommentDiff) {
+            latestCommentsBinder.rebindComment(post, (CommentDiff) payload);
         } else {
-            CatanLog.d("PostFeedRecyclerView bind : invalid playload");
+            CatanLog.d("PostFeedRecyclerView bind : invalid payload");
         }
     }
 
