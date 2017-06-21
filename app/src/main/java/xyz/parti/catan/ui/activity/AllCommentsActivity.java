@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.parceler.Parcels;
 
@@ -39,6 +40,8 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     ViewGroup noCommentsSignView;
     @BindView(R.id.new_comment_form)
     NewCommentForm newCommentForm;
+    @BindView(R.id.layout_comment_list_demo)
+    LinearLayout commentListDemoLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +176,18 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public void showDemo() {
+        commentListDemoLayout.setVisibility(View.VISIBLE);
+        listWrapperView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void hideDemo() {
+        commentListDemoLayout.setVisibility(View.GONE);
+        listWrapperView.setVisibility(View.VISIBLE);
     }
 
     @Override

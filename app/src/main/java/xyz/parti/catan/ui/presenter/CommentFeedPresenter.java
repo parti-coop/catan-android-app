@@ -73,6 +73,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
             return;
         }
 
+        getView().showDemo();
+
         firstCommentsPublisher = getRxGuardian().subscribe(firstCommentsPublisher,
                 commentsService.getComments(post.id),
                 new Consumer<Response<Page<Comment>>>() {
@@ -91,6 +93,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             feedAdapter.setMoreDataAvailable(false);
                         }
                         feedAdapter.setLoadFinished();
+                        getView().hideDemo();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -101,6 +104,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
                         getView().reportError(error);
                         feedAdapter.setLoadFinished();
+                        getView().hideDemo();
                     }
                 });
     }
@@ -277,5 +281,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         void showCommentList();
         void showNewCommentForm(Comment comment);
         Context getContext();
+
+        void showDemo();
+        void hideDemo();
     }
 }

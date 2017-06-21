@@ -10,13 +10,62 @@
         android:layout_height="0dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:visibility="gone">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none" />
     </FrameLayout>
+    <LinearLayout
+        android:id="@+id/layout_comment_list_demo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/post_card_padding"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <View
+                        android:layout_height="6dp"
+                        android:layout_width="80dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/style_color_primary_light"/>
+                    <View
+                        android:layout_height="6dp"
+                        android:layout_width="50dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/style_color_primary_light"/>
+                </LinearLayout>
+            </LinearLayout>
+            <View
+                android:layout_height="6dp"
+                android:layout_width="120dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/style_color_primary_light"/>
+            <View
+                android:layout_height="6dp"
+                android:layout_width="70dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/style_color_primary_light"/>
+        </LinearLayout>
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/layout_no_comments_sign"
         android:layout_width="match_parent"
