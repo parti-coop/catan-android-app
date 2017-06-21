@@ -112,7 +112,7 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
             //set the colors for textViews
             partiViewHolder.name.setTextColor(ContextCompat.getColor(ctx, R.color.material_drawer_primary_text_unread));
         } else {
-            partiViewHolder.name.setPaintFlags(partiViewHolder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+            partiViewHolder.name.setPaintFlags(partiViewHolder.name.getPaintFlags() & (~ Paint.FAKE_BOLD_TEXT_FLAG));
             //set the colors for textViews
             partiViewHolder.name.setTextColor(selectedTextColor);
         }
