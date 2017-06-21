@@ -69,8 +69,8 @@ public class Post implements RecyclableModel {
         return this._docFileSources;
     }
 
-    public boolean hasMoreComments() {
-        return (this.comments_count > 0 && this.latest_comments != null && this.comments_count > this.latest_comments.length);
+    public boolean hasMoreComments(int limit) {
+        return (this.comments_count > 0 && this.comments_count > limit);
     }
 
     @Override
@@ -145,5 +145,17 @@ public class Post implements RecyclableModel {
     @Override
     public String toString() {
         return super.toString() + " - post id : " + id;
+    }
+
+    public boolean needToStickyComment(int limit) {
+        if(sticky_comment == null) return false;
+
+        for(Comment comment : lastComments(limit)) {
+            if(comment.id.equals(sticky_comment.id)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

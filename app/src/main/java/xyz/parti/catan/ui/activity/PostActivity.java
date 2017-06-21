@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Comment;
@@ -82,11 +84,14 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         presenter = new PostPresenter(post, session);
         presenter.attachView(this);
 
-        boolean hasStickyComment = (post.sticky_comment != null);
-        if (hasStickyComment) {
+        setupPost(post);
+        if(post.needToStickyComment(Constants.LIMIT_LAST_COMMENTS_COUNT_IN_POST_ACTIVITY)) {
             setupStickyComment(post);
+        } else {
+            if(post.sticky_comment != null) {
+                setupHighlightComment(post.sticky_comment);
+            }
         }
-        setupPost(post, hasStickyComment);
 
         newCommentForm.attachPresenter(presenter);
 
@@ -96,14 +101,25 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         }
     }
 
-    private void setupPost(Post post, boolean hasStickyComment) {
+    private void setupHighlightComment(final Comment comment) {
+        postLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                postLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                postBinder.scrollToComment(postScrollView, comment);
+            }
+        });
+    }
+
+    private void setupPost(Post post) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.downloadProgressDialog = new ProgressDialog(this, R.style.AppProgressDialog);
         } else {
             this.downloadProgressDialog = new ProgressDialog(this);
         }
-        this.postBinder = new PostBinder(this, this.postLayout, this.presenter, false);
-        this.postBinder.bindData(post, !hasStickyComment);
+        this.postBinder = new PostBinder(this, this.postLayout, this.presenter, false, Constants.LIMIT_LAST_COMMENTS_COUNT_IN_POST_ACTIVITY);
+        this.postBinder.bindData(post);
     }
 
     @Override

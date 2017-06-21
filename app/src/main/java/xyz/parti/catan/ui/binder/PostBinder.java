@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
+import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Poll;
@@ -71,31 +73,27 @@ public class PostBinder {
     @BindView(R.id.referenceview)
     ReferenceView referenceview;
 
-    public PostBinder(Context context, View view, PostBindablePresenter presenter) {
-        this(context, view, presenter, true);
+    public PostBinder(Context context, View view, PostBindablePresenter presenter, int lastCommentsCount) {
+        this(context, view, presenter, true, lastCommentsCount);
     }
 
-    public PostBinder(Context context, View view, PostBindablePresenter presenter, boolean withCommentForm) {
+    public PostBinder(Context context, View view, PostBindablePresenter presenter, boolean withCommentForm, int lastCommentsCountLimit) {
         this.context = context;
         this.presenter = presenter;
         ButterKnife.bind(this, view);
 
-        latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout, withCommentForm);
+        latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout, withCommentForm, lastCommentsCountLimit);
     }
 
     public void bindData(Post post) {
-        bindData(post, true);
-    }
-
-    public void bindData(Post post, boolean showLastComments) {
         bindBasic(post);
         bindLike(post);
-        bindComments(post, showLastComments);
+        bindComments(post);
         referenceview.bindData(presenter, post);
     }
 
-    private void bindComments(Post post, boolean showLastComments) {
-        latestCommentsBinder.bindData(post, showLastComments);
+    private void bindComments(Post post) {
+        latestCommentsBinder.bindData(post);
     }
 
     private void bindLike(final Post post) {
@@ -175,7 +173,7 @@ public class PostBinder {
 
     public void rebindData(Post post, Object payload) {
         if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
-            this.bindComments(post, true);
+            this.bindComments(post);
         } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
             this.bindLike(post);
         } else if(payload instanceof Survey) {
@@ -187,6 +185,12 @@ public class PostBinder {
         } else {
             CatanLog.d("PostFeedRecyclerView bind : invalid payload");
         }
+    }
+
+    public void scrollToComment(ScrollView scrollView, Comment comment) {
+        if(latestCommentsBinder == null) return;
+
+        latestCommentsBinder.scrollToComment(scrollView, comment);
     }
 
     public interface PostBindablePresenter extends CommentView.Presenter {

@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.User;
@@ -132,7 +133,7 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
 
         PostViewHolder(android.view.View view, PostFeedPresenter presenter) {
             super(view);
-            this.postBinder = new PostBinder(view.getContext(), view, presenter);
+            this.postBinder = new PostBinder(view.getContext(), view, presenter, Constants.LIMIT_LAST_COMMENTS_COUNT_IN_POST_FEED);
         }
 
         void bindData(Post post){

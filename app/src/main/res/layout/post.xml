@@ -185,9 +185,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/comments_background"
-            android:paddingLeft="@dimen/post_card_padding"
-            android:paddingRight="@dimen/post_card_padding" >
+            android:background="@color/post_comments_background" >
             <TextView
                 android:id="@+id/textview_comments_load_more"
                 android:text="@string/load_more_comments"
@@ -195,14 +193,18 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/post_card_padding"
+                android:paddingRight="@dimen/post_card_padding" />
             <LinearLayout
                 android:id="@+id/layout_new_comment_form"
                 android:orientation="horizontal"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/post_card_padding"
+                android:paddingRight="@dimen/post_card_padding">
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imageview_new_comment_user_image"
                     android:layout_width="@dimen/comment_user_image"

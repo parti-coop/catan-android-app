@@ -27,4 +27,6 @@ public class Constants {
     public static final int NO_NOTIFICATION_ID = -1;
     public static final int MERGED_NOTIFICATION_ID = 0;
     public final static long POST_FEED_DASHBOARD = 0;
+    public static final int LIMIT_LAST_COMMENTS_COUNT_IN_POST_ACTIVITY = 5;
+    public static final int LIMIT_LAST_COMMENTS_COUNT_IN_POST_FEED = 3;
 }

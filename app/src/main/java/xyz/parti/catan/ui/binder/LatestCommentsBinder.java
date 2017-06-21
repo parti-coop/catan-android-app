@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,13 +39,15 @@ public class LatestCommentsBinder {
     private final Context context;
     private ViewGroup view;
     private boolean withNewCommentForm;
+    private int lastCommentsCountLimit;
     private final List<CommentView> commentViews = new ArrayList<>();
 
-    LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view, boolean withNewCommentForm) {
+    LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view, boolean withNewCommentForm, int lastCommentsCountLimit) {
         this.presenter = presenter;
         this.context = view.getContext();
         this.view = view;
         this.withNewCommentForm = withNewCommentForm;
+        this.lastCommentsCountLimit = lastCommentsCountLimit;
         ButterKnife.bind(this, view);
 
         if(withNewCommentForm) {
@@ -54,8 +57,8 @@ public class LatestCommentsBinder {
         }
     }
 
-    public void bindData(final Post post, boolean showLastComments) {
-        if (post.hasMoreComments() || (!showLastComments && post.comments_count > 1)) {
+    public void bindData(final Post post) {
+        if (post.hasMoreComments(lastCommentsCountLimit)) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
             loadMoreTextView.setText(String.format(Locale.getDefault(), context.getResources().getString(R.string.load_more_comments), String.valueOf(post.comments_count)));
             loadMoreTextView.setOnClickListener(new View.OnClickListener() {
@@ -69,25 +72,24 @@ public class LatestCommentsBinder {
             loadMoreTextView.setOnClickListener(null);
         }
 
-        List<Comment> lastComments = post.lastComments(3);
+        List<Comment> lastComments = post.lastComments(lastCommentsCountLimit);
         for (CommentView commentView : commentViews) {
             commentView.hideData();
         }
 
-        if (showLastComments) {
-            for (int i = 0; i < lastComments.size(); i++) {
-                CommentView commentView;
-                if (i >= commentViews.size()) {
-                    commentView = new CommentView(context);
-                    commentView.attachPresenter(presenter);
-                    commentViews.add(commentView);
-                    view.addView(commentView, 1 + i);
-                } else {
-                    commentView = commentViews.get(i);
-                }
-                boolean isLineVisible = withNewCommentForm || (i != lastComments.size() - 1);
-                bindComment(commentView, post, lastComments.get(i), isLineVisible);
+        for (int i = 0; i < lastComments.size(); i++) {
+            CommentView commentView;
+            if (i >= commentViews.size()) {
+                commentView = new CommentView(context);
+                commentView.attachPresenter(presenter);
+                commentView.setPadding(context.getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0, context.getResources().getDimensionPixelSize(R.dimen.post_card_padding), 0);
+                commentViews.add(commentView);
+                view.addView(commentView, 1 + i);
+            } else {
+                commentView = commentViews.get(i);
             }
+            boolean isLineVisible = withNewCommentForm || (i != lastComments.size() - 1);
+            bindComment(commentView, post, lastComments.get(i), isLineVisible);
         }
 
         new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
@@ -112,6 +114,15 @@ public class LatestCommentsBinder {
             Comment taggingComment = commentView.getComment();
             if(taggingComment != null && taggingComment.id != null && taggingComment.id.equals(comment.id)) {
                 commentView.rebindData(post, comment, payload);
+            }
+        }
+    }
+
+    public void scrollToComment(ScrollView scrollView, Comment comment) {
+        if(commentViews == null) return;
+        for(CommentView commentVew : commentViews) {
+            if(commentVew.getComment() != null && commentVew.getComment().id.equals(comment.id)) {
+                scrollView.scrollTo(0, commentVew.getBottom());
             }
         }
     }
