@@ -19,7 +19,6 @@ public class LinkSource {
     public String site_name;
     public String image_url;
     public Boolean is_video;
-    public String video_embeded_code;
     public String video_app_url;
 
     public Collection<? extends String> getPreloadImageUrls() {
