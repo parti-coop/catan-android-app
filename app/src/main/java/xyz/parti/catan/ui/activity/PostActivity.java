@@ -106,8 +106,12 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
             @Override
             public void onGlobalLayout() {
                 postLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                postBinder.scrollToComment(postScrollView, comment);
+                postLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        postBinder.scrollToComment(postScrollView, comment);
+                    }
+                }, 2000);
             }
         });
     }

@@ -187,7 +187,7 @@ public class PostBinder {
         }
     }
 
-    public void scrollToComment(ScrollView scrollView, Comment comment) {
+    public void  scrollToComment(ScrollView scrollView, Comment comment) {
         if(latestCommentsBinder == null) return;
 
         latestCommentsBinder.scrollToComment(scrollView, comment);

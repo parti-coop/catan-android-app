@@ -1,8 +1,10 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -120,10 +122,24 @@ public class LatestCommentsBinder {
 
     public void scrollToComment(ScrollView scrollView, Comment comment) {
         if(commentViews == null) return;
-        for(CommentView commentVew : commentViews) {
-            if(commentVew.getComment() != null && commentVew.getComment().id.equals(comment.id)) {
-                scrollView.scrollTo(0, commentVew.getBottom());
+        for(CommentView commentView : commentViews) {
+            if(commentView.getComment() != null && commentView.getComment().id.equals(comment.id)) {
+                Point childOffset = new Point();
+                getDeepChildOffset(scrollView, view.getParent(), view, childOffset);
+                // Scroll to child.
+                scrollView.smoothScrollTo(0, childOffset.y);
+                return;
             }
         }
+    }
+
+    private void getDeepChildOffset(ScrollView mainParent, ViewParent parent, ViewGroup child, Point childOffset) {
+        ViewGroup parentGroup = (ViewGroup) parent;
+        childOffset.x += child.getLeft();
+        childOffset.y += child.getTop();
+        if (parentGroup.equals(mainParent)) {
+            return;
+        }
+        getDeepChildOffset(mainParent, parentGroup.getParent(), parentGroup, childOffset);
     }
 }
