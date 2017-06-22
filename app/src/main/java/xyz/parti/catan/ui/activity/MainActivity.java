@@ -750,7 +750,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void showPostListDemo() {
-        appBarLayout.setExpanded(true);
         noPostSignLayout.setVisibility(View.GONE);
         postListDemoLayout.setVisibility(View.VISIBLE);
         postListDemoLayout.startShimmerAnimation();
@@ -760,11 +759,22 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         }
         postListSwipeRefreshLayout.setEnabled(false);
         postListSwipeRefreshLayout.setRefreshing(false);
+        appBarLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                appBarLayout.setExpanded(true);
+            }
+        });
     }
 
     @Override
     public void ensureExpendedAppBar() {
-        appBarLayout.setExpanded(true, true);
+        appBarLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                appBarLayout.setExpanded(true, true);
+            }
+        });
     }
 
     @Override
