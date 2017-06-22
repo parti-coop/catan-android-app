@@ -187,10 +187,10 @@ public class PostBinder {
         }
     }
 
-    public void  scrollToComment(ScrollView scrollView, Comment comment) {
+    public void  highlightComment(final ScrollView scrollView, final Comment comment) {
         if(latestCommentsBinder == null) return;
 
-        latestCommentsBinder.scrollToComment(scrollView, comment);
+        latestCommentsBinder.highlightComment(scrollView, comment);
     }
 
     public interface PostBindablePresenter extends CommentView.Presenter {

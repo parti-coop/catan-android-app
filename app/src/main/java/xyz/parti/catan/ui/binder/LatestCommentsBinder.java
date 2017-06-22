@@ -2,6 +2,7 @@ package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -120,14 +121,27 @@ public class LatestCommentsBinder {
         }
     }
 
-    public void scrollToComment(ScrollView scrollView, Comment comment) {
+    public void highlightComment(final ScrollView scrollView, Comment comment) {
         if(commentViews == null) return;
-        for(CommentView commentView : commentViews) {
+
+        Rect scrollBounds = new Rect();
+        scrollView.getHitRect(scrollBounds);
+
+        for(final CommentView commentView : commentViews) {
             if(commentView.getComment() != null && commentView.getComment().id.equals(comment.id)) {
-                Point childOffset = new Point();
-                getDeepChildOffset(scrollView, view.getParent(), view, childOffset);
-                // Scroll to child.
-                scrollView.smoothScrollTo(0, childOffset.y);
+                if (commentView.getLocalVisibleRect(scrollBounds)) {
+                    commentView.highlight();
+                }
+
+                scrollView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Point childOffset = new Point();
+                        getDeepChildOffset(scrollView, commentView.getParent(), commentView, childOffset);
+                        scrollView.smoothScrollTo(0, childOffset.y);
+                        commentView.highlight();
+                    }
+                }, 1500);
                 return;
             }
         }

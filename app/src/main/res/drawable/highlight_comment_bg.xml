@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:angle="90"
+                android:centerColor="@color/comments_background_highlight"
+                android:centerY="0.8"
+                android:endColor="@color/comments_background_highlight_edge"
+                android:startColor="@color/comments_background_highlight" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <gradient
+                android:angle="90"
+                android:centerColor="@color/comments_background_highlight"
+                android:centerY="0.2"
+                android:endColor="@color/comments_background_highlight_edge"
+                android:startColor="@color/comments_background_highlight" />
+        </shape>
+    </item>
+</layer-list>

@@ -6,14 +6,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,6 +53,7 @@ public class CommentView extends LinearLayout {
     Button likeButton;
     @BindView(R.id.button_show_comment_likes)
     Button showLikesButton;
+    private boolean isHighlighted = false;
 
     public CommentView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -86,23 +85,18 @@ public class CommentView extends LinearLayout {
         }
     }
 
-    private void setHighlight() {
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                CommentView.this.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    public void highlight() {
+        if(isHighlighted) return;
+        isHighlighted = true;
 
-                Drawable originalBgDrawable = CommentView.this.getBackground();
-                if(originalBgDrawable == null) originalBgDrawable = new ColorDrawable(Color.TRANSPARENT);
-                int highlightBgColor = ContextCompat.getColor(getContext(), R.color.comments_background_highlight);
-
-                Drawable[] color = {new ColorDrawable(highlightBgColor), originalBgDrawable};
-                TransitionDrawable trans = new TransitionDrawable(color);
-                trans.setCrossFadeEnabled(true);
-                CommentView.this.setBackground(trans);
-                trans.startTransition(3000);
-            }
-        });
+        Drawable originalBgDrawable = CommentView.this.getBackground();
+        if(originalBgDrawable == null) originalBgDrawable = new ColorDrawable(Color.TRANSPARENT);
+        Drawable highlightBgDrawable = ContextCompat.getDrawable(getContext(), R.drawable.highlight_comment_bg);
+        Drawable[] color = {highlightBgDrawable, originalBgDrawable};
+        TransitionDrawable trans = new TransitionDrawable(color);
+        trans.setCrossFadeEnabled(true);
+        CommentView.this.setBackground(trans);
+        trans.startTransition(3000);
     }
 
     public void bindData(Post post, Comment comment) {
@@ -134,11 +128,6 @@ public class CommentView extends LinearLayout {
         bindLike(post, comment);
 
         setVisibility(View.VISIBLE);
-        if(post.sticky_comment != null) {
-            if(comment.id.equals(post.sticky_comment.id)) {
-                setHighlight();
-            }
-        }
     }
 
     private void bindLike(final Post post, final Comment comment) {

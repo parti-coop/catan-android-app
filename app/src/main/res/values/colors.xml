@@ -19,6 +19,7 @@
     <color name="default_text_view_link">#303F9F</color>
     <color name="post_comments_background">@color/brand_gray_light</color>
     <color name="comments_background_highlight">@color/style_color_primary_light</color>
+    <color name="comments_background_highlight_edge">#00ded2f2</color>
     <color name="post_border">@color/brand_gray_light</color>
     <color name="comments_border">@color/brand_gray</color>
     <color name="comment_edittext_highlight">@color/brand_gray_light</color>
