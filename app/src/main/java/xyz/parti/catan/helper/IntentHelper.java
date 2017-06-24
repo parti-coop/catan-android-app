@@ -12,7 +12,7 @@ public class IntentHelper {
     private Context context;
 
     public IntentHelper(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     public void startPlayStore(String appPackage) {

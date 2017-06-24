@@ -15,7 +15,7 @@ public class NetworkHelper {
     private Context context;
 
     public NetworkHelper(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     public boolean isValidNetwork() {

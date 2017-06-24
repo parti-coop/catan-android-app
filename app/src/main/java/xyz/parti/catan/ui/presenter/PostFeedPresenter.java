@@ -5,9 +5,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -104,7 +101,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     @Override
     public void attachView(PostFeedPresenter.View view) {
         super.attachView(view);
-        appVersionCheckTask = new AppVersionCheckTask(new AppVersionHelper(getView().getContext()).getCurrentVerion(), getView().getContext());
+        appVersionCheckTask = new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(getView().getContext()), getView().getContext());
         receivablePushMessageCheckTask = new ReceivablePushMessageCheckTask(getView().getContext(), session);
         lastPostFeedPreference = new LastPostFeedPreference(getView().getContext());
 
@@ -346,20 +343,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showUrl(Uri.parse("https://parti.xyz/parties"));
     }
 
-    public void preloadImage(String url) {
-        if(url == null) {
-            return;
-        }
-        Glide.with(getView().getContext())
-                .load(url)
-                .downloadOnly(new SimpleTarget<File>() {
-                    @Override
-                    public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
-                        //OK
-                    }
-                });
-    }
-
     public void receivePushMessage(int notificatiionId, PushMessage pushMessage) {
         if(!isActive()) {
             CatanLog.d("NOT active");
@@ -466,13 +449,12 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         });
     }
 
-
-    public interface OnLoadPostFeed {
+    interface OnLoadPostFeed {
         void onDashbard();
         void onParti(Parti parti);
     }
 
-    public void playWithPostFeed(final OnLoadPostFeed callback) {
+    private void playWithPostFeed(final OnLoadPostFeed callback) {
         if(currentPostFeedId == Constants.POST_FEED_DASHBOARD) {
             callback.onDashbard();
             return;
@@ -673,9 +655,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 if (!getView().canRefreshDrawer()) return;
                 joindedParties.clear();
                 joindedParties.addAll(list);
-                for (Parti parti : joindedParties) {
-                    preloadImage(parti.logo_url);
-                }
                 getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
                 getView().ensureToHideDrawerDemo();
                 watchNewPosts();
@@ -714,9 +693,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
                 Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
                 if(lastStrokedSecondTime == null) {
-                    lastStrokedSecondTime = new Long(-1);
+                    lastStrokedSecondTime = (long) -1;
                 }
-                readPostFeedDAO.updateLastStrokedAtSeconds(readPostFeed, lastStrokedSecondTime.longValue());
+                readPostFeedDAO.updateLastStrokedAtSeconds(readPostFeed, lastStrokedSecondTime);
                 markUnreadOrNotPostFeed(readPostFeed);
 
                 if(readPostFeed.isUnread()) {
@@ -797,7 +776,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         switchPartiPostFeed(parti, true, true);
     }
 
-    public void switchPartiPostFeed(Parti parti, boolean needToLoadPost, boolean force) {
+    private void switchPartiPostFeed(Parti parti, boolean needToLoadPost, boolean force) {
         if(!isActive()) return;
 
         currentPostFeedId = parti.id;

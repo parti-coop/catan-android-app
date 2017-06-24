@@ -117,17 +117,21 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         } else {
             this.downloadProgressDialog = new ProgressDialog(this);
         }
-        this.postBinder = new PostBinder(this, this.postLayout, this.presenter, false, Constants.LIMIT_LAST_COMMENTS_COUNT_IN_POST_ACTIVITY);
-        this.postBinder.bindData(post);
+        this.postBinder = new PostBinder(this, this.postLayout, false, Constants.LIMIT_LAST_COMMENTS_COUNT_IN_POST_ACTIVITY);
+        this.postBinder.bind(this.presenter, post);
     }
 
     @Override
     protected void onDestroy() {
         if(this.postBinder != null) {
+            this.postBinder.unbind();
             this.postBinder = null;
         }
         if(presenter != null) {
             presenter.detachView();
+        }
+        if(stickeyCommentView != null) {
+            stickeyCommentView.unbind();
         }
         super.onDestroy();
     }
@@ -298,9 +302,9 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     @Override
     public void changePost(Post post, Object payload) {
         if(payload == null) {
-            this.postBinder.bindData(post);
+            this.postBinder.bind(presenter, post);
         } else {
-            this.postBinder.rebindData(post, payload);
+            this.postBinder.rebindData(presenter, post, payload);
         }
     }
 
@@ -316,7 +320,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
 
     @Override
     public void showNewComment(Post post) {
-        postBinder.rebindData(post, Post.PLAYLOAD_LATEST_COMMENT);
+        postBinder.rebindData(presenter, post, Post.PLAYLOAD_LATEST_COMMENT);
         postLayout.post(new Runnable() {
             @Override
             public void run() {

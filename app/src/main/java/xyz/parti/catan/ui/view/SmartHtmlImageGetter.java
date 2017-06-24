@@ -3,6 +3,7 @@ package xyz.parti.catan.ui.view;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
@@ -24,7 +25,7 @@ import xyz.parti.catan.R;
  * Created by dalikim on 2017. 5. 19..
  */
 
-public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateChangeListener, Drawable.Callback {
+class SmartHtmlImageGetter implements Html.ImageGetter, View.OnAttachStateChangeListener, Drawable.Callback {
 
     private final Context mContext;
 
@@ -35,7 +36,7 @@ public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateCha
      */
     private final Set<ViewTarget> mViewTargetSet = Collections.newSetFromMap(new WeakHashMap<ViewTarget, Boolean>());
 
-    public GlideImageGetter(Context context, TextView textView) {
+    SmartHtmlImageGetter(Context context, TextView textView) {
         this.mContext = context;
         this.mTextView = textView;
 
@@ -87,25 +88,22 @@ public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateCha
      * redraw the TextView which contains the animated GIFs.
      */
     @Override
-    public void invalidateDrawable(Drawable who) {
+    public void invalidateDrawable(@NonNull Drawable who) {
         mTextView.invalidate();
     }
 
     @Override
-    public void scheduleDrawable(Drawable who, Runnable what, long when) {}
+    public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when) {}
 
     @Override
-    public void unscheduleDrawable(Drawable who, Runnable what) {}
+    public void unscheduleDrawable(@NonNull Drawable who, @NonNull Runnable what) {}
 
     private static final class ImageGetterViewTarget extends ViewTarget<TextView, GlideDrawable> {
-
         private final UrlDrawable mDrawable;
-
         private Request mRequest;
 
         private ImageGetterViewTarget(TextView view, UrlDrawable drawable) {
             super(view);
-
             this.mDrawable = drawable;
         }
 
@@ -116,7 +114,7 @@ public class GlideImageGetter implements Html.ImageGetter, View.OnAttachStateCha
             final int resHeight = resource.getIntrinsicHeight();
             int width, height;
             TextView textView = getView();
-            if (textView.getWidth() >= resWidth) {
+            if (textView.getWidth() >= resWidth * 1.5) {
                 width = resWidth;
                 height = resHeight;
             } else {

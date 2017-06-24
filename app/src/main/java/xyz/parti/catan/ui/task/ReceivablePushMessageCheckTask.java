@@ -32,18 +32,21 @@ public class ReceivablePushMessageCheckTask {
     private final DeviceTokensService deviceTokensService;
 
     private SharedPreferences pref;
-    private Context context;
+    private Context activityContext;
     private Disposable createDeviceTokenPublisher;
 
     public ReceivablePushMessageCheckTask(Context context, SessionManager session) {
         pref = context.getSharedPreferences(Constants.PREF_NAME_RECEIVABLE_PUSH_MESSAGE_CHECKER, Context.MODE_PRIVATE);
-        this.context = context;
+        this.activityContext = context;
         deviceTokensService = ServiceBuilder.createNoRefreshService(DeviceTokensService.class, session.getPartiAccessToken());
         this.rxGuardian = new RxGuardian();
     }
 
     public void cancel() {
         this.rxGuardian.unsubscribeAll();
+        if(activityContext != null) {
+            activityContext = null;
+        }
     }
 
     public void check() {
@@ -52,11 +55,11 @@ public class ReceivablePushMessageCheckTask {
             return;
         }
 
-        if(PrefPushMessage.isReceivable(context)) {
+        if(PrefPushMessage.isReceivable(activityContext)) {
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
         builder.setTitle(R.string.receivable_push_message_confirm_title);
         builder.setMessage(R.string.receivable_push_message_confirm_message);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -68,7 +71,7 @@ public class ReceivablePushMessageCheckTask {
                             @Override
                             public void accept(@NonNull Response<JsonNull> response) throws Exception {
                                 CatanLog.d("Create Instance ID");
-                                PrefPushMessage.setReceivable(context);
+                                PrefPushMessage.setReceivable(activityContext);
                             }
                         });
             }

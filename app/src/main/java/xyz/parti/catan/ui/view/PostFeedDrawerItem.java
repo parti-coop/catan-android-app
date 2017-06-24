@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
@@ -19,7 +20,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.helper.ImageHelper;
 
 /**
  * Created by dalikim on 2017. 6. 6..
@@ -28,22 +28,20 @@ import xyz.parti.catan.helper.ImageHelper;
 public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostFeedDrawerItem.PartiViewHolder> {
     private final int layoutRes;
     private final int type;
-    private final boolean isDashboard;
     private String logoUrl;
     private boolean unreadMarked = false;
 
-    private PostFeedDrawerItem(int layoutRes, int type, boolean isDashboard) {
+    private PostFeedDrawerItem(int layoutRes, int type) {
         this.layoutRes = layoutRes;
         this.type = type;
-        this.isDashboard = isDashboard;
     }
 
     public static PostFeedDrawerItem forParti() {
-        return new PostFeedDrawerItem(R.layout.drawer_item_post_feed, R.id.drawer_item_parti, false);
+        return new PostFeedDrawerItem(R.layout.drawer_item_post_feed, R.id.drawer_item_parti);
     }
 
     public static PostFeedDrawerItem forDashboard() {
-        return new PostFeedDrawerItem(R.layout.drawer_item_post_feed, R.id.drawer_item_dashbord, true);
+        return new PostFeedDrawerItem(R.layout.drawer_item_post_feed, R.id.drawer_item_dashbord);
     }
 
     public PostFeedDrawerItem withLogo(String url) {
@@ -57,7 +55,7 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
     }
 
     @Override
-    public void bindView(PartiViewHolder viewHolder, List payloads) {
+    public void bindView(PartiViewHolder viewHolder, List<Object> payloads) {
         super.bindView(viewHolder, payloads);
 
         //bind the basic view parts
@@ -69,10 +67,8 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
 
     /**
      * a helper method to have the logic for all secondaryDrawerItems only once
-     *
-     * @param partiViewHolder
      */
-    protected void bindViewHelper(PartiViewHolder partiViewHolder) {
+    private void bindViewHelper(PartiViewHolder partiViewHolder) {
         Context ctx = partiViewHolder.view.getContext();
 
         //set the identifier from the drawerItem here. It can be used to run tests
@@ -98,7 +94,7 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
 //        int selectedIconColor = getSelectedIconColor(ctx);
 
         //set the background for the item
-        UIUtils.setBackground(partiViewHolder.view, UIUtils.getSelectableBackground(ctx, selectedColor, true));
+        ViewCompat.setBackground(partiViewHolder.view, UIUtils.getSelectableBackground(ctx, selectedColor, true));
         //set the text for the name
         StringHolder.applyTo(this.getName(), partiViewHolder.name);
 
@@ -118,20 +114,19 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
         }
 
         if(logoUrl != null) {
-            partiViewHolder.itemDashboardLogoImageView.setVisibility(View.GONE);
-            partiViewHolder.itemPartiLogoImageView.setVisibility(View.GONE);
+            partiViewHolder.itemDashboardLogoDraweeView.setVisibility(View.GONE);
+            partiViewHolder.itemPartiLogoDraweeView.setVisibility(View.GONE);
 
-            ImageView logoImageView = null;
+            SimpleDraweeView logoImageView = null;
             if (getType() == R.id.drawer_item_dashbord) {
-                logoImageView = partiViewHolder.itemDashboardLogoImageView;
+                logoImageView = partiViewHolder.itemDashboardLogoDraweeView;
             } else if (getType() == R.id.drawer_item_parti) {
-                logoImageView = partiViewHolder.itemPartiLogoImageView;
+                logoImageView = partiViewHolder.itemPartiLogoDraweeView;
             }
 
             if (logoImageView != null) {
                 logoImageView.setVisibility(View.VISIBLE);
-                logoImageView.setImageDrawable(null);
-                new ImageHelper(logoImageView).loadInto(logoUrl, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+                logoImageView.setImageURI(logoUrl);
             }
         }
 
@@ -142,7 +137,7 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
         }
     }
 
-    public static void setDashboardDrawerMarginTop(View v) {
+    private static void setDashboardDrawerMarginTop(View v) {
         int topMargin = v.getContext().getResources().getDimensionPixelSize(R.dimen.drawer_item_dashboard_margin_top);
 
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) v.getLayoutParams();
@@ -170,10 +165,10 @@ public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostF
     }
 
     static class PartiViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.imageview_item_parti_logo)
-        ImageView itemPartiLogoImageView;
-        @BindView(R.id.imageview_item_dashboard_logo)
-        ImageView itemDashboardLogoImageView;
+        @BindView(R.id.draweeview_item_parti_logo)
+        SimpleDraweeView itemPartiLogoDraweeView;
+        @BindView(R.id.draweeview_item_dashboard_logo)
+        SimpleDraweeView itemDashboardLogoDraweeView;
         @BindView(R.id.material_drawer_name)
         TextView name;
 

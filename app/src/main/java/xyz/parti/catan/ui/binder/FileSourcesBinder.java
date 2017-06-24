@@ -1,13 +1,16 @@
 package xyz.parti.catan.ui.binder;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +20,7 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
-import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.ui.view.CropTopImageView;
-import xyz.parti.catan.ui.view.MatchParentWidthImageView;
+import xyz.parti.catan.helper.ClosableClickableList;
 
 /**
  * Created by dalikim on 2017. 4. 4..
@@ -27,27 +28,29 @@ import xyz.parti.catan.ui.view.MatchParentWidthImageView;
 
 public class FileSourcesBinder {
     private final static int HALF_IMAGE_SPACE = 5;
-    private final PostBinder.PostBindablePresenter presenter;
-    private final Context context;
+    private Context context;
 
     @BindView(R.id.layout_flies_docs)
     ViewGroup docsLayout;
     @BindView(R.id.layout_files_images)
     LinearLayout imagesLayout;
 
-    public FileSourcesBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
-        this.presenter = presenter;
-        this.context = view.getContext();
+    private ClosableClickableList closableClickableList = new ClosableClickableList();
+
+    public FileSourcesBinder(ViewGroup view) {
+        this.context = view.getContext().getApplicationContext();
         LayoutInflater.from(context).inflate(R.layout.references_file_sources, view);
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(Post post) {
+    public void bind(PostBinder.PostBindablePresenter presenter, Post post) {
+        closableClickableList.clear();
+
         imagesLayout.removeAllViews();
         docsLayout.removeAllViews();
 
-        drawImageFileSources(post.getImageFileSources(), post);
-        drawDocFileSources(post.getDocFileSources(), post);
+        drawImageFileSources(presenter, post.getImageFileSources(), post);
+        drawDocFileSources(presenter, post.getDocFileSources(), post);
 
         if(post.getImageFileSources().size() > 0) {
             imagesLayout.setVisibility(View.VISIBLE);
@@ -61,7 +64,7 @@ public class FileSourcesBinder {
         }
     }
 
-    private void drawImageFileSources(List<FileSource> imageFileSources, final Post post) {
+    private void drawImageFileSources(final PostBinder.PostBindablePresenter presenter, List<FileSource> imageFileSources, final Post post) {
         int row = 0;
         for(List<FileSource> imageFileSourcesRow: splitImageFileSources(imageFileSources)) {
             LinearLayout rowLayout = new LinearLayout(context);
@@ -75,13 +78,14 @@ public class FileSourcesBinder {
 
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
-                android.view.View imageView = makeImageCell(context, fileSource.attachment_md_url, fileSource.attachment_sm_url, imageFileSourcesRow.size(), col);
+                android.view.View imageView = makeImageCell(context, fileSource.attachment_md_url, imageFileSourcesRow.size(), col);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         presenter.onClickImageFileSource(post);
                     }
                 });
+                closableClickableList.add(imageView);
                 rowLayout.addView(imageView);
                 col++;
             }
@@ -132,21 +136,20 @@ public class FileSourcesBinder {
         return imageFileSourcesRows;
     }
 
-    private android.view.View makeImageCell(Context context, String md_url, String sm_url, int col_size, int current_col) {
-        final ImageView imageView = (col_size <= 1 ? new MatchParentWidthImageView(context) : new CropTopImageView(context));
-        
-        int height = 300;
-        if(col_size == 1) {
-            height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
-        imageView.setLayoutParams(params);
-        imageView.setAdjustViewBounds(true);
-        if(col_size == 1) {
-            new ImageHelper(imageView).loadInto(md_url, ImageView.ScaleType.CENTER_CROP);
+    private android.view.View makeImageCell(Context context, String md_url, int col_size, int current_col) {
+        SimpleDraweeView draweeView = new SimpleDraweeView(context);
+        if(col_size <= 1) {
+            draweeView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            draweeView.setAspectRatio(0.8f); // w / h
+            draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP);
+            draweeView.setImageURI(md_url);
         } else {
-            new ImageHelper(imageView).loadInto(sm_url, ImageView.ScaleType.MATRIX);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, 300);
+            layoutParams.weight = 1;
+            draweeView.setLayoutParams(layoutParams);
+            draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FOCUS_CROP);
+            draweeView.getHierarchy().setActualImageFocusPoint(new PointF(0.5f, 0f));
+            draweeView.setImageURI(md_url);
         }
 
         LinearLayout rowBgLayout = new LinearLayout(context);
@@ -163,12 +166,12 @@ public class FileSourcesBinder {
                 rowBgLayout.setPadding(HALF_IMAGE_SPACE, 0, HALF_IMAGE_SPACE, 0);
             }
         }
-        rowBgLayout.addView(imageView);
+        rowBgLayout.addView(draweeView);
 
         return rowBgLayout;
     }
 
-    private void drawDocFileSources(List<FileSource> docFileSources, final Post post) {
+    private void drawDocFileSources(final PostBinder.PostBindablePresenter presenter, List<FileSource> docFileSources, final Post post) {
         for(final FileSource docFileSource: docFileSources) {
             LayoutInflater inflater = LayoutInflater.from(context);
             LinearLayout fileSourcesLayout = (LinearLayout) inflater.inflate(R.layout.references_doc_file_source, docsLayout, false);
@@ -176,22 +179,22 @@ public class FileSourcesBinder {
             docsLayout.addView(fileSourcesLayout);
 
             fileSourcesLayout.setOnClickListener(new View.OnClickListener() {
-                                                     @Override
-                                                     public void onClick(View view) {
-                                                         presenter.onClickDocFileSource(post, docFileSource);
-                                                     }
-                                                 });
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickDocFileSource(post, docFileSource);
+                }
+            });
+            closableClickableList.add(fileSourcesLayout);
         }
-    }
-
-    public void unbindData() {
-        imagesLayout.removeAllViews();
-        docsLayout.removeAllViews();
     }
 
     public void setVisibility(int visibility) {
         this.imagesLayout.setVisibility(visibility);
         this.docsLayout.setVisibility(visibility);
+    }
+
+    public void unbind() {
+        closableClickableList.clear();
     }
 
     static class DocFileSourceHolder {

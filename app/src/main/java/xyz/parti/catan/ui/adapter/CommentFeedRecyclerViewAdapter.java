@@ -39,14 +39,6 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
     }
 
     @Override
-    protected void prepareChangedModel(InfinitableModelHolder<Comment> holders) {
-        if(presenter == null) return;
-        for(String url : holders.getPreloadImageUrls()) {
-            presenter.preloadImage(url);
-        }
-    }
-
-    @Override
     boolean isLoadMorePosition(int position) {
         return position <= 0;
     }
@@ -95,6 +87,12 @@ public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<
         @Override
         boolean isLoader() {
             return false;
+        }
+
+        @Override
+        public void onViewRecycled() {
+            commentView.unbind();
+            super.onViewRecycled();
         }
 
         public void bindData(Post post, Comment comment, int position) {

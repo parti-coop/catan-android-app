@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -15,15 +16,16 @@
             android:orientation="horizontal"
             android:padding="@dimen/post_card_padding"
             android:background="@drawable/border_bottom_on_white_bg">
-            <ImageView
-                android:id="@+id/imageview_post_parti_logo"
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/draweeview_post_parti_logo"
                 android:layout_width="@dimen/feed_item_parti_logo"
                 android:layout_height="@dimen/feed_item_parti_logo"
                 android:layout_gravity="center"
                 android:layout_marginRight="5dp"
-                android:scaleType="centerInside"
                 android:gravity="left"
-                android:src="@drawable/img_sample_parti_logo" />
+                fresco:actualImageScaleType="centerCrop"
+                fresco:failureImage="@drawable/img_sample_parti_logo"
+                fresco:failureImageScaleType="centerCrop" />
             <TextView
                 android:id="@+id/textview_post_parti_title"
                 android:layout_width="wrap_content"
@@ -62,8 +64,8 @@
             android:padding="6dp"
             android:background="@drawable/textview_bg_post_latest_activity"
             android:visibility="gone" >
-            <TextView
-                android:id="@+id/textview_post_latest_activity_body"
+            <xyz.parti.catan.ui.view.SmartTextView
+                android:id="@+id/smarttextview_post_latest_activity_body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_muted" />
@@ -80,12 +82,16 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/post_card_padding">
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageview_post_user_image"
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/draweeview_post_user_image"
                 android:layout_width="@dimen/feed_item_user_image"
                 android:layout_height="@dimen/feed_item_user_image"
                 android:layout_gravity="center"
-                android:layout_marginRight="5dp" />
+                android:layout_marginRight="5dp"
+                fresco:actualImageScaleType="centerCrop"
+                fresco:roundAsCircle="true"
+                fresco:failureImage="@drawable/ic_account_circle_white_24dp"
+                fresco:failureImageScaleType="centerCrop" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -104,8 +110,8 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textview_post_title"
+        <xyz.parti.catan.ui.view.SmartTextView
+            android:id="@+id/smarttextview_post_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
@@ -114,7 +120,7 @@
             android:textSize="18sp"
             android:lineSpacingMultiplier="1.1" />
 
-        <TextView
+        <xyz.parti.catan.ui.view.SmartTextView
             android:id="@+id/textview_post_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -205,12 +211,16 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/post_card_padding"
                 android:paddingRight="@dimen/post_card_padding">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/imageview_new_comment_user_image"
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/draweeview_new_comment_user_image"
                     android:layout_width="@dimen/comment_user_image"
                     android:layout_height="@dimen/comment_user_image"
                     android:layout_gravity="top"
-                    android:paddingRight="5dp" />
+                    android:paddingRight="5dp"
+                    fresco:actualImageScaleType="centerCrop"
+                    fresco:roundAsCircle="true"
+                    fresco:failureImage="@drawable/ic_account_circle_white_24dp"
+                    fresco:failureImageScaleType="centerCrop"/>
                 <TextView
                     android:id="@+id/textview_new_comment_input"
                     android:text="@string/comment_form_placeholer"

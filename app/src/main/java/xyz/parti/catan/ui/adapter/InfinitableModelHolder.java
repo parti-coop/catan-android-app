@@ -14,8 +14,8 @@ public class InfinitableModelHolder<T extends RecyclableModel> {
     static int TYPE_MODEL = 0;
     static int TYPE_LOAD = 1;
 
-    private final T model;
-    private final int viewType;
+    private T model;
+    private int viewType;
 
     private InfinitableModelHolder(T model, int viewType) {
         this.model = model;

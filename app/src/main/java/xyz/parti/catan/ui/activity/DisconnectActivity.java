@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.NetworkHelper;
 
@@ -19,12 +20,13 @@ import xyz.parti.catan.helper.NetworkHelper;
 
 public class DisconnectActivity extends BaseActivity {
     public static final String ACTION_NETWORK_RECONNECT = "parti.xyz.catan.session.NetworkReconnect";
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disconnect);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
     }
 
     @Override
@@ -36,6 +38,16 @@ public class DisconnectActivity extends BaseActivity {
     protected void onPause(){
         LocalBroadcastManager.getInstance(this).unregisterReceiver(networkReconnectReceiver);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(unbinder != null) {
+            unbinder.unbind();
+            unbinder = null;
+        }
+        networkReconnectReceiver = null;
+        super.onDestroy();
     }
 
     @OnClick(R.id.button_check)

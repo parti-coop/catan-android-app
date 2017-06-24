@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,9 +34,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -51,6 +54,7 @@ import java.util.TreeMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import mehdi.sakout.fancybuttons.FancyButton;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
@@ -108,12 +112,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     ImageView toolbarDashboardLogoImageView;
     @BindView(R.id.layout_toolbar_parti)
     RelativeLayout toolbarPartiLayout;
-    @BindView(R.id.imageview_toolbar_parti_logo)
-    ImageView toolbarPartiLogoImageView;
+    @BindView(R.id.draweeview_toolbar_parti_logo)
+    SimpleDraweeView toolbarPartiLogoDraweeView;
     @BindView(R.id.textview_toolbar_parti_title)
     TextView toolbarPartiTitleTextView;
     @BindView(R.id.textview_toolbar_group_title)
     TextView toolbarGroupTitleTextView;
+    // android:src="@drawable/img_sample_parti_logo"
 
     private NewPostSignAnimator newPostsSignAnimator;
 
@@ -122,6 +127,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     private MenuItem newPostMenuItem;
     private Drawer drawer;
     private View drawerDemoLayout;
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -135,7 +141,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 public void onLoggedIn() {
                     CatanLog.d("이미 로그인되어 있음");
 
-                    ButterKnife.bind(MainActivity.this);
+                    unbinder = ButterKnife.bind(MainActivity.this);
 
                     presenter = new PostFeedPresenter(session);
                     presenter.attachView(MainActivity.this);
@@ -169,6 +175,17 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         }
         if(presenter != null) {
             presenter.unwatchNewPosts();
+        }
+        if(postListSwipeRefreshLayout != null) {
+            postListSwipeRefreshLayout.setOnRefreshListener(null);
+        }
+
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        imagePipeline.clearMemoryCaches();
+
+        if(unbinder != null) {
+            unbinder.unbind();
+            unbinder = null;
         }
         super.onDestroy();
     }
@@ -623,8 +640,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         } else {
             toolbarGroupTitleTextView.setVisibility(View.GONE);
         }
-        toolbarPartiLogoImageView.setImageDrawable(null);
-        new ImageHelper(toolbarPartiLogoImageView).loadInto(parti.logo_url);
+        toolbarPartiLogoDraweeView.setImageURI(parti.logo_url);
         toolbarDashboardLogoImageView.setVisibility(View.GONE);
     }
 
@@ -860,10 +876,18 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         if (user != null) {
             int size = getResources().getDimensionPixelSize(R.dimen.action_user_image);
 
-            Glide.with(this).load(user.image_url).asBitmap().into(new SimpleTarget<Bitmap>(size,size) {
+            ImageHelper.getBitmap(this, Uri.parse(user.image_url), size, size, new ImageHelper.OnCompletedListener() {
                 @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                    profileItem.setIcon(new BitmapDrawable(getResources(), ImageHelper.getCircularBitmap(resource)));
+                public void onSuccess(Bitmap bitmap) {
+                    profileItem.setIcon(new BitmapDrawable(getResources(), ImageHelper.getCircularBitmap(bitmap)));
+                }
+
+                @Override
+                public void onFailure() {
+                    Drawable defaultDrawable = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_account_circle_white_24dp);
+                    Drawable wrappedDrawable = DrawableCompat.wrap(defaultDrawable);
+                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(MainActivity.this, R.color.brand_gray_dark));
+                    profileItem.setIcon(defaultDrawable);
                 }
             });
         }

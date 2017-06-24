@@ -18,11 +18,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.mikepenz.fastadapter.FastAdapter;
@@ -55,7 +55,6 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.User;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.adapter.PostFormGroupItem;
 import xyz.parti.catan.ui.adapter.PostFormImageItem;
 import xyz.parti.catan.ui.adapter.PostFormPartiItem;
@@ -76,8 +75,8 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
 
     @BindView(R.id.textview_post_form_parti_title)
     TextView partiTitleTextView;
-    @BindView(R.id.imageview_post_form_parti_logo)
-    ImageView partiLogoImageView;
+    @BindView(R.id.draweeview_post_form_parti_logo)
+    SimpleDraweeView partiLogoDraweeView;
     @BindView(R.id.edittext_body)
     EditText editTextVew;
     @BindView(R.id.recyclerview_preview_images)
@@ -113,7 +112,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
 
         previewImagesAdapter = new FastItemAdapter<>();
         //just add an `EventHook` to your `FastAdapter` by implementing either a `ClickEventHook`, `LongClickEventHook`, `TouchEventHook`, `CustomEventHook`
-        previewImagesAdapter.withItemEvent(new ClickEventHook<PostFormImageItem>() {
+        previewImagesAdapter.withEventHook(new ClickEventHook<PostFormImageItem>() {
             @Nullable
             @Override
             public View onBind(@NonNull RecyclerView.ViewHolder viewHolder) {
@@ -209,7 +208,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
 
     @Override
     public void hidePartiChoice() {
-        if(partiChoiceFragment == null) return;
+        if(partiChoiceFragment == null || partiChoiceFragment.getDialog() == null) return;
         partiChoiceFragment.getDialog().hide();
     }
 
@@ -221,7 +220,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
     @Override
     public void setParti(Parti parti) {
         partiTitleTextView.setText(parti.title);
-        new ImageHelper(partiLogoImageView).loadInto(parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        partiLogoDraweeView.setImageURI(parti.logo_url);
     }
 
     @Override
@@ -383,7 +382,7 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            View view = inflater.inflate(R.layout.fragment_parti_choice, null);
+            View view = inflater.inflate(R.layout.fragment_parti_choice, partiChoiceListRecycler);
             ButterKnife.bind(this, view);
 
             setupParties();

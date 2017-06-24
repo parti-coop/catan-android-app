@@ -2,12 +2,8 @@ package xyz.parti.catan.ui.presenter;
 
 import android.content.Context;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.JsonNull;
 
-import java.io.File;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -217,19 +213,6 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
     public Post getPost() {
         return post;
-    }
-
-    public void preloadImage(String url) {
-        if(url == null) {
-            return;
-        }
-        Glide.with(getView().getContext())
-                .load(url)
-                .downloadOnly(new SimpleTarget<File>() {
-                    @Override
-                    public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
-                    }
-                });
     }
 
     @Override

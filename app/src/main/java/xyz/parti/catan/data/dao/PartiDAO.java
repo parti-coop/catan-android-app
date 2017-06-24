@@ -33,7 +33,9 @@ public class PartiDAO {
     }
 
     public void unwatchAll() {
-        result.removeAllChangeListeners();
+        if(result == null) {
+            result.removeAllChangeListeners();
+        }
     }
 
     public void save(final List<Parti> parties, Realm.Transaction.OnSuccess onSuccess) {

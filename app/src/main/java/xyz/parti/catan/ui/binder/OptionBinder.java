@@ -31,14 +31,13 @@ class OptionBinder {
     @BindView(R.id.textview_survey_selected_sign)
     IconTextView selectedSignTextView;
 
-    private final PostBinder.PostBindablePresenter presenter;
-
-    OptionBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
-        this.presenter = presenter;
+    OptionBinder(ViewGroup view) {
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(final Post post, final Option option) {
+    public void bind(final PostBinder.PostBindablePresenter presenter, final Post post, final Option option) {
+        unbind();
+
         bodyTextView.setText(option.body);
         if(post.survey.is_open) {
             bodyTextView.setOnClickListener(new View.OnClickListener() {
@@ -83,5 +82,10 @@ class OptionBinder {
             feedbacksCountTextView.setVisibility(android.view.View.GONE);
             progressBar.setVisibility(android.view.View.GONE);
         }
+    }
+
+    void unbind() {
+        if(bodyTextView != null) bodyTextView.setOnClickListener(null);
+        if(checkBox != null) checkBox.setOnCheckedChangeListener(null);
     }
 }

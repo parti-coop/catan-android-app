@@ -2,6 +2,8 @@ package xyz.parti.catan;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.stetho.Stetho;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
@@ -9,7 +11,9 @@ import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import okhttp3.OkHttpClient;
 import timber.log.Timber;
+import xyz.parti.catan.data.UnsafeOkHttpClient;
 import xyz.parti.catan.data.preference.JoinedPartiesPreference;
 
 public class CatanApplication extends MultiDexApplication {
@@ -27,6 +31,9 @@ public class CatanApplication extends MultiDexApplication {
         }
         RealmConfiguration config = builder.build();
         Realm.setDefaultConfiguration(config);
+
+        OkHttpClient okHttpClient = UnsafeOkHttpClient.getUnsafeOkHttpClient();
+        Fresco.initialize(this, OkHttpImagePipelineConfigFactory.newBuilder(this, okHttpClient).build());
 
         new JoinedPartiesPreference(this).reset();
 

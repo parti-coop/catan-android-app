@@ -36,7 +36,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         super.onCreate(savedInstanceState);
-        //Stetho.initializeWithDefaults(this);
         ensureValidNetwork();
         LocalBroadcastManager.getInstance(this).registerReceiver(logOutReceiver, new IntentFilter(ACTION_LOGOUT));
     }
@@ -90,6 +89,8 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         LocalBroadcastManager.getInstance(this).unregisterReceiver(logOutReceiver);
+        networkDisconnectReceiver = null;
+        logOutReceiver = null;
         super.onDestroy();
     }
 

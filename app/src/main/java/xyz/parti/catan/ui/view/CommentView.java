@@ -13,21 +13,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.CatanLog;
-import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.helper.TextHelper;
 
 /**
  * Created by dalikim on 2017. 6. 14..
@@ -35,14 +34,14 @@ import xyz.parti.catan.helper.TextHelper;
 
 public class CommentView extends LinearLayout {
     private Comment comment;
-    private WeakReference<Presenter> presenter = new WeakReference<Presenter>(null);
+    private WeakReference<Presenter> presenter = new WeakReference<>(null);
 
-    @BindView(R.id.imageview_comment_user_image)
-    CircleImageView userImageImageView;
+    @BindView(R.id.draweeview_comment_user_image)
+    SimpleDraweeView userImageDraweeView;
     @BindView(R.id.textview_comment_user_nickname)
     TextView userNicknameTextView;
-    @BindView(R.id.textview_comment_body)
-    TextView bodyTextView;
+    @BindView(R.id.smarttextview_comment_body)
+    SmartTextView bodySmartTextView;
     @BindView(R.id.textview_comment_created_at)
     LooselyRelativeTimeTextView createdAtTextView;
     @BindView(R.id.button_new_comment)
@@ -104,12 +103,14 @@ public class CommentView extends LinearLayout {
     }
 
     public void bindData(final Post post, final Comment comment, boolean isLineVisible) {
+        clearListeners();
+
         this.comment = comment;
         setTag(R.id.tag_comment, comment);
 
-        new ImageHelper(userImageImageView).loadInto(comment.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        userImageDraweeView.setImageURI(comment.user.image_url);
         userNicknameTextView.setText(comment.user.nickname);
-        new TextHelper(this.getContext()).setTextViewHTML(bodyTextView, comment.body, comment.truncated_body);
+        bodySmartTextView.setRichText(comment.body, comment.truncated_body);
         createdAtTextView.setReferenceTime(comment.created_at.getTime());
 
         if(isLineVisible) {
@@ -146,7 +147,7 @@ public class CommentView extends LinearLayout {
             }
         });
         if(comment.upvotes_count > 0) {
-            showLikesButton.setText(String.format("{fa-heart} %d", comment.upvotes_count));
+            showLikesButton.setText(String.format(Locale.getDefault(), "{fa-heart} %d", comment.upvotes_count));
             showLikesButton.setVisibility(View.VISIBLE);
         } else {
             showLikesButton.setVisibility(View.GONE);
@@ -181,5 +182,22 @@ public class CommentView extends LinearLayout {
     public interface Presenter {
         void onClickLikeComment(Post post, Comment comment);
         void onClickNewComment(Post post, Comment comment);
+    }
+
+    public void unbind() {
+        setTag(R.id.tag_comment, null);
+        if(comment != null) {
+            comment = null;
+        }
+        clearListeners();
+    }
+
+    private void clearListeners() {
+        if(newCommentButton != null) {
+            newCommentButton.setOnClickListener(null);
+        }
+        if(likeButton != null) {
+            likeButton.setOnClickListener(null);
+        }
     }
 }

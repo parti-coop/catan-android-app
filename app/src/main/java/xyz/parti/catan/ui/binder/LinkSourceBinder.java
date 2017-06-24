@@ -9,13 +9,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.LinkSource;
-import xyz.parti.catan.helper.ImageHelper;
 
 /**
  * Created by dalikim on 2017. 4. 5..
@@ -32,8 +31,8 @@ public class LinkSourceBinder {
     TextView siteNameTextView;
     @BindView(R.id.layout_link_image)
     FrameLayout imageLayout;
-    @BindView(R.id.imageview_link_image)
-    ImageView imageImageView;
+    @BindView(R.id.draweeview_link_image)
+    SimpleDraweeView imageSimpleDraweeView;
     @BindView(R.id.textview_link_video_sign)
     ImageView videoSignTextView;
 
@@ -42,7 +41,8 @@ public class LinkSourceBinder {
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(LinkSource linkSource) {
+    public void bind(LinkSource linkSource) {
+        unbind();
         if(linkSource.title_or_url != null) {
             titleTextView.setText(linkSource.title_or_url);
             titleTextView.setVisibility(View.VISIBLE);
@@ -62,7 +62,7 @@ public class LinkSourceBinder {
         }
         siteNameTextView.setVisibility(View.VISIBLE);
         if(linkSource.image_url != null) {
-            new ImageHelper(imageImageView).loadInto(linkSource.image_url);
+            imageSimpleDraweeView.setImageURI(linkSource.image_url);
             if(linkSource.is_video) {
                 videoSignTextView.setVisibility(View.VISIBLE);
             } else {
@@ -70,8 +70,6 @@ public class LinkSourceBinder {
             }
             imageLayout.setVisibility(View.VISIBLE);
         } else {
-            Glide.clear(imageImageView);
-            imageImageView.setImageDrawable(null);
             imageLayout.setVisibility(View.GONE);
         }
     }
@@ -82,5 +80,9 @@ public class LinkSourceBinder {
 
     public void setVisibility(int visibility) {
         getRootView().setVisibility(visibility);
+    }
+
+    public void unbind() {
+        /* ignored */
     }
 }

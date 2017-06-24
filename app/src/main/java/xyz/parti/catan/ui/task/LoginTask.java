@@ -32,7 +32,6 @@ import xyz.parti.catan.helper.RxGuardian;
 
 public class LoginTask {
     private final AuthTokenService authTokenService;
-    private Context context;
     private After afterLogin;
     private SessionManager session;
     private final RxGuardian rxGuardian;
@@ -40,9 +39,8 @@ public class LoginTask {
     private Disposable ceateTokenPublisher;
 
     public LoginTask(Context context, LoginTask.After afterLogin) {
-        this.context = context;
         this.afterLogin = afterLogin;
-        this.session = new SessionManager(this.context.getApplicationContext());
+        this.session = new SessionManager(context.getApplicationContext());
         this.authTokenService = ServiceBuilder.createUnsignedService(AuthTokenService.class);
         this.rxGuardian = new RxGuardian();
     }
@@ -52,7 +50,6 @@ public class LoginTask {
     }
 
     public void destroy() {
-        this.context = null;
         this.afterLogin = null;
         this.session = null;
         this.rxGuardian.unsubscribeAll();

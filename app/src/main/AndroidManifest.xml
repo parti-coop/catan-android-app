@@ -117,9 +117,6 @@
             android:name="io.fabric.ApiKey"
             android:value="61fec037830f072a57601a3e9f538a4a0f0d1ac3"
             />
-        <meta-data
-            android:name="xyz.parti.catan.data.UnsafeOkHttpGlideModule"
-            android:value="GlideModule" />
         <meta-data android:name="AA_DB_NAME" android:value="Catan" />
         <meta-data android:name="AA_DB_VERSION" android:value="1" />
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/material_drawer_item_primary"
     android:orientation="horizontal"
@@ -9,21 +10,26 @@
     android:paddingRight="@dimen/material_drawer_vertical_padding"
     android:paddingStart="@dimen/material_drawer_vertical_padding">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageview_item_dashboard_logo"
-        android:adjustViewBounds="false"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/draweeview_item_dashboard_logo"
         android:layout_width="@dimen/feed_item_parti_logo"
         android:layout_height="@dimen/feed_item_parti_logo"
         android:layout_gravity="center"
-        android:layout_marginRight="@dimen/default_space"/>
+        android:layout_marginRight="@dimen/default_space"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:failureImage="@drawable/ic_account_circle_white_24dp"
+        fresco:failureImageScaleType="centerCrop" />
 
-    <ImageView
-        android:id="@+id/imageview_item_parti_logo"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/draweeview_item_parti_logo"
         android:adjustViewBounds="false"
         android:layout_width="@dimen/feed_item_parti_logo"
         android:layout_height="@dimen/feed_item_parti_logo"
         android:layout_gravity="center"
-        android:layout_marginRight="@dimen/default_space"/>
+        android:layout_marginRight="@dimen/default_space"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:failureImage="@drawable/img_sample_parti_logo"
+        fresco:failureImageScaleType="centerCrop" />
 
     <LinearLayout
         android:layout_width="wrap_content"

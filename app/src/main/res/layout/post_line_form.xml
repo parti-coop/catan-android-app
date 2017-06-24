@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center">
@@ -10,16 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/post_card_padding">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageview_post_line_user_image"
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/draweeview_post_line_user_image"
             android:layout_width="@dimen/feed_item_user_image"
             android:layout_height="@dimen/feed_item_user_image"
-            android:layout_marginRight="5dp" />
+            android:layout_marginRight="5dp"
+            fresco:actualImageScaleType="centerCrop"
+            fresco:roundAsCircle="true"
+            fresco:failureImage="@drawable/ic_account_circle_white_24dp"
+            fresco:failureImageScaleType="centerCrop" />
         <TextView
             android:id="@+id/textview_post_line_user_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/imageview_post_line_user_image"
+            android:layout_toRightOf="@id/draweeview_post_line_user_image"
             android:layout_centerVertical="true"
             android:textColor="@color/text_muted"
             android:text="@string/new_post_placeholder" />

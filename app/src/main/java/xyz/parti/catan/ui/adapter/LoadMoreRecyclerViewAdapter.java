@@ -23,8 +23,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     abstract boolean isLoadMorePosition(int position);
     abstract void onBuildModelViewHolder(RecyclerView.ViewHolder viewHolder, int position);
     abstract LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateLoaderHolder(ViewGroup parent);
-    abstract protected void prepareChangedModel(InfinitableModelHolder<T> holder);
-
 
     LoadMoreRecyclerViewAdapter() {
         holders = new ArrayList<>();
@@ -60,7 +58,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     public void appendModel(T item) {
         InfinitableModelHolder<T> holder = InfinitableModelHolder.forModel(item);
         this.holders.add(holder);
-        prepareChangedModel(holder);
         notifyItemInserted(this.holders.size() - 1);
     }
 
@@ -74,14 +71,12 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     public void prependModel(T item) {
         InfinitableModelHolder<T> holder = InfinitableModelHolder.forModel(item);
         this.holders.add(0, holder);
-        prepareChangedModel(holder);
         notifyDataPrepended(1);
     }
 
     public void addModel(int position, T item) {
         InfinitableModelHolder<T> holder = InfinitableModelHolder.forModel(item);
         this.holders.add(position, holder);
-        prepareChangedModel(holder);
         notifyItemInserted(position);
     }
 
@@ -100,9 +95,6 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
 
     private void prepareChangedModels(List<InfinitableModelHolder<T>> holders) {
         if(holders == null) return;
-        for(InfinitableModelHolder<T> holder : holders) {
-            this.prepareChangedModel(holder);
-        }
     }
 
     public void appendLoader() {
@@ -294,6 +286,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
             super(itemView);
         }
         abstract boolean isLoader();
+        public void onViewRecycled() {}
     }
 
     static abstract class ModelViewHolder extends BaseViewHolder {

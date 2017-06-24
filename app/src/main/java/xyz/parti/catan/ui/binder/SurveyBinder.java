@@ -5,6 +5,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
@@ -22,23 +25,24 @@ public class SurveyBinder {
     LinearLayout optionsLayout;
     @BindView(R.id.textview_survey_footnote)
     TextView footnoteTextView;
+    private List<OptionBinder> optionBinders = new ArrayList<>();
 
-    private PostBinder.PostBindablePresenter presenter;
     private LayoutInflater inflater;
 
-    public SurveyBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
-        this.presenter = presenter;
+    public SurveyBinder(ViewGroup view) {
         this.inflater =  LayoutInflater.from(view.getContext());
         inflater.inflate(R.layout.references_survey, view);
 
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(final Post post) {
+    public void bind(PostBinder.PostBindablePresenter presenter, Post post) {
+        unbind();
+
         optionsLayout.removeAllViews();
         for(int i = 0; i < post.survey.options.length; i++) {
             Option option = post.survey.options[i];
-            bindOption(post, option, i);
+            bindOption(presenter, post, option, i);
         }
 
         String footnote = post.survey.remain_time_human;
@@ -54,14 +58,22 @@ public class SurveyBinder {
         footnoteTextView.setText(footnote);
     }
 
-    private void bindOption(Post post, Option option, int index) {
+    private void bindOption(PostBinder.PostBindablePresenter presenter, Post post, Option option, int index) {
         LinearLayout optionLayout = (LinearLayout) inflater.inflate(R.layout.references_survey_option, optionsLayout, false);
-        new OptionBinder(presenter, optionLayout).bindData(post, option);
+        OptionBinder optionBinder = new OptionBinder(optionLayout);
+        optionBinder.bind(presenter, post, option);
+        optionBinders.add(optionBinder);
         optionLayout.setTag(R.id.tag_option, option);
         optionsLayout.addView(optionLayout, index);
     }
 
     public void setVisibility(int visibility) {
         this.referencesSurveyLayout.setVisibility(visibility);
+    }
+
+    public void unbind() {
+        for(OptionBinder binder : optionBinders) {
+            binder.unbind();
+        }
     }
 }

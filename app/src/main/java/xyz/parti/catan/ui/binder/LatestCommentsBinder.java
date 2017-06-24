@@ -6,10 +6,11 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,37 +18,33 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
-import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.ui.view.CommentView;
 
 /**
  * Created by dalikim on 2017. 4. 29..
  */
 
-public class LatestCommentsBinder {
+class LatestCommentsBinder {
     @BindView(R.id.textview_comments_load_more)
     TextView loadMoreTextView;
-    @BindView(R.id.imageview_new_comment_user_image)
-    CircleImageView newCommentUserImageView;
+    @BindView(R.id.draweeview_new_comment_user_image)
+    SimpleDraweeView newCommentUserDraweeView;
     @BindView(R.id.textview_new_comment_input)
     TextView newCommentInputTextView;
     @BindView(R.id.layout_new_comment_form)
     LinearLayout newCommentFormLayout;
 
-    private final PostBinder.PostBindablePresenter presenter;
-    private final Context context;
+    private Context context;
     private ViewGroup view;
     private boolean withNewCommentForm;
     private int lastCommentsCountLimit;
     private final List<CommentView> commentViews = new ArrayList<>();
 
-    LatestCommentsBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view, boolean withNewCommentForm, int lastCommentsCountLimit) {
-        this.presenter = presenter;
-        this.context = view.getContext();
+    LatestCommentsBinder(ViewGroup view, boolean withNewCommentForm, int lastCommentsCountLimit) {
+        this.context = view.getContext().getApplicationContext();
         this.view = view;
         this.withNewCommentForm = withNewCommentForm;
         this.lastCommentsCountLimit = lastCommentsCountLimit;
@@ -60,7 +57,9 @@ public class LatestCommentsBinder {
         }
     }
 
-    public void bindData(final Post post) {
+    public void bind(final PostBinder.PostBindablePresenter presenter, final Post post) {
+        unbind();
+
         if (post.hasMoreComments(lastCommentsCountLimit)) {
             loadMoreTextView.setVisibility(android.view.View.VISIBLE);
             loadMoreTextView.setText(String.format(Locale.getDefault(), context.getResources().getString(R.string.load_more_comments), String.valueOf(post.comments_count)));
@@ -95,7 +94,7 @@ public class LatestCommentsBinder {
             bindComment(commentView, post, lastComments.get(i), isLineVisible);
         }
 
-        new ImageHelper(newCommentUserImageView).loadInto(presenter.getCurrentUser().image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        newCommentUserDraweeView.setImageURI(presenter.getCurrentUser().image_url);
         newCommentInputTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,7 +120,7 @@ public class LatestCommentsBinder {
         }
     }
 
-    public void highlightComment(final ScrollView scrollView, Comment comment) {
+    void highlightComment(final ScrollView scrollView, Comment comment) {
         if(commentViews == null) return;
 
         Rect scrollBounds = new Rect();
@@ -155,5 +154,13 @@ public class LatestCommentsBinder {
             return;
         }
         getDeepChildOffset(mainParent, parentGroup.getParent(), parentGroup, childOffset);
+    }
+
+    void unbind() {
+        if(loadMoreTextView != null) loadMoreTextView.setOnClickListener(null);
+        if(newCommentInputTextView != null) newCommentInputTextView.setOnClickListener(null);
+        for(CommentView commentView : commentViews) {
+            if(commentView != null) commentView.unbind();
+        }
     }
 }

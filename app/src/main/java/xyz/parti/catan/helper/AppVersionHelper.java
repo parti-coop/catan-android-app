@@ -9,20 +9,13 @@ import android.content.pm.PackageManager;
  */
 
 public class AppVersionHelper {
-    private Context context;
-
-    public AppVersionHelper(Context context) {
-        this.context = context;
-    }
-
-    public String getCurrentVerion() {
+    public static String getCurrentVerion(Context context) {
         PackageManager packageManager = context.getPackageManager();
-        PackageInfo packageInfo = null;
         try {
-            packageInfo =  packageManager.getPackageInfo(context.getPackageName(), 0);
+            PackageInfo packageInfo =  packageManager.getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
-        return packageInfo.versionName;
     }
 }

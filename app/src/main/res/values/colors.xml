@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="default_text">#000</color>
     <color name="brand_gray_darker">#212121</color>
     <color name="brand_gray_dark">#777777</color>
     <color name="brand_gray_less_dark">#b0b0b0</color>

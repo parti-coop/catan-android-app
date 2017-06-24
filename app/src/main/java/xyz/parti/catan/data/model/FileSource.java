@@ -14,6 +14,7 @@ import java.util.List;
 public class FileSource {
     public Long id;
     public String attachment_url;
+    public String attachment_lg_url;
     public String attachment_md_url;
     public String attachment_sm_url;
     public String name;

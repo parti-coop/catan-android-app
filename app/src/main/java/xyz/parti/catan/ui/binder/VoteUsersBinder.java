@@ -1,46 +1,45 @@
 package xyz.parti.catan.ui.binder;
 
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import com.facebook.drawee.generic.RoundingParams;
+import com.facebook.drawee.view.SimpleDraweeView;
+
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.User;
-import xyz.parti.catan.helper.ImageHelper;
 
 /**
  * Created by dalikim on 2017. 4. 25..
  */
 
 class VoteUsersBinder {
-    private final LayoutInflater inflater;
     private ViewGroup view;
-    private boolean reverse;
 
-    VoteUsersBinder(ViewGroup view, boolean reverse) {
+    VoteUsersBinder(ViewGroup view) {
         this.view = view;
-        this.reverse = reverse;
-        this.inflater =  LayoutInflater.from(view.getContext());
     }
 
-    public void bindData(User[] voteUsers) {
-        if(reverse) {
-            for (int i = voteUsers.length - 1; i >= 0; i--) {
-                bindUser(voteUsers[i]);
-            }
-        } else {
-            for (User user : voteUsers) {
-                bindUser(user);
-            }
+    public void bind(User[] voteUsers) {
+        for (User user : voteUsers) {
+            bindUser(user);
         }
     }
 
     private void bindUser(User user) {
-        CircleImageView imageView = (CircleImageView) inflater.inflate(R.layout.references_poll_vote_user, view, false);
-        if(reverse) {
-            imageView.setRotationY(180);
-        }
-        new ImageHelper(imageView).loadInto(user.image_url, CircleImageView.ScaleType.CENTER_CROP, CircleImageView.ScaleType.CENTER_CROP);
+        SimpleDraweeView imageView = new SimpleDraweeView(view.getContext());
+
+        int size = view.getContext().getResources().getDimensionPixelSize(R.dimen.poll_vote_user_size);
+        int margin = view.getContext().getResources().getDimensionPixelSize(R.dimen.poll_vote_user_margin);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
+        layoutParams.setMargins(margin, 0, margin, 0);
+        imageView.setLayoutParams(layoutParams);
+
+        RoundingParams roundingParams = RoundingParams.fromCornersRadius(5f);
+        roundingParams.setRoundAsCircle(true);
+        imageView.getHierarchy().setRoundingParams(roundingParams);
+
+        imageView.setImageURI(user.image_url);
         view.addView(imageView);
     }
 }

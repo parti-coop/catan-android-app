@@ -6,14 +6,16 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.FileSource;
@@ -23,43 +25,41 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.Survey;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.CatanLog;
-import xyz.parti.catan.helper.ImageHelper;
-import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.ui.view.CommentView;
 import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 import xyz.parti.catan.ui.view.ReferenceView;
+import xyz.parti.catan.ui.view.SmartTextView;
 
 /**
  * Created by dalikim on 2017. 5. 15..
  */
 
 public class PostBinder {
-    private final Context context;
-    private final PostBindablePresenter presenter;
+    private Context context;
     private final LatestCommentsBinder latestCommentsBinder;
 
-    @BindView(R.id.imageview_post_parti_logo)
-    ImageView partiLogoImageView;
+    @BindView(R.id.draweeview_post_parti_logo)
+    SimpleDraweeView partiLogoDraweeView;
     @BindView(R.id.textview_post_parti_title)
     TextView partiTitleTextView;
     @BindView(R.id.textview_post_group_title)
     TextView groupTitleTextView;
     @BindView(R.id.layout_post_latest_activity)
     LinearLayout postLatestActivityLayout;
-    @BindView(R.id.textview_post_latest_activity_body)
-    TextView postLatestActivityBodyTextView;
+    @BindView(R.id.smarttextview_post_latest_activity_body)
+    SmartTextView postLatestActivityBodySmartTextView;
     @BindView(R.id.textview_post_latest_activity_at)
     LooselyRelativeTimeTextView postLatestActivityAtTextView;
     @BindView(R.id.textview_post_user_nickname)
     TextView userNicknameTextView;
-    @BindView(R.id.imageview_post_user_image)
-    CircleImageView userImageImageView;
+    @BindView(R.id.draweeview_post_user_image)
+    SimpleDraweeView userImageDraweeView;
     @BindView(R.id.textview_post_created_at)
     LooselyRelativeTimeTextView createdAtTextView;
     @BindView(R.id.textview_post_body)
-    TextView bodyTextView;
-    @BindView(R.id.textview_post_title)
-    TextView titleTextView;
+    SmartTextView bodyTextView;
+    @BindView(R.id.smarttextview_post_title)
+    SmartTextView titleSmartTextView;
     @BindView(R.id.textview_prefix_group_title)
     TextView prefixGroupTitleTextView;
     @BindView(R.id.button_post_like)
@@ -73,30 +73,30 @@ public class PostBinder {
     @BindView(R.id.referenceview)
     ReferenceView referenceview;
 
-    public PostBinder(Context context, View view, PostBindablePresenter presenter, int lastCommentsCount) {
-        this(context, view, presenter, true, lastCommentsCount);
+    public PostBinder(Context context, View view, int lastCommentsCount) {
+        this(context, view, true, lastCommentsCount);
     }
 
-    public PostBinder(Context context, View view, PostBindablePresenter presenter, boolean withCommentForm, int lastCommentsCountLimit) {
-        this.context = context;
-        this.presenter = presenter;
+    public PostBinder(Context context, View view, boolean withCommentForm, int lastCommentsCountLimit) {
+        this.context = context.getApplicationContext();
         ButterKnife.bind(this, view);
 
-        latestCommentsBinder = new LatestCommentsBinder(presenter, commentsSectionLayout, withCommentForm, lastCommentsCountLimit);
+        latestCommentsBinder = new LatestCommentsBinder(commentsSectionLayout, withCommentForm, lastCommentsCountLimit);
     }
 
-    public void bindData(Post post) {
-        bindBasic(post);
-        bindLike(post);
-        bindComments(post);
+    public void bind(PostBindablePresenter presenter, Post post) {
+        unbind();
+        bindBasic(presenter, post);
+        bindLike(presenter, post);
+        bindComments(presenter, post);
         referenceview.bindData(presenter, post);
     }
 
-    private void bindComments(Post post) {
-        latestCommentsBinder.bindData(post);
+    private void bindComments(PostBindablePresenter presenter, Post post) {
+        latestCommentsBinder.bind(presenter, post);
     }
 
-    private void bindLike(final Post post) {
+    private void bindLike(final PostBindablePresenter presenter, final Post post) {
         if(post.is_upvoted_by_me) {
             likeButton.setTypeface(null, Typeface.BOLD);
             likeButton.setTextColor(ContextCompat.getColor(context, R.color.style_color_accent));
@@ -112,15 +112,15 @@ public class PostBinder {
         });
 
         if(post.upvotes_count > 0) {
-            showLikesButton.setText(String.format("{fa-heart} %d", post.upvotes_count));
+            showLikesButton.setText(String.format(Locale.getDefault(), "{fa-heart} %d", post.upvotes_count));
             showLikesButton.setVisibility(View.VISIBLE);
         } else {
             showLikesButton.setVisibility(View.GONE);
         }
     }
 
-    private void bindBasic(final Post post) {
-        new ImageHelper(partiLogoImageView).loadInto(post.parti.logo_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+    private void bindBasic(final PostBindablePresenter presenter, final Post post) {
+        partiLogoDraweeView.setImageURI(post.parti.logo_url);
         partiTitleTextView.setText(post.parti.title);
         if(post.parti.group.isIndie()) {
             prefixGroupTitleTextView.setVisibility(android.view.View.GONE);
@@ -132,14 +132,14 @@ public class PostBinder {
         }
 
         if(post.latest_stroked_activity != null && post.last_stroked_at != null) {
-            new TextHelper(context).setTextViewHTML(postLatestActivityBodyTextView, post.latest_stroked_activity);
+            postLatestActivityBodySmartTextView.setRichText(post.latest_stroked_activity);
             postLatestActivityAtTextView.setReferenceTime(post.last_stroked_at.getTime());
             postLatestActivityLayout.setVisibility(View.VISIBLE);
         } else {
             postLatestActivityLayout.setVisibility(View.GONE);
         }
 
-        new ImageHelper(userImageImageView).loadInto(post.user.image_url, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_CROP);
+        userImageDraweeView.setImageURI(post.user.image_url);
         userNicknameTextView.setText(post.user.nickname);
         createdAtTextView.setReferenceTime(post.created_at.getTime());
         createdAtTextView.setOnClickListener(new View.OnClickListener() {
@@ -150,17 +150,17 @@ public class PostBinder {
         });
 
         if(TextUtils.isEmpty(post.parsed_title)) {
-            titleTextView.setVisibility(android.view.View.GONE);
+            titleSmartTextView.setVisibility(android.view.View.GONE);
         } else {
-            titleTextView.setVisibility(android.view.View.VISIBLE);
-            new TextHelper(context).setTextViewHTML(titleTextView, post.parsed_title);
+            titleSmartTextView.setVisibility(android.view.View.VISIBLE);
+            titleSmartTextView.setRichText(post.parsed_title);
         }
 
         if(TextUtils.isEmpty(post.parsed_body)) {
             bodyTextView.setVisibility(android.view.View.GONE);
         } else {
             bodyTextView.setVisibility(android.view.View.VISIBLE);
-            new TextHelper(context).setTextViewHTML(bodyTextView, post.parsed_body, post.truncated_parsed_body);
+            bodyTextView.setRichText(post.parsed_body, post.truncated_parsed_body);
         }
 
         newCommentButton.setOnClickListener(new View.OnClickListener() {
@@ -171,11 +171,11 @@ public class PostBinder {
         });
     }
 
-    public void rebindData(Post post, Object payload) {
+    public void rebindData(PostBindablePresenter presenter, Post post, Object payload) {
         if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
-            this.bindComments(post);
+            this.bindComments(presenter, post);
         } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
-            this.bindLike(post);
+            this.bindLike(presenter, post);
         } else if(payload instanceof Survey) {
             referenceview.bindData(presenter, post);
         } else if(payload instanceof Poll) {
@@ -189,8 +189,15 @@ public class PostBinder {
 
     public void  highlightComment(final ScrollView scrollView, final Comment comment) {
         if(latestCommentsBinder == null) return;
-
         latestCommentsBinder.highlightComment(scrollView, comment);
+    }
+
+    public void unbind() {
+        if(likeButton != null) likeButton.setOnClickListener(null);
+        if(newCommentButton != null) newCommentButton.setOnClickListener(null);
+        if(createdAtTextView != null) createdAtTextView.setOnClickListener(null);
+        if(latestCommentsBinder != null) latestCommentsBinder.unbind();
+        if(referenceview != null) referenceview.unbind();
     }
 
     public interface PostBindablePresenter extends CommentView.Presenter {

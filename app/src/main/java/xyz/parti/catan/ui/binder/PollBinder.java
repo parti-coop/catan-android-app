@@ -20,6 +20,8 @@ import xyz.parti.catan.data.model.Post;
  */
 
 public class PollBinder {
+    private final Context context;
+
     @BindView(R.id.layout_references_poll)
     LinearLayout referencePollLayout;
     @BindView(R.id.layout_poll_agree_votes)
@@ -33,17 +35,15 @@ public class PollBinder {
     @BindView(R.id.button_poll_disagree)
     IconButton pollDisagreeButton;
 
-    private final PostBinder.PostBindablePresenter presenter;
-    private final Context context;
-
-    public PollBinder(PostBinder.PostBindablePresenter presenter, ViewGroup view) {
-        this.presenter = presenter;
-        this.context = view.getContext();
+    public PollBinder(ViewGroup view) {
+        this.context = view.getContext().getApplicationContext();
         LayoutInflater.from(view.getContext()).inflate(R.layout.references_poll, view);
         ButterKnife.bind(this, view);
     }
 
-    public void bindData(final Post post) {
+    public void bind(final PostBinder.PostBindablePresenter presenter, final Post post) {
+        unbind();
+
         pollTitleTextView.setText(post.poll.title);
         bindVotings(post);
 
@@ -64,8 +64,8 @@ public class PollBinder {
     private void bindVotings(Post post) {
         pollAgreeVotesLayout.removeAllViews();
         pollDisagreeVotesLayout.removeAllViews();
-        new VoteUsersBinder(pollAgreeVotesLayout, true).bindData(post.poll.latest_agreed_voting_users);
-        new VoteUsersBinder(pollDisagreeVotesLayout, false).bindData(post.poll.latest_disagreed_voting_users);
+        new VoteUsersBinder(pollAgreeVotesLayout).bind(post.poll.latest_agreed_voting_users);
+        new VoteUsersBinder(pollDisagreeVotesLayout).bind(post.poll.latest_disagreed_voting_users);
 
         unselectedStyle(pollAgreeButton);
         unselectedStyle(pollDisagreeButton);
@@ -112,5 +112,10 @@ public class PollBinder {
 
     public void setVisibility(int visibility) {
         this.referencePollLayout.setVisibility(visibility);
+    }
+
+    public void unbind() {
+        if(pollAgreeButton != null) pollAgreeButton.setOnClickListener(null);
+        if(pollDisagreeButton != null) pollDisagreeButton.setOnClickListener(null);
     }
 }

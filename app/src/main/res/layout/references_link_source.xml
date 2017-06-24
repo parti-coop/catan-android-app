@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_references_link_source"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,11 +13,13 @@
         android:id="@+id/layout_link_image"
         android:layout_width="match_parent"
         android:layout_height="250dp">
-        <ImageView
-            android:id="@+id/imageview_link_image"
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/draweeview_link_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            fresco:actualImageScaleType="centerCrop"
+            fresco:failureImage="@drawable/ic_empty_box_brand_gray"
+            fresco:failureImageScaleType="centerInside" />
         <ImageView
             android:id="@+id/textview_link_video_sign"
             android:layout_width="wrap_content"

@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_marginLeft="@dimen/default_space"
     android:layout_marginTop="@dimen/default_space"
     android:layout_marginBottom="@dimen/default_space"
     android:layout_height="120dp">
-    <xyz.parti.catan.ui.view.CropTopImageView
-        android:id="@+id/imageview_preview"
-        android:layout_width="wrap_content"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/darweeview_preview"
+        android:layout_width="120dp"
         android:layout_height="match_parent"
-        android:minWidth="50dp" />
-    <com.joanzapata.iconify.widget.IconTextView
+        fresco:actualImageScaleType="focusCrop"
+        fresco:failureImage="@drawable/ic_empty_box_brand_gray_dark"
+        fresco:failureImageScaleType="centerInside" />
+
+    <ImageView
         android:id="@+id/textview_remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|top"
-        android:textSize="30dp"
         android:padding="@dimen/default_space"
-        android:textColor="@android:color/white"
-        android:text="{fa-times-circle-o}"/>
+        android:src="@drawable/ic_multiply"/>
 </FrameLayout>

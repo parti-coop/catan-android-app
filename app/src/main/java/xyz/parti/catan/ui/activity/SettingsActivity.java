@@ -163,7 +163,7 @@ public class SettingsActivity extends BaseActivity {
             setupReceivePushMessageAction();
 
             Preference version = findPreference("pref_version");
-            version.setSummary(new AppVersionHelper(getActivity()).getCurrentVerion());
+            version.setSummary(AppVersionHelper.getCurrentVerion(getView().getContext()));
 
             setupLicenseAction();
             setupMenuAction("pref_help", setting.help_url);

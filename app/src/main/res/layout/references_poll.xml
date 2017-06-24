@@ -25,17 +25,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end"
             android:layout_marginRight="5dp">
             <com.joanzapata.iconify.widget.IconButton
                 android:id="@+id/button_poll_agree"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:background="@drawable/button_bg_transparent"
                 android:text="@string/references_poll_agree_button"
                 android:textSize="14dp"
@@ -44,9 +43,11 @@
                 android:id="@+id/layout_poll_agree_votes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/button_poll_agree"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="0dp"
