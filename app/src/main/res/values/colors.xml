@@ -26,6 +26,7 @@
     <color name="comment_edittext_highlight">@color/brand_gray_light</color>
     <color name="post_button_text">@color/brand_gray_dark</color>
     <color name="comment_button_text">@color/brand_gray_less_dark</color>
+    <color name="messages_border">@color/brand_gray</color>
 
     <color name="vote_agree_button">#59baa3</color>
     <color name="vote_disagree_button">#c0575d</color>
@@ -44,4 +45,5 @@
     <color name="material_drawer_selected">@color/style_color_primary_dark</color>
     <color name="material_drawer_selected_text">@android:color/white</color>
     <color name="material_drawer_header_selection_text">@color/style_color_primary_light</color>
+    <color name="circle_badge">#ff5650</color>
 </resources>

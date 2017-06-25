@@ -55,7 +55,7 @@ public class DisconnectActivity extends BaseActivity {
         if(new NetworkHelper(this).isValidNetwork()) {
             cleanUp();
         } else {
-            showMessage(R.string.fail_to_connect);
+            reportInfo(R.string.fail_to_connect);
         }
     }
 

@@ -69,6 +69,13 @@
             android:theme="@style/AppDialogWhenLarge"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.activity.MessagesActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_messages"
+            android:theme="@style/AppDialogWhenLarge"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.activity.PostActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"

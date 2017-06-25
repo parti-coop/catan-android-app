@@ -132,7 +132,7 @@ public class PostBinder {
         }
 
         if(post.latest_stroked_activity != null && post.last_stroked_at != null) {
-            postLatestActivityBodySmartTextView.setRichText(post.latest_stroked_activity);
+            postLatestActivityBodySmartTextView.setNoImageRichText(post.latest_stroked_activity);
             postLatestActivityAtTextView.setReferenceTime(post.last_stroked_at.getTime());
             postLatestActivityLayout.setVisibility(View.VISIBLE);
         } else {
@@ -153,7 +153,7 @@ public class PostBinder {
             titleSmartTextView.setVisibility(android.view.View.GONE);
         } else {
             titleSmartTextView.setVisibility(android.view.View.VISIBLE);
-            titleSmartTextView.setRichText(post.parsed_title);
+            titleSmartTextView.setNoImageRichText(post.parsed_title);
         }
 
         if(TextUtils.isEmpty(post.parsed_body)) {

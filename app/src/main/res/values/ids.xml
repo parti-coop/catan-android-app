@@ -11,4 +11,6 @@
     <item name="drawer_item_parti" type="id" />
     <item name="material_drawer_item_group" type="id" />
     <item name="tag_option" type="id" />
+    <item name="message_item" type="id" />
+    <item name="default_progress_item" type="id" />
 </resources>

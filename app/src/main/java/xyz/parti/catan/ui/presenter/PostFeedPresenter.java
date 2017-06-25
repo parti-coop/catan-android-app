@@ -371,7 +371,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         if("post".equals(pushMessage.type) && pushMessage.param != null) {
             long postId = Long.parseLong(pushMessage.param);
             if(postId <= 0) {
-                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                 return;
             }
             receivePushMessageForPostPublisher = getRxGuardian().subscribe(receivePushMessageForPostPublisher, postsService.getPost(postId),
@@ -381,9 +381,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             if (response.isSuccessful()) {
                                 getView().showPost(response.body());
                             } else if (response.code() == 403) {
-                                getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                                getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                             } else {
-                                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                                getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                             }
                         }
                     }, new Consumer<Throwable>() {
@@ -395,7 +395,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         } else if("comment".equals(pushMessage.type) && pushMessage.param != null) {
             long commentId = Long.parseLong(pushMessage.param);
             if(commentId <= 0) {
-                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                 return;
             }
             receivePushMessageForCommentPublisher = getRxGuardian().subscribe(receivePushMessageForCommentPublisher, postsService.getPostByStickyCommentId(commentId),
@@ -405,9 +405,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             if (response.isSuccessful()) {
                                 getView().showPost(response.body());
                             } else if (response.code() == 403) {
-                                getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                                getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                             } else {
-                                getView().showMessage(getView().getContext().getResources().getString(R.string.not_found_post));
+                                getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                             }
                         }
                     }, new Consumer<Throwable>() {
@@ -486,6 +486,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 });
     }
 
+    public void showMessages() {
+        if(!isActive()) return;
+        getView().showMessages();
+    }
+
     public void showPostForm() {
         if(!isActive()) return;
 
@@ -537,7 +542,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                                 feedAdapter.addModel(1, response.body());
                                 getView().scrollToTop();
                             } else if (response.code() == 403) {
-                                getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                                getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                             } else {
                                 getView().reportError("savePost error : " + response.code());
                                 getView().showPostForm(parti, body);
@@ -800,10 +805,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void showPostListDemo();
         void ensureExpendedAppBar();
         void showSettings();
+        void showMessages();
 
         Context getContext();
         void showNewVersionMessage(String newVersion);
-        void showMessage(String message);
+        void reportInfo(String message);
         void showEmpty(boolean isError);
         void showBlocked();
         void readyToRetry();

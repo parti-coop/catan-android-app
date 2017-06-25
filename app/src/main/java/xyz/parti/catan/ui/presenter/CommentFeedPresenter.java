@@ -189,7 +189,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             }
                             post.addComment(comment);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Create comment error : " + response.code());
                         }
@@ -232,7 +232,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             post.toggleCommentUpvoting(comment);
                             changeComment(comment, Comment.IS_UPVOTED_BY_ME);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Like error : " + response.code());
                         }
@@ -258,7 +258,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
     public interface View {
         void setSendingCommentForm();
         void setCompletedCommentForm();
-        void showMessage(String message);
+        void reportInfo(String message);
         void reportError(String message);
         void reportError(Throwable error);
         void showCommentList();

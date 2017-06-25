@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="@dimen/default_elevation"
     android:orientation="vertical">
     <FrameLayout
-        android:id="@+id/layout_list_wrapper"
+        android:id="@+id/layout_messages_list_wrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_weight="1"
         android:visibility="gone">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview_list"
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/layout_coordinator"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh_layout_message_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerview_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none" />
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.design.widget.CoordinatorLayout>
     </FrameLayout>
     <LinearLayout
-        android:id="@+id/layout_comment_list_demo"
+        android:id="@+id/layout_message_list_demo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -28,12 +39,12 @@
         <include layout="@layout/list_demo" />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/layout_no_comments_sign"
+        android:id="@+id/layout_no_messages_sign"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:visibility="gone"
         android:layout_weight="1"
+        android:visibility="gone"
         android:gravity="center">
         <ImageView
             android:layout_width="100dp"
@@ -44,11 +55,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_comments"
+            android:text="@string/no_messages"
             android:textColor="@color/text_muted" />
     </LinearLayout>
-    <xyz.parti.catan.ui.view.NewCommentForm
-        android:id="@+id/new_comment_form"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

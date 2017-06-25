@@ -193,7 +193,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE)));
                             }
                         } catch (android.content.ActivityNotFoundException ignore) {
-                            showMessage(R.string.not_support_device);
+                            reportInfo(R.string.not_support_device);
                             finish();
                         }
                     }
@@ -237,7 +237,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             if(googleApiAvailability.isUserResolvableError(status)) {
                 showGoogleServiceErrorMessage();
             } else {
-                showMessage(R.string.not_support_device);
+                reportInfo(R.string.not_support_device);
             }
             return;
         }
@@ -275,7 +275,7 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
         } else {
             CatanLog.d(result.getStatus().toString());
             progressToggler.toggle(false);
-            showMessage(R.string.error_google_login);
+            reportInfo(R.string.error_google_login);
         }
     }
 
@@ -292,13 +292,13 @@ public class LogInActivity extends BaseActivity implements GoogleApiClient.OnCon
             @Override
             public void onCancel() {
                 progressToggler.toggle(false);
-                showMessage(R.string.error_login);
+                reportInfo(R.string.error_login);
             }
 
             @Override
             public void onError(FacebookException error) {
                 progressToggler.toggle(false);
-                showMessage(R.string.error_login);
+                reportInfo(R.string.error_login);
                 CatanLog.e(error.getMessage(), error);
             }
         });

@@ -144,11 +144,11 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void showMessage(String message) {
+    public void reportInfo(String message) {
         Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    public void showMessage(@StringRes int idRes) {
+    public void reportInfo(@StringRes int idRes) {
         Toast.makeText(this.getApplicationContext(), getResources().getText(idRes), Toast.LENGTH_LONG).show();
     }
 }

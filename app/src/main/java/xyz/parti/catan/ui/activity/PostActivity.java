@@ -285,7 +285,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         try {
             startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            showMessage(R.string.not_found_app_for_downloaded_file);
+            reportInfo(R.string.not_found_app_for_downloaded_file);
         }
     }
 

@@ -100,7 +100,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             post.toggleUpvoting();
                             changePost(post, Post.IS_UPVOTED_BY_ME);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Like error : " + response.code());
                         }
@@ -127,7 +127,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             post.toggleCommentUpvoting(comment);
                             changePost(post, new CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Like error : " + response.code());
                         }
@@ -150,7 +150,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         if (response.isSuccessful()) {
                             reloadPostSurvey(post);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Feedback error : " + response.code());
                         }
@@ -174,7 +174,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             post.survey = response.body().survey;
                             changePost(post, post.survey);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Rebind survey error : " + response.code());
                         }
@@ -200,7 +200,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Agree error : " + response.code());
                         }
@@ -225,7 +225,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
                         } else if (response.code() == 403) {
-                            getView().showMessage(getView().getContext().getResources().getString(R.string.blocked_post));
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
                             getView().reportError("Disagree error : " + response.code());
                         }
@@ -292,7 +292,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     @Override
     public void onFailDownloadDocFileSource(String message) {
         if(getView() == null) return;
-        getView().showMessage(message);
+        getView().reportInfo(message);
     }
 
     @Override
@@ -316,6 +316,6 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void showDownloadedFile(Uri uri, String mimeType);
         void showPost(Post post);
         Context getContext();
-        void showMessage(String string);
+        void reportInfo(String string);
     }
 }

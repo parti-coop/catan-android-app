@@ -45,11 +45,11 @@ public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
     }
 
     public void setRichText(String originalHtml, String truncatedHtml) {
-        final CharSequence originalText = processHtml(originalHtml);
+        final CharSequence originalText = processHtml(originalHtml, true);
 
         if(!TextUtils.isEmpty(truncatedHtml)) {
             String expandText = getContext().getResources().getString(R.string.view_more);
-            CharSequence truncatedText = processHtml(truncatedHtml.replace("<read-more></read-more>", "<a href='action://view_more'>" + expandText + "</a>"));
+            CharSequence truncatedText = processHtml(truncatedHtml.replace("<read-more></read-more>", "<a href='action://view_more'>" + expandText + "</a>"), true);
             ViewMoreListener viewMoreListener = new ViewMoreListener() {
                 @Override
                 public void onClick() {
@@ -63,13 +63,16 @@ public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
         setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    public void setRichText(String html) {
-        super.setText(processHtml(html));
+    public void setNoImageRichText(String html) {
+        super.setText(getSmartSpannableStringBuilder(processHtml(html, false), null));
         setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private CharSequence processHtml(String html) {
-        Html.ImageGetter asyncImageGetter = new SmartHtmlImageGetter(getContext(), this);
+    private CharSequence processHtml(String html, boolean parseImage) {
+        Html.ImageGetter asyncImageGetter = null;
+        if (parseImage) {
+            asyncImageGetter = new SmartHtmlImageGetter(getContext(), this);
+        }
         Spanned spanned = TextHelper.converToHtml(html, asyncImageGetter);
         SpannableStringBuilder spannableStringBuilder;
         if (spanned instanceof SpannableStringBuilder) {

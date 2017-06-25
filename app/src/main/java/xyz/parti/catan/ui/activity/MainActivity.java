@@ -745,7 +745,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         try {
             startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            showMessage(R.string.not_found_app_for_downloaded_file);
+            reportInfo(R.string.not_found_app_for_downloaded_file);
         }
     }
 
@@ -796,6 +796,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     public void showSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void showMessages() {
+        Intent intent = new Intent(this, MessagesActivity.class);
         startActivity(intent);
     }
 
@@ -899,6 +905,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         switch (item.getItemId()) {
             case R.id.action_new_post:
                 presenter.showPostForm();
+                return true;
+            case R.id.action_messages:
+                presenter.showMessages();
                 return true;
             case R.id.action_profile:
                 presenter.showProfile();
