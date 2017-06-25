@@ -1,4 +1,4 @@
-package xyz.parti.catan.ui.receivers;
+package xyz.parti.catan.ui.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -31,9 +31,11 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.dao.MessagesStatusDAO;
 import xyz.parti.catan.data.dao.PartiDAO;
 import xyz.parti.catan.data.dao.ReadPostFeedDAO;
 import xyz.parti.catan.data.model.Group;
+import xyz.parti.catan.data.model.MessagesStatus;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.Post;
@@ -84,6 +86,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private final Realm realm;
     private final PartiDAO partiDAO;
     private final ReadPostFeedDAO readPostFeedDAO;
+    private final MessagesStatusDAO messagesStatusDAO;
     private PartiDAO.ChangeListener partiDAOListener;
 
     public PostFeedPresenter(SessionManager session) {
@@ -95,6 +98,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         realm = Realm.getDefaultInstance();
         partiDAO = new PartiDAO(realm);
+        messagesStatusDAO = new MessagesStatusDAO(realm);
         readPostFeedDAO = new ReadPostFeedDAO(realm);
     }
 
@@ -121,6 +125,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
         if(partiDAO != null) {
             partiDAO.unwatchAll();
+        }
+        if(messagesStatusDAO != null) {
+            messagesStatusDAO.unwatchAll();
         }
         if(realm != null && !realm.isClosed()) {
             realm.close();
@@ -447,6 +454,32 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 getView().changePartiPostFeedToolbar(parti);
             }
         });
+    }
+
+    public void watchMessages() {
+        if(!isActive()) return;
+
+        MessagesStatusDAO.ChangeListener messagesStatusChangeListener = new MessagesStatusDAO.ChangeListener() {
+            @Override
+            public void onInit(MessagesStatus messagesStatus) {
+                updateMessagesStatus(messagesStatus);
+            }
+
+            @Override
+            public void onChange(MessagesStatus messagesStatus) {
+                updateMessagesStatus(messagesStatus);
+            }
+
+            private void updateMessagesStatus(MessagesStatus messagesStatus) {
+                if (!isActive()) return;
+                if (messagesStatus.hasUnread()) {
+                    getView().setUnreadMessagesStatus();
+                } else {
+                    getView().setReadMessagesStatus();
+                }
+            }
+        };
+        messagesStatusDAO.watch(session.getCurrentUser(), messagesStatusChangeListener);
     }
 
     interface OnLoadPostFeed {
@@ -830,5 +863,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         void changePartiPostFeedToolbar(Parti parti);
 
         void showProfile(User user);
+
+        void setUnreadMessagesStatus();
+        void setReadMessagesStatus();
     }
 }

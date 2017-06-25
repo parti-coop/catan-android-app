@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
     android:layout_gravity="center"
     android:clickable="true"
-    android:background="@color/style_color_primary"
     style="@android:style/Widget.ActionButton">
     <ImageView
-        android:id="@+id/hotlist_bell"
-        android:src="@drawable/ic_notifications_white_24dp"
+        android:id="@+id/imageview_messages_bell"
+        android:src="@drawable/ic_notifications_none_white_24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_margin="0dp"
+        android:clickable="true"
         android:contentDescription="bell"
         />
     <ImageView
-        android:id="@+id/hotlist_hot"
+        android:id="@+id/imageview_messages_dot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_alignTop="@id/hotlist_bell"
-        android:layout_alignRight="@id/hotlist_bell"
+        android:layout_alignTop="@id/imageview_messages_bell"
+        android:layout_alignRight="@id/imageview_messages_bell"
         android:layout_marginRight="0dp"
         android:layout_marginTop="3dp"
         android:paddingBottom="1dp"
         android:paddingRight="4dp"
         android:paddingLeft="4dp"
+        android:visibility="gone"
         android:src="@drawable/circle_badge"/>
 </RelativeLayout>

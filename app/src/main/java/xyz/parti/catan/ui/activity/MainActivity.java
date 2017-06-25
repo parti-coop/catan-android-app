@@ -73,6 +73,7 @@ import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
+import xyz.parti.catan.ui.job.NewMessageCheckJob;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
@@ -118,13 +119,16 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     TextView toolbarPartiTitleTextView;
     @BindView(R.id.textview_toolbar_group_title)
     TextView toolbarGroupTitleTextView;
-    // android:src="@drawable/img_sample_parti_logo"
 
     private NewPostSignAnimator newPostsSignAnimator;
 
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
-    private MenuItem newPostMenuItem;
+
+    private MenuItem messagesMenuItem;
+    private ImageView messagesBellImageView;
+    private ImageView messagesDotImageView;
+
     private Drawer drawer;
     private View drawerDemoLayout;
     private Unbinder unbinder;
@@ -212,12 +216,14 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         if(presenter != null) {
             presenter.onResume();
         }
+        NewMessageCheckJob.scheduleJob();
         ensureExpendedAppBar();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        NewMessageCheckJob.cancelJob();
         ensureExpendedAppBar();
     }
 
@@ -669,13 +675,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
-    public void showPost(Post post) {
-        Intent intent = new Intent(this, PostActivity.class);
-        intent.putExtra("post", Parcels.wrap(post));
-        startActivityForResult(intent, REQUEST_UPDATE_POST);
-    }
-
-    @Override
     public void showDownloadDocFileSourceProgress(final DownloadFilesTask task) {
         downloadProgressDialog.setMessage("다운로드 중");
         downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -794,6 +793,13 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
+    public void showPost(Post post) {
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        startActivityForResult(intent, REQUEST_UPDATE_POST);
+    }
+
+    @Override
     public void showSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -871,7 +877,19 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        newPostMenuItem = menu.findItem(R.id.action_new_post);
+        messagesMenuItem = menu.findItem(R.id.action_messages);
+        messagesMenuItem.setActionView(R.layout.action_bar_notifitcation_icon);
+        View messagesView = messagesMenuItem.getActionView();
+        if(messagesView != null) {
+            messagesBellImageView = (ImageView) messagesView.findViewById(R.id.imageview_messages_bell);
+            messagesDotImageView = (ImageView) messagesView.findViewById(R.id.imageview_messages_dot);
+            messagesBellImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.showMessages();
+                }
+            });
+        }
         return true;
     }
 
@@ -897,6 +915,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 }
             });
         }
+        presenter.watchMessages();
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -917,5 +937,19 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void setReadMessagesStatus() {
+        if(messagesBellImageView == null || messagesDotImageView == null) return;
+        messagesBellImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_notifications_none_white_24dp));
+        messagesDotImageView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setUnreadMessagesStatus() {
+        if(messagesBellImageView == null || messagesDotImageView == null) return;
+        messagesBellImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_notifications_white_24dp));
+        messagesDotImageView.setVisibility(View.VISIBLE);
     }
 }

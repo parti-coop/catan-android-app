@@ -2,6 +2,7 @@ package xyz.parti.catan;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.evernote.android.job.JobManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.stetho.Stetho;
@@ -15,6 +16,7 @@ import okhttp3.OkHttpClient;
 import timber.log.Timber;
 import xyz.parti.catan.data.UnsafeOkHttpClient;
 import xyz.parti.catan.data.preference.JoinedPartiesPreference;
+import xyz.parti.catan.ui.job.CatanJobCreator;
 
 public class CatanApplication extends MultiDexApplication {
     @Override
@@ -36,6 +38,8 @@ public class CatanApplication extends MultiDexApplication {
         Fresco.initialize(this, OkHttpImagePipelineConfigFactory.newBuilder(this, okHttpClient).build());
 
         new JoinedPartiesPreference(this).reset();
+
+        JobManager.create(this).addJobCreator(new CatanJobCreator());
 
         if(BuildConfig.DEBUG) {
             Stetho.initialize(Stetho.newInitializerBuilder(this)

@@ -28,7 +28,7 @@ import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.ui.activity.MainActivity;
-import xyz.parti.catan.ui.receivers.CancelNotificationReceiver;
+import xyz.parti.catan.ui.receiver.CancelNotificationReceiver;
 
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
 

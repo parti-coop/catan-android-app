@@ -33,7 +33,7 @@ public class PartiDAO {
     }
 
     public void unwatchAll() {
-        if(result == null) {
+        if(result != null) {
             result.removeAllChangeListeners();
         }
     }

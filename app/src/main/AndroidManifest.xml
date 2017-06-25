@@ -95,7 +95,7 @@
             android:label="@string/title_activity_settings" />
 
         <receiver
-            android:name=".ui.receivers.NetworkChangeReceiver"
+            android:name=".ui.receiver.NetworkChangeReceiver"
             android:label="NetworkChangeReceiver" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -103,7 +103,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".ui.receivers.CancelNotificationReceiver"
+            android:name=".ui.receiver.CancelNotificationReceiver"
             android:label="CancelNotificationReceiver">
         </receiver>
         <service
