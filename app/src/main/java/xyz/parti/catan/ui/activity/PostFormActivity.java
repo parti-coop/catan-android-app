@@ -40,6 +40,9 @@ import com.zhihu.matisse.internal.entity.CaptureStrategy;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
@@ -55,6 +58,7 @@ import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 import xyz.parti.catan.ui.adapter.PostFormGroupItem;
 import xyz.parti.catan.ui.adapter.PostFormImageItem;
 import xyz.parti.catan.ui.adapter.PostFormPartiItem;
@@ -429,13 +433,19 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
 
             List<AbstractItem> items = new ArrayList<>();
             TreeMap<Group, List<PostFormPartiItem>> result = getGroupList(parties);
-            for(Group group: result.keySet()) {
+            for(Group group: Group.sortByTitle(result.keySet())) {
+                List<PostFormPartiItem> partiItems = result.get(group);
+                Collections.sort(partiItems, new Comparator<PostFormPartiItem>() {
+                    public int compare(PostFormPartiItem left, PostFormPartiItem right) {
+                        return OrderingByKoreanEnglishNumbuerSpecial.compare(left.getParti().title, right.getParti().title);
+                    }
+                });
                 if(group.isIndie()) {
                     items.add(0, new PostFormGroupItem(group));
-                    items.addAll(1, result.get(group));
+                    items.addAll(1, partiItems);
                 } else {
                     items.add(new PostFormGroupItem(group));
-                    items.addAll(result.get(group));
+                    items.addAll(partiItems);
                 }
             }
             fastAdapter.clear();

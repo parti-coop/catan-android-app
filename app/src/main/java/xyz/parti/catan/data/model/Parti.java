@@ -4,12 +4,15 @@ import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
+import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 
 /**
  * Created by dalikim on 2017. 3. 28..
@@ -40,5 +43,14 @@ public class Parti extends RealmObject {
         List<String> result = new ArrayList<>();
         result.add(logo_url);
         return result;
+    }
+
+    public static List<Parti> sortByTitle(List<Parti> partis) {
+        Collections.sort(partis, new Comparator<Parti>() {
+            public int compare(Parti left, Parti right) {
+                return OrderingByKoreanEnglishNumbuerSpecial.compare(left.title, right.title);
+            }
+        });
+        return partis;
     }
 }

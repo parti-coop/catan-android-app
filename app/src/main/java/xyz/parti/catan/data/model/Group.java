@@ -4,8 +4,15 @@ import android.support.annotation.NonNull;
 
 import org.parceler.Parcel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 
 /**
  * Created by dalikim on 2017. 3. 28..
@@ -39,5 +46,15 @@ public class Group extends RealmObject implements Comparable<Group> {
 
         if(o.slug.equals(slug)) return 0;
         return o.title.compareTo(title) * -1;
+    }
+
+    public static List<Group> sortByTitle(Set<Group> groups) {
+        ArrayList<Group> result = new ArrayList<>(groups);
+        Collections.sort(result, new Comparator<Group>() {
+            public int compare(Group left, Group right) {
+                return OrderingByKoreanEnglishNumbuerSpecial.compare(left.title, right.title);
+            }
+        });
+        return result;
     }
 }

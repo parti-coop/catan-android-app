@@ -39,6 +39,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.facebook.stetho.common.ListUtil;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.mikepenz.materialdrawer.Drawer;
@@ -49,7 +50,10 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import butterknife.BindView;
@@ -71,6 +75,7 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
+import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
@@ -585,7 +590,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         PostFeedDrawerItem dashboardItem = PostFeedDrawerItem.forDashboard().withName(R.string.navigation_menu_dashboard).withLogo(currentUser.image_url).withIdentifier(Constants.POST_FEED_DASHBOARD);
         drawerItems.add(dashboardItem);
 
-        for(Group group: joindedParties.keySet()) {
+        List<Group> groups = Group.sortByTitle(joindedParties.keySet());
+        for(Group group: groups) {
             SectionDrawerItem groupItem = new GroupSectionDrawerItem().withName(group.title).withDivider(false).withTextColorRes(R.color.material_drawer_header_selection_text);
 
             int indieCount = 1;
@@ -595,7 +601,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 drawerItems.add(groupItem);
             }
 
-            for(Parti parti : joindedParties.get(group)) {
+            List<Parti> parties = Parti.sortByTitle(joindedParties.get(group));
+            for(Parti parti :parties) {
                 PostFeedDrawerItem item = PostFeedDrawerItem.forParti().withName(parti.title).withLogo(parti.logo_url);
                 item.withTag(parti).withIdentifier(parti.id);
                 if(group.isIndie()) {
