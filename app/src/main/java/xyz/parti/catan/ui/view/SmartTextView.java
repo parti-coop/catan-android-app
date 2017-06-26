@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.text.Layout;
+import android.text.Selection;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -15,7 +18,9 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +36,8 @@ import xyz.parti.catan.helper.TextHelper;
 
 public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
     private OnImageClickListener onImageClickListener;
+    boolean dontConsumeNonUrlClicks = true;
+    private boolean linkHit;
 
     public SmartTextView(Context context) {
         this(context, null);
@@ -42,6 +49,13 @@ public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
 
     public SmartTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        linkHit = false;
+        super.onTouchEvent(event);
+        return linkHit;
     }
 
     public void setRichText(String originalHtml, String truncatedHtml) {
@@ -60,12 +74,12 @@ public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
         } else {
             setText(getSmartSpannableStringBuilder(originalText, null));
         }
-        setMovementMethod(LinkMovementMethod.getInstance());
+        setMovementMethod(LocalLinkMovementMethod.getInstance());
     }
 
     public void setNoImageRichText(String html) {
         super.setText(getSmartSpannableStringBuilder(processHtml(html, false), null));
-        setMovementMethod(LinkMovementMethod.getInstance());
+        setMovementMethod(LocalLinkMovementMethod.getInstance());
     }
 
     private CharSequence processHtml(String html, boolean parseImage) {
@@ -180,5 +194,58 @@ public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
     @Override
     public void onFinishTemporaryDetach() {
         super.onFinishTemporaryDetach();
+    }
+
+    public static class LocalLinkMovementMethod extends LinkMovementMethod{
+        static LocalLinkMovementMethod sInstance;
+
+        public static LocalLinkMovementMethod getInstance() {
+            if (sInstance == null)
+                sInstance = new LocalLinkMovementMethod();
+            return sInstance;
+        }
+
+        @Override
+        public boolean onTouchEvent(TextView widget,
+                                    Spannable buffer, MotionEvent event) {
+            int action = event.getAction();
+
+            if (action == MotionEvent.ACTION_UP ||
+                    action == MotionEvent.ACTION_DOWN) {
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+
+                x -= widget.getTotalPaddingLeft();
+                y -= widget.getTotalPaddingTop();
+
+                x += widget.getScrollX();
+                y += widget.getScrollY();
+
+                Layout layout = widget.getLayout();
+                int line = layout.getLineForVertical(y);
+                int off = layout.getOffsetForHorizontal(line, x);
+
+                ClickableSpan[] link = buffer.getSpans(
+                        off, off, ClickableSpan.class);
+
+                if (link.length != 0) {
+                    if (action == MotionEvent.ACTION_UP) {
+                        link[0].onClick(widget);
+                    } else if (action == MotionEvent.ACTION_DOWN) {
+                        Selection.setSelection(buffer,
+                                buffer.getSpanStart(link[0]),
+                                buffer.getSpanEnd(link[0]));
+                    }
+
+                    if (widget instanceof SmartTextView){
+                        ((SmartTextView) widget).linkHit = true;
+                    }
+                    return true;
+                } else {
+                    Selection.removeSelection(buffer);
+                }
+            }
+            return super.onTouchEvent(widget, buffer, event);
+        }
     }
 }

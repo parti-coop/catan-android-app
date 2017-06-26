@@ -1,5 +1,8 @@
 package xyz.parti.catan.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,6 +21,8 @@ import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 import com.mikepenz.fastadapter_extensions.scroll.EndlessRecyclerOnScrollListener;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +32,7 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Message;
 import xyz.parti.catan.data.model.Page;
+import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.adapter.DefaultProgressItem;
 import xyz.parti.catan.ui.adapter.MessageItem;
 import xyz.parti.catan.ui.presenter.MessagesPresenter;
@@ -80,7 +86,7 @@ public class MessagesActivity extends BaseActivity implements MessagesPresenter.
         fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<MessageItem>() {
             @Override
             public boolean onClick(View v, IAdapter<MessageItem> adapter, MessageItem item, int position) {
-                presenter.showMessage(item);
+                presenter.showMessage(item.getMessage());
                 return true;
             }
         });
@@ -193,6 +199,23 @@ public class MessagesActivity extends BaseActivity implements MessagesPresenter.
             if (loadMoreScrollListener != null)
                 listRecyclerView.removeOnScrollListener(loadMoreScrollListener);
         }
+    }
+
+    @Override
+    public void showPost(Post post) {
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra("post", Parcels.wrap(post));
+        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_POST);
+    }
+
+    @Override
+    public void showUrl(Uri url) {
+        startActivity(new Intent(Intent.ACTION_VIEW, url));
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     @Override

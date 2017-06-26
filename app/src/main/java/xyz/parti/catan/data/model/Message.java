@@ -26,4 +26,5 @@ public class Message {
     public String body;
     public Date read_at;
     public Date created_at;
+    public Fcm fcm;
 }
