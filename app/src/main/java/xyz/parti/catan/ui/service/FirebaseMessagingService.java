@@ -20,9 +20,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.realm.Realm;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.SessionManager;
+import xyz.parti.catan.data.dao.MessagesStatusDAO;
 import xyz.parti.catan.data.model.PushMessage;
 import xyz.parti.catan.data.preference.NotificationsPreference;
 import xyz.parti.catan.helper.CatanLog;
@@ -81,6 +83,22 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
 
         updateNotifications(pushMessage);
+        updateMessagesStatus(pushMessage);
+    }
+
+    private void updateMessagesStatus(PushMessage pushMessage) {
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            try {
+                MessagesStatusDAO messagesStatusDAO = new MessagesStatusDAO(realm);
+                messagesStatusDAO.saveServerCreatedMessageIdSyncIfNew(pushMessage.user_id, pushMessage.id);
+            } finally {
+                if(realm != null) realm.close();
+            }
+        } catch (Throwable e) {
+            CatanLog.e(e);
+            /* ignored */
+        }
     }
 
     private void updateNotifications(PushMessage newPushMessage) {

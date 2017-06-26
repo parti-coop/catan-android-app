@@ -22,7 +22,7 @@ public class MessagesStatusDAO {
 
     public void watch(User currentUser, final MessagesStatusDAO.ChangeListener listener) {
         if(result == null) {
-            result = findMessagesStatus(realm, currentUser);
+            result = findMessagesStatus(realm, currentUser.id);
             if(result == null) {
                 realm.beginTransaction();
                 result = realm.createObject(MessagesStatus.class, currentUser.id);
@@ -56,7 +56,7 @@ public class MessagesStatusDAO {
                     maxId = Math.max(message.id, maxId);
                 }
 
-                MessagesStatus messagesStatus = findMessagesStatus(bgRealm, currentUser);
+                MessagesStatus messagesStatus = findMessagesStatus(bgRealm, currentUser.id);
                 messagesStatus.last_local_read_messag_id = maxId;
                 bgRealm.copyToRealmOrUpdate(messagesStatus);
             }
@@ -67,7 +67,7 @@ public class MessagesStatusDAO {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm bgRealm) {
-                MessagesStatus messagesStatus = findMessagesStatus(bgRealm, currentUser);
+                MessagesStatus messagesStatus = findMessagesStatus(bgRealm, currentUser.id);
                 messagesStatus.last_created_message_id = statusFromServer.last_created_message_id;
                 messagesStatus.last_server_read_messag_id = statusFromServer.last_server_read_messag_id;
                 bgRealm.copyToRealmOrUpdate(messagesStatus);
@@ -75,8 +75,21 @@ public class MessagesStatusDAO {
         });
     }
 
-    private MessagesStatus findMessagesStatus(Realm aRealm, User currentUser) {
-        return aRealm.where(MessagesStatus.class).equalTo("user_id", currentUser.id).findFirst();
+    public void saveServerCreatedMessageIdSyncIfNew(final long userId, final long messageId) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm bgRealm) {
+                MessagesStatus messagesStatus = findMessagesStatus(bgRealm, userId);
+                if(messagesStatus.last_created_message_id < messageId) {
+                    messagesStatus.last_created_message_id = messageId;
+                    bgRealm.copyToRealmOrUpdate(messagesStatus);
+                }
+            }
+        });
+    }
+
+    private MessagesStatus findMessagesStatus(Realm aRealm, long userId) {
+        return aRealm.where(MessagesStatus.class).equalTo("user_id", userId).findFirst();
     }
 
     public interface ChangeListener {
