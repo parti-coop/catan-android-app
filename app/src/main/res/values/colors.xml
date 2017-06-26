@@ -46,4 +46,6 @@
     <color name="material_drawer_selected_text">@android:color/white</color>
     <color name="material_drawer_header_selection_text">@color/style_color_primary_light</color>
     <color name="circle_badge">#ff5650</color>
+    <color name="fab_color_shadow">#44000000</color>
+    <color name="fab_color_pressed">#c0575d</color>
 </resources>

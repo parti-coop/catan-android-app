@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -119,6 +120,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     TextView toolbarPartiTitleTextView;
     @BindView(R.id.textview_toolbar_group_title)
     TextView toolbarGroupTitleTextView;
+    @BindView(R.id.button_new_post)
+    FloatingActionButton newPostButton;
 
     private NewPostSignAnimator newPostsSignAnimator;
 
@@ -156,6 +159,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     setupCheckNewPost();
                     setupDrawerBar();
                     setupSwipeRefresh();
+                    setupFloatingNewPostButton();
 
                     receivePushMessageIntent(getIntent());
                     checkReceivablePushMessage();
@@ -167,6 +171,15 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                 }
             });
         }
+    }
+
+    private void setupFloatingNewPostButton() {
+        newPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.showPostForm();
+            }
+        });
     }
 
     @Override
@@ -923,9 +936,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_new_post:
-                presenter.showPostForm();
-                return true;
             case R.id.action_messages:
                 presenter.showMessages();
                 return true;
