@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
@@ -52,6 +54,13 @@ public class CommentView extends LinearLayout {
     Button likeButton;
     @BindView(R.id.button_show_comment_likes)
     Button showLikesButton;
+    @BindView(R.id.layout_comment_line)
+    LinearLayout commentLineLayout;
+    @BindView(R.id.layout_blind_comment)
+    LinearLayout blindCommentLayout;
+    @BindView(R.id.imageview_blind)
+    CircleImageView blindImageView;
+
     private boolean isHighlighted = false;
 
     public CommentView(@NonNull Context context, AttributeSet attrs) {
@@ -70,6 +79,7 @@ public class CommentView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.view_comment, this);
         setOrientation(LinearLayout.VERTICAL);
         ButterKnife.bind(this);
+        DrawableCompat.setTint(blindImageView.getDrawable(), ContextCompat.getColor(getContext(), R.color.text_muted));
         this.presenter = new WeakReference<>(null);
     }
 
@@ -98,36 +108,38 @@ public class CommentView extends LinearLayout {
         trans.startTransition(3000);
     }
 
-    public void bindData(Post post, Comment comment) {
-        bindData(post, comment, true);
-    }
-
     public void bindData(final Post post, final Comment comment, boolean isLineVisible) {
         clearListeners();
 
-        this.comment = comment;
-        setTag(R.id.tag_comment, comment);
-
-        userImageDraweeView.setImageURI(comment.user.image_url);
-        userNicknameTextView.setText(comment.user.nickname);
-        bodySmartTextView.setRichText(comment.body, comment.truncated_body);
-        createdAtTextView.setReferenceTime(comment.created_at.getTime());
-
-        if(isLineVisible) {
-            dividerView.setVisibility(View.VISIBLE);
+        if(comment.is_blinded) {
+            blindCommentLayout.setVisibility(VISIBLE);
+            commentLineLayout.setVisibility(GONE);
         } else {
-            dividerView.setVisibility(View.GONE);
-        }
-        newCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(presenter.get() == null) return;
-                presenter.get().onClickNewComment(post, comment);
+            blindCommentLayout.setVisibility(GONE);
+            commentLineLayout.setVisibility(VISIBLE);
+
+            this.comment = comment;
+            setTag(R.id.tag_comment, comment);
+
+            userImageDraweeView.setImageURI(comment.user.image_url);
+            userNicknameTextView.setText(comment.user.nickname);
+            bodySmartTextView.setRichText(comment.body, comment.truncated_body);
+            createdAtTextView.setReferenceTime(comment.created_at.getTime());
+
+            if (isLineVisible) {
+                dividerView.setVisibility(View.VISIBLE);
+            } else {
+                dividerView.setVisibility(View.GONE);
             }
-        });
-
-        bindLike(post, comment);
-
+            newCommentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (presenter.get() == null) return;
+                    presenter.get().onClickNewComment(post, comment);
+                }
+            });
+            bindLike(post, comment);
+        }
         setVisibility(View.VISIBLE);
     }
 

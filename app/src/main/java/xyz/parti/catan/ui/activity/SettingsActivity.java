@@ -145,7 +145,7 @@ public class SettingsActivity extends BaseActivity {
         public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
             View view = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
             if(view != null) {
-                setupAction();
+                setupAction(view);
             }
             return view;
         }
@@ -158,12 +158,12 @@ public class SettingsActivity extends BaseActivity {
             super.onDestroy();
         }
 
-        private void setupAction() {
+        private void setupAction(View view) {
             setupShowProfileAction();
             setupReceivePushMessageAction();
 
             Preference version = findPreference("pref_version");
-            version.setSummary(AppVersionHelper.getCurrentVerion(getView().getContext()));
+            version.setSummary(AppVersionHelper.getCurrentVerion(view.getContext()));
 
             setupLicenseAction();
             setupMenuAction("pref_help", setting.help_url);
