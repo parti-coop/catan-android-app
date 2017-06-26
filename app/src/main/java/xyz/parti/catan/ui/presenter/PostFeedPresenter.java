@@ -366,15 +366,15 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         if(pushMessage == null) {
             CatanLog.d("NULL pushMessage and reload");
-            switchDashboardPostFeed(true);
+            showMessages();
             return;
         }
+
         if(pushMessage.user_id != session.getCurrentUser().id) {
             CatanLog.d("ANOTHER USER");
             switchDashboardPostFeed(true);
             return;
         }
-
         if("post".equals(pushMessage.type) && pushMessage.param != null) {
             long postId = Long.parseLong(pushMessage.param);
             if(postId <= 0) {
