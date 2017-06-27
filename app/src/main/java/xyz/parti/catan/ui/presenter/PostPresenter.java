@@ -84,6 +84,8 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
                             getView().showNewComment(post);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().reportError("Create comment error in post: " + response.code());
                         }

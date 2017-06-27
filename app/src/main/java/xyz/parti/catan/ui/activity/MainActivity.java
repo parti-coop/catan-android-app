@@ -39,7 +39,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.facebook.stetho.common.ListUtil;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.mikepenz.materialdrawer.Drawer;
@@ -50,10 +49,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import butterknife.BindView;
@@ -75,7 +71,6 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
 import xyz.parti.catan.helper.NetworkHelper;
-import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.adapter.PostFeedRecyclerViewAdapter;
@@ -530,7 +525,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         postListSwipeRefreshLayout.setRefreshing(false);
 
         retryButton.setVisibility(View.GONE);
-        noPostSignTextView.setText(getResources().getText(R.string.blocked_parti));
+        noPostSignTextView.setText(getResources().getText(R.string.blocked_or_not_found_parti));
         goToPartiesButton.setVisibility(View.VISIBLE);
     }
 

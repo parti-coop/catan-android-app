@@ -29,6 +29,7 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     private final static long RESUT_NO_DATA = -2L;
     private final static long RESUT_ERROR = -3L;
     private static final Long RESUT_BLOCKED = -4L;
+    private static final Long RESUT_NO_FOUND = -5L;
 
     private PostDownloadablePresenter presenter;
     private final PartiAccessToken partiAccessToken;
@@ -67,6 +68,8 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
                 return saveFile(body);
             } else if(response.code() == 403) {
                 return RESUT_BLOCKED;
+            } else if(response.code() == 410) {
+                return RESUT_NO_FOUND;
             } else {
                 return RESUT_ERROR;
             }
@@ -178,6 +181,8 @@ public class DownloadFilesTask extends AsyncTask<String, String, Long> {
                 message = "오류가 발생했습니다";
             } else if(size == RESUT_NO_DATA) {
                 message = "해당 파일이 없습니다";
+            } else if(size == RESUT_NO_DATA) {
+                message = "게시물이 삭제되었거나 찾을 수 없습니다.";
             } else if(size == RESUT_BLOCKED) {
                 message = "비공개된 빠띠의 파일은 다운로드 받을 수 없습니다";
             }

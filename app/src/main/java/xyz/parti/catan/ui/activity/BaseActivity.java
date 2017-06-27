@@ -13,10 +13,12 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.identity.AuthHandler;
 
 import io.fabric.sdk.android.Fabric;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.R;
+import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.NetworkHelper;
 
@@ -139,8 +141,13 @@ public class BaseActivity extends AppCompatActivity {
 
     public void reportError(Throwable error) {
         if(new NetworkHelper(this).isValidNetwork()) {
-            Toast.makeText(this.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
-            CatanLog.e(error);
+            if(error instanceof ServiceBuilder.AuthFailError) {
+                Toast.makeText(this.getApplicationContext(), R.string.report_logout, Toast.LENGTH_LONG).show();
+                CatanLog.e(error);
+            } else {
+                Toast.makeText(this.getApplicationContext(), R.string.error_any, Toast.LENGTH_LONG).show();
+                CatanLog.e(error);
+            }
         }
     }
 

@@ -84,6 +84,10 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             Page<Comment> page = response.body();
                             feedAdapter.clearAndAppendModels(page.items);
                             feedAdapter.setMoreDataAvailable(page.has_more_item);
+                        } else if (response.code() == 403) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().reportError("AllComments load first error : " + response.code());
                             feedAdapter.setMoreDataAvailable(false);
@@ -142,10 +146,15 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                                 //result size 0 means there is no more data available at server
                                 feedAdapter.setMoreDataAvailable(false);
                             }
+                        } else if (response.code() == 403) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             feedAdapter.setMoreDataAvailable(false);
                             getView().reportError("AllComments load more error : " + response.code());
                         }
+
                         feedAdapter.setLoadFinished();
                     }
                 }, new Consumer<Throwable>() {
@@ -190,6 +199,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             post.addComment(comment);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().reportError("Create comment error : " + response.code());
                         }
@@ -233,6 +244,8 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                             changeComment(comment, Comment.IS_UPVOTED_BY_ME);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_comment));
                         } else {
                             getView().reportError("Like error : " + response.code());
                         }

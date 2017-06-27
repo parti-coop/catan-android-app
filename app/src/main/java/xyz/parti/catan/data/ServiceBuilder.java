@@ -159,7 +159,7 @@ public class ServiceBuilder {
         } catch (IOException e) {
             CatanLog.e("Response Error 005 " + e.getMessage(), e);
             Crashlytics.logException(e);
-            throw new AuthFailError();
+            throw new RuntimeException(e);
         }
     }
 
@@ -180,5 +180,5 @@ public class ServiceBuilder {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
-    private static class AuthFailError extends IOException {}
+    public static class AuthFailError extends IOException {}
 }

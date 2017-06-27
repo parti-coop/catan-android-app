@@ -101,6 +101,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             changePost(post, Post.IS_UPVOTED_BY_ME);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().reportError("Like error : " + response.code());
                         }
@@ -128,6 +130,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             changePost(post, new CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_comment));
                         } else {
                             getView().reportError("Like error : " + response.code());
                         }
@@ -151,6 +155,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             reloadPostSurvey(post);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_option));
                         } else {
                             getView().reportError("Feedback error : " + response.code());
                         }
@@ -176,7 +182,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
-                            getView().reportError("Rebind survey error : " + response.code());
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -201,6 +207,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             changePost(post, post.poll);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().reportError("Agree error : " + response.code());
                         }
@@ -226,6 +234,8 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                             changePost(post, post.poll);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().reportError("Disagree error : " + response.code());
                         }

@@ -173,7 +173,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             if(readPostFeed.isUnread() && currentPostFeedId == readPostFeed.postFeedId && !getView().isVisibleNewPostsSign()) {
                                 getView().showNewPostsSign();
                             }
-                        } else if (response.code() == 403) {
+                        } else if (response.code() == 410 || response.code() == 403) {
                             feedAdapter.setMoreDataAvailable(false);
                             feedAdapter.clear();
                         } else {
@@ -185,7 +185,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         getView().stopAndEnableSwipeRefreshing();
 
                         if (feedAdapter.getModelItemCount() <= 0) {
-                            if(response.code() == 403) {
+                            if(response.code() == 403 || response.code() == 410) {
                                 getView().showBlocked();
                             } else {
                                 getView().showEmpty(!response.isSuccessful());
@@ -246,6 +246,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                                 feedAdapter.setMoreDataAvailable(false);
                                 //telling adapter to stop calling loadFirstPosts more as no more server data available
                             }
+                        } else if (response.code() == 410 || response.code() == 403) {
+                            feedAdapter.setMoreDataAvailable(false);
+                            feedAdapter.clear();
                         } else {
                             feedAdapter.setMoreDataAvailable(false);
                             getView().reportError("Load more post error : " + response.code());
@@ -253,7 +256,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
                         feedAdapter.setLoadFinished();
                         if (feedAdapter.getModelItemCount() <= 0) {
-                            if(response.code() == 403) {
+                            if(response.code() == 403 || response.code() == 410) {
                                 getView().showBlocked();
                             } else {
                                 getView().showEmpty(!response.isSuccessful());
@@ -507,6 +510,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             Parti parti = response.body();
                             callback.onParti(parti);
                             currentParti = parti;
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_parti));
                         } else {
                             getView().reportError("fetch parti error : " + response.code());
                         }
@@ -575,7 +580,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                                 feedAdapter.addModel(1, response.body());
                                 getView().scrollToTop();
                             } else if (response.code() == 403) {
-                                getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                                getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_or_not_found_parti));
                             } else {
                                 getView().reportError("savePost error : " + response.code());
                                 getView().showPostForm(parti, body);
@@ -613,9 +618,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         if(lastPostFeedPreference.isNewbie()) {
             getView().openDrawer();
             lastPostFeedPreference.save(currentPostFeedId);
-        }
-
-        if(!needToUpgardeDrawer()) {
+        }  else if(!needToUpgardeDrawer()) {
             getView().ensureToHideDrawerDemo();
             ensuerInitDrawer();
             return;

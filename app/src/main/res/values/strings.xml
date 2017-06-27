@@ -75,12 +75,14 @@
     <string name="login_password_not_found_user">이메일과 비밀번호가 일치하지 않습니다. 새로 가입하시겠습니까?</string>
     <string name="login_social_not_found_user">아직 가입하지 않으셨습니다. 새로 가입하시겠습니까?</string>
     <string name="no_posts">게시글이 없습니다. 관심가는 빠띠에 가입해 보세요.</string>
-    <string name="blocked_parti">해당 빠띠는 비공개로 숨겨졌습니다.</string>
+    <string name="blocked_or_not_found_parti">해당 빠띠는 삭제되었거나 비공개로 숨겨졌습니다.</string>
     <string name="blocked_post">해당 게시글의 빠띠는 비공개로 숨겨졌습니다.</string>
     <string name="go_to_parties_button">다른 빠띠 찾기</string>
     <string name="retry_button">다시 시도합니다</string>
     <string name="title_activity_messages">알림</string>
-    <string name="not_found_post">게시물을 찾을 수 없습니다.</string>
+    <string name="not_found_option">게시물 혹은 제안이 삭제되었거나 찾을 수 없습니다.</string>
+    <string name="not_found_post">게시물이 삭제되었거나 찾을 수 없습니다.</string>
+    <string name="not_found_comment">댓글이 삭제되었거나 찾을 수 없습니다.</string>
     <string name="title_activity_post">게시글</string>
     <string name="pref_receive_push_message_off">알림을 받지 않습니다</string>
     <string name="pref_receive_push_message_on">알림을 받습니다</string>
@@ -106,4 +108,6 @@
     <string name="google_play_services_update_text">구글 서비스를 업데이트해야 구글ID로 빠띠에 로그인 할 수 있습니다</string>
     <string name="navigation_my_profile">내 프로필</string>
     <string name="no_messages">알림 메시지가 없습니다.</string>
+    <string name="not_found_parti">빠띠를 찾을 수 없습니다</string>
+    <string name="report_logout">로그아웃 되었습니다.</string>
 </resources>
