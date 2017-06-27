@@ -52,7 +52,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
                 InfinitableModelHolder.from(items);
         this.holders.addAll(holders);
         prepareChangedModels(holders);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(this.holders.size() - items.size(), items.size());
     }
 
     public void appendModel(T item) {
@@ -144,7 +144,7 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
 
     public void removeLastMoldelHolder() {
         holders.remove(holders.size() - 1);
-        notifyItemRemoved(holders.size() - 1);
+        notifyItemRemoved(holders.size());
     }
 
     public boolean isEmpty() {
