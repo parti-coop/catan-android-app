@@ -10,9 +10,11 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.joanzapata.iconify.widget.IconButton;
 
@@ -37,6 +39,8 @@ public class NewCommentForm extends FrameLayout {
     EditText newCommentInputEditText;
     @BindView(R.id.button_new_comment_create)
     IconButton newCommentCreateButton;
+    @BindView(R.id.layout_comment_form)
+    LinearLayout commentFormLayout;
 
     public NewCommentForm(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -49,6 +53,7 @@ public class NewCommentForm extends FrameLayout {
     }
 
     public void focusForm(Comment comment) {
+        commentFormLayout.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         newCommentInputEditText.post(new Runnable() {
             @Override
             public void run() {
@@ -68,6 +73,9 @@ public class NewCommentForm extends FrameLayout {
             newCommentInputEditText.setText(defaultComment);
             newCommentInputEditText.setSelection(defaultComment.length());
         }
+    }
+    public void unfocusForm() {
+        commentFormLayout.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
     }
 
     private void setupCommentForm() {

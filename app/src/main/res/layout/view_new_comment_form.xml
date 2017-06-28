@@ -10,11 +10,13 @@
             android:layout_height="1dp"
             android:background="@color/brand_gray"/>
         <LinearLayout
+            android:id="@+id/layout_comment_form"
             android:orientation="horizontal"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:descendantFocusability="blocksDescendants"
             android:background="#fff">
             <EditText
                 android:id="@+id/edittext_new_comment_input"

@@ -129,6 +129,8 @@ public class AllCommentsActivity extends BaseActivity implements CommentFeedPres
 
         if(focusInput) {
             newCommentForm.focusForm(comment);
+        } else {
+            newCommentForm.unfocusForm();
         }
     }
 
