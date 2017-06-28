@@ -74,9 +74,6 @@ public class NewCommentForm extends FrameLayout {
             newCommentInputEditText.setSelection(defaultComment.length());
         }
     }
-    public void unfocusForm() {
-        commentFormLayout.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-    }
 
     private void setupCommentForm() {
         disableCommentCreateButton();

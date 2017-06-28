@@ -16,7 +16,8 @@
             android:paddingLeft="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:descendantFocusability="blocksDescendants"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
             android:background="#fff">
             <EditText
                 android:id="@+id/edittext_new_comment_input"
