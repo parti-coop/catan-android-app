@@ -3,11 +3,11 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.facebook.drawee.view.SimpleDraweeView
+    <xyz.parti.catan.ui.view.ZoomableDraweeView
         android:id="@+id/imageview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        fresco:actualImageScaleType="centerInside"
+        fresco:actualImageScaleType="fitCenter"
         fresco:failureImage="@drawable/ic_empty_box_brand_gray"
         fresco:failureImageScaleType="centerInside" />
 </FrameLayout>

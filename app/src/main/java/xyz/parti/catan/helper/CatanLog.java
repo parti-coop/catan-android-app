@@ -23,4 +23,10 @@ public class CatanLog {
     public static void e(Throwable e) {
         Log.e(Constants.TAG, e.getMessage(), e);
     }
+
+    public static void d(String message, Object... args) {
+        if(BuildConfig.DEBUG) {
+            d(String.format(message, args));
+        }
+    }
 }

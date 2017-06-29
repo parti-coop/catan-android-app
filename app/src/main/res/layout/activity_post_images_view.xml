@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:background="#000"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/textview_post_desc"

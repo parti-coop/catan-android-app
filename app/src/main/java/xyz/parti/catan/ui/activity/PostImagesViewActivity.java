@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -26,6 +28,7 @@ import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
+import xyz.parti.catan.ui.view.ZoomableDraweeView;
 
 /**
  * Created by dalikim on 2017. 4. 13..
@@ -102,7 +105,7 @@ public class PostImagesViewActivity extends BaseActivity {
 
     public static class SwipeFragment extends Fragment {
         @BindView(R.id.imageview)
-        SimpleDraweeView imageView;
+        ZoomableDraweeView imageView;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup view,
