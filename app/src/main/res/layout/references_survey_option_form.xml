@@ -10,12 +10,18 @@
     android:orientation="horizontal">
 
     <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/checkbox_new_option_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"
         app:buttonTint="@color/style_color_primary"
         android:layout_marginLeft="-5dp" />
-
+    <android.support.v7.widget.AppCompatRadioButton
+        android:id="@+id/radiobutton_new_option_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginLeft="-5dp" />
     <TextView
         android:text="@string/option_form_placeholer"
         android:textColor="@color/option_form_placeholer"

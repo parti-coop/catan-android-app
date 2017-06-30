@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.joanzapata.iconify.widget.IconTextView;
@@ -22,8 +23,10 @@ import xyz.parti.catan.data.model.Post;
 class OptionBinder {
     @BindView(R.id.textview_option_body)
     TextView bodyTextView;
-    @BindView(R.id.survey_checkbox)
+    @BindView(R.id.checkbox_survey)
     CheckBox checkBox;
+    @BindView(R.id.radiobutton_survey)
+    RadioButton radioButton;
     @BindView(R.id.textview_feedbacks_count)
     TextView feedbacksCountTextView;
     @BindView(R.id.progressbar)
@@ -39,19 +42,32 @@ class OptionBinder {
         unbind();
 
         bodyTextView.setText(option.body);
+
+        final CompoundButton holder;
+        if(post.survey.multiple_select) {
+            checkBox.setVisibility(View.VISIBLE);
+            radioButton.setVisibility(View.GONE);
+            holder = checkBox;
+        } else {
+            checkBox.setVisibility(View.GONE);
+            radioButton.setVisibility(View.VISIBLE);
+            holder = radioButton;
+        }
+
+
         if(post.survey.is_open) {
             bodyTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    checkBox.setChecked(!checkBox.isChecked());
+                    holder.setChecked(!holder.isChecked());
                 }
             });
         }
 
         if(post.survey.is_open) {
-            checkBox.setVisibility(android.view.View.VISIBLE);
-            checkBox.setChecked(option.is_my_select);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            holder.setVisibility(android.view.View.VISIBLE);
+            holder.setChecked(option.is_my_select);
+            holder.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     presenter.onClickSurveyOption(post, option, b);
@@ -59,7 +75,7 @@ class OptionBinder {
             });
             selectedSignTextView.setVisibility(android.view.View.GONE);
         } else {
-            checkBox.setVisibility(android.view.View.GONE);
+            holder.setVisibility(android.view.View.GONE);
             if(option.is_my_select) {
                 selectedSignTextView.setVisibility(android.view.View.VISIBLE);
             } else {
@@ -87,5 +103,8 @@ class OptionBinder {
     void unbind() {
         if(bodyTextView != null) bodyTextView.setOnClickListener(null);
         if(checkBox != null) checkBox.setOnCheckedChangeListener(null);
+        if(radioButton != null) radioButton.setOnCheckedChangeListener(null);
     }
+
+
 }

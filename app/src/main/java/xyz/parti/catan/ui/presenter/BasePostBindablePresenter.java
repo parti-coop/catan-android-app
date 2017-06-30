@@ -358,8 +358,10 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                                 }
                             });
                         } else if (response.code() == 403) {
+                            getView().hideNewSurveyOptionDialog();
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
+                            getView().hideNewSurveyOptionDialog();
                             getView().reportError("New Option error : " + response.code());
                         }
                     }
@@ -367,6 +369,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
                         if(getView() == null) return;
+                        getView().hideNewSurveyOptionDialog();
                         getView().reportError(error);
                     }
                 });

@@ -1,9 +1,13 @@
 package xyz.parti.catan.ui.binder;
 
+import android.support.v4.widget.TextViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -12,8 +16,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
+import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Post;
+import xyz.parti.catan.helper.StyleHelper;
 
 /**
  * Created by dalikim on 2017. 4. 28..
@@ -28,6 +34,10 @@ public class SurveyBinder {
     TextView footnoteTextView;
     @BindView(R.id.layout_new_option_input)
     LinearLayout newOptionInputLayout;
+    @BindView(R.id.checkbox_new_option_input)
+    CheckBox newOptionInputCheckbox;
+    @BindView(R.id.radiobutton_new_option_input)
+    RadioButton newOptionInputRadioButton;
 
     private List<OptionBinder> optionBinders = new ArrayList<>();
 
@@ -60,6 +70,15 @@ public class SurveyBinder {
             footnote += "\n" + "투표 후 현황을 확인할 수 있습니다";
         }
         footnoteTextView.setText(footnote);
+
+
+        if(post.survey.multiple_select) {
+            newOptionInputCheckbox.setVisibility(View.VISIBLE);
+            newOptionInputRadioButton.setVisibility(View.GONE);
+        } else {
+            newOptionInputCheckbox.setVisibility(View.GONE);
+            newOptionInputRadioButton.setVisibility(View.VISIBLE);
+        }
 
         newOptionInputLayout.setOnClickListener(new View.OnClickListener() {
             @Override
