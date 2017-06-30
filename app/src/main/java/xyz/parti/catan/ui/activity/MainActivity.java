@@ -226,6 +226,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     protected void onStart() {
         super.onStart();
         if(presenter != null) {
+            presenter.onStart();
             presenter.watchNewPosts();
         }
     }
@@ -241,9 +242,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     protected void onResume() {
         super.onResume();
-        if(presenter != null) {
-            presenter.onResume();
-        }
         NewMessageCheckJob.scheduleJob();
         ensureExpendedAppBar();
     }

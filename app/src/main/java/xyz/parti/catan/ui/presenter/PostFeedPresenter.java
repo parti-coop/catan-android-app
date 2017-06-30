@@ -291,7 +291,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showPost(post);
     }
 
-    public void onResume() {
+    public void onStart() {
         if(lastLoadFirstPostsAtMillis <= 0 || feedAdapter == null) {
             return;
         }
@@ -306,7 +306,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             return;
         }
 
-        long reload_gap_mills = 10 * 60 * 1000;
+        long reload_gap_mills = 30 * 60 * 1000;
         if(System.currentTimeMillis() - lastLoadFirstPostsAtMillis > reload_gap_mills) {
             refreshPosts();
         }
