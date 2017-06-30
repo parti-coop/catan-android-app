@@ -46,12 +46,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
+                android:textSize="@dimen/text_default_size"
                 android:textColor="@color/default_text" />
             <xyz.parti.catan.ui.view.SmartTextView
                 android:id="@+id/smarttextview_message_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_space"
+                android:textSize="@dimen/text_default_size"
                 android:textColor="@color/default_text" />
         </LinearLayout>
     </LinearLayout>

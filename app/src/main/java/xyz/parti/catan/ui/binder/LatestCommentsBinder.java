@@ -44,7 +44,7 @@ class LatestCommentsBinder {
     private final List<CommentView> commentViews = new ArrayList<>();
 
     LatestCommentsBinder(ViewGroup view, boolean withNewCommentForm, int lastCommentsCountLimit) {
-        this.context = view.getContext().getApplicationContext();
+        this.context = view.getContext();
         this.view = view;
         this.withNewCommentForm = withNewCommentForm;
         this.lastCommentsCountLimit = lastCommentsCountLimit;

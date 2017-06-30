@@ -127,6 +127,7 @@
             android:paddingBottom="10dp"
             android:paddingLeft="@dimen/post_card_padding"
             android:paddingRight="@dimen/post_card_padding"
+            android:textSize="@dimen/text_default_size"
             android:lineSpacingMultiplier="1.1" />
 
         <xyz.parti.catan.ui.view.ReferenceView
