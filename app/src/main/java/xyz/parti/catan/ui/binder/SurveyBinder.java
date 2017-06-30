@@ -71,21 +71,25 @@ public class SurveyBinder {
         }
         footnoteTextView.setText(footnote);
 
-
-        if(post.survey.multiple_select) {
-            newOptionInputCheckbox.setVisibility(View.VISIBLE);
-            newOptionInputRadioButton.setVisibility(View.GONE);
-        } else {
-            newOptionInputCheckbox.setVisibility(View.GONE);
-            newOptionInputRadioButton.setVisibility(View.VISIBLE);
-        }
-
-        newOptionInputLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onClickNewOption(post);
+        if(post.survey.is_open) {
+            if (post.survey.multiple_select) {
+                newOptionInputCheckbox.setVisibility(View.VISIBLE);
+                newOptionInputRadioButton.setVisibility(View.GONE);
+            } else {
+                newOptionInputCheckbox.setVisibility(View.GONE);
+                newOptionInputRadioButton.setVisibility(View.VISIBLE);
             }
-        });
+
+            newOptionInputLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickNewOption(post);
+                }
+            });
+            newOptionInputLayout.setVisibility(View.VISIBLE);
+        } else{
+            newOptionInputLayout.setVisibility(View.GONE);
+        }
     }
 
     private void bindOption(PostBinder.PostBindablePresenter presenter, Post post, Option option, int index) {
