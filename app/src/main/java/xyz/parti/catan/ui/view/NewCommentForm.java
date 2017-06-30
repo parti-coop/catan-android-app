@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -25,8 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
-
-import static android.content.Context.INPUT_METHOD_SERVICE;
+import xyz.parti.catan.helper.KeyboardHelper;
 
 /**
  * Created by dalikim on 2017. 6. 16..
@@ -59,13 +57,7 @@ public class NewCommentForm extends FrameLayout {
             public void run() {
                 newCommentInputEditText.setFocusableInTouchMode(true);
                 newCommentInputEditText.requestFocus();
-                newCommentInputEditText.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(newCommentInputEditText, 0);
-                    }
-                });
+                KeyboardHelper.showKey(getContext(), newCommentInputEditText);
             }
         });
         if(comment != null) {

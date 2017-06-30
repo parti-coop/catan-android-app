@@ -49,7 +49,7 @@
     <string name="drawer_open">메뉴를 엽니다</string>
     <string name="drawer_close">메뉴를 닫습니다</string>
 
-    <string name="comment_form_placeholer">댓글을 입력하세요...</string>
+    <string name="comment_form_placeholer">댓글을 남기세요...</string>
     <string name="load_more_comments">%s개의 댓글 모두 보기</string>
     <string name="no_comments">가장 먼저 댓글을 남겨 보세요</string>
 
@@ -110,4 +110,7 @@
     <string name="no_messages">알림 메시지가 없습니다.</string>
     <string name="not_found_parti">빠띠를 찾을 수 없습니다</string>
     <string name="report_logout">로그아웃 되었습니다.</string>
+    <string name="option_form_placeholer">새로운 제안하기</string>
+    <string name="option_dialog_title">새로운 제안</string>
+    <string name="option_dialog_hint">제안을 적으세요</string>
 </resources>

@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="vertical" />
+    <include layout="@layout/references_survey_option_form" />
     <View
         android:id="@+id/survey_bar"
         android:layout_width="match_parent"

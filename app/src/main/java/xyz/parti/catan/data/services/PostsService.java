@@ -1,6 +1,5 @@
 package xyz.parti.catan.data.services;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -18,7 +17,6 @@ import retrofit2.http.Query;
 import retrofit2.http.Streaming;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
-import xyz.parti.catan.data.model.Update;
 
 /**
  * Created by dalikim on 2017. 3. 28..
@@ -46,7 +44,7 @@ public interface PostsService {
 
     @Multipart
     @POST("/api/v1/posts")
-    Flowable<Response<Post>> createPost(
+    Flowable<Response<Post>> create(
             @Part("post[parti_id]") RequestBody partiId,
             @Part("post[body]") RequestBody body,
             @Part("post[is_html_body]") RequestBody isHtmlBody,

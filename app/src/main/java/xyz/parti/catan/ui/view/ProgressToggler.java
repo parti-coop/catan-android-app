@@ -10,8 +10,8 @@ import android.widget.ProgressBar;
  */
 
 public class ProgressToggler {
-    private final View view;
-    private final ProgressBar progressBar;
+    private View view;
+    private ProgressBar progressBar;
 
     public ProgressToggler(View view, ProgressBar progressBar) {
         this.view = view;

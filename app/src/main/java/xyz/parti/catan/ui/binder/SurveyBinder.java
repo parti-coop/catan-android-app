@@ -1,6 +1,7 @@
 package xyz.parti.catan.ui.binder;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,6 +26,9 @@ public class SurveyBinder {
     LinearLayout optionsLayout;
     @BindView(R.id.textview_survey_footnote)
     TextView footnoteTextView;
+    @BindView(R.id.layout_new_option_input)
+    LinearLayout newOptionInputLayout;
+
     private List<OptionBinder> optionBinders = new ArrayList<>();
 
     private LayoutInflater inflater;
@@ -36,7 +40,7 @@ public class SurveyBinder {
         ButterKnife.bind(this, view);
     }
 
-    public void bind(PostBinder.PostBindablePresenter presenter, Post post) {
+    public void bind(final PostBinder.PostBindablePresenter presenter, final Post post) {
         unbind();
 
         optionsLayout.removeAllViews();
@@ -56,6 +60,13 @@ public class SurveyBinder {
             footnote += "\n" + "투표 후 현황을 확인할 수 있습니다";
         }
         footnoteTextView.setText(footnote);
+
+        newOptionInputLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickNewOption(post);
+            }
+        });
     }
 
     private void bindOption(PostBinder.PostBindablePresenter presenter, Post post, Option option, int index) {
@@ -72,6 +83,7 @@ public class SurveyBinder {
     }
 
     public void unbind() {
+        if(newOptionInputLayout != null) newOptionInputLayout.setOnClickListener(null);
         for(OptionBinder binder : optionBinders) {
             binder.unbind();
         }

@@ -568,7 +568,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         }
 
         savePost = getRxGuardian().subscribe(savePost,
-                postsService.createPost(partiIdReq, bodyReq, isHtmlBodyReq, filesReq),
+                postsService.create(partiIdReq, bodyReq, isHtmlBodyReq, filesReq),
                 new Consumer<Response<Post>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Response<Post> response) throws Exception {

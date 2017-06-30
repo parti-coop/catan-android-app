@@ -13,9 +13,12 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -42,6 +45,7 @@ import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.CommentView;
 import xyz.parti.catan.ui.view.MaxHeightScrollView;
 import xyz.parti.catan.ui.view.NewCommentForm;
+import xyz.parti.catan.ui.view.NewOptionFormAlertBuilder;
 
 /**
  * Created by dalikim on 2017. 5. 15..
@@ -50,6 +54,7 @@ import xyz.parti.catan.ui.view.NewCommentForm;
 public class PostActivity extends BaseActivity implements PostPresenter.View {
     PostPresenter presenter;
     private ProgressDialog downloadProgressDialog;
+    private AlertDialog optionDialog;
 
     @BindView(R.id.scrollview_post)
     ScrollView postScrollView;
@@ -123,6 +128,12 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
 
     @Override
     protected void onDestroy() {
+        if(downloadProgressDialog != null) {
+            downloadProgressDialog.dismiss();
+        }
+        if(optionDialog != null) {
+            optionDialog.dismiss();
+        }
         if(this.postBinder != null) {
             this.postBinder.unbind();
             this.postBinder = null;
@@ -292,6 +303,17 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
     @Override
     public void showPost(Post post) {
         // do nothing
+    }
+
+    @Override
+    public void showNewSurveyOptionDialog(Post post) {
+        optionDialog = NewOptionFormAlertBuilder.build(this, presenter, post);
+        optionDialog.show();
+    }
+
+    @Override
+    public void hideNewSurveyOptionDialog() {
+        optionDialog.dismiss();
     }
 
     @Override

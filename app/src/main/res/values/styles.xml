@@ -35,6 +35,7 @@
         <item name="colorPrimary">@color/style_color_primary</item>
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>
+        <item name="android:disabledAlpha">0.8</item>
         <item name="android:windowTitleStyle">@style/AppDialogWindowTitle</item>
     </style>
 

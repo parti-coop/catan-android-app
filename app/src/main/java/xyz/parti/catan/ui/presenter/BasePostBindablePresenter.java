@@ -24,6 +24,7 @@ import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.FeedbacksService;
+import xyz.parti.catan.data.services.OptionsService;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.data.services.UpvotesService;
 import xyz.parti.catan.data.services.VotingsService;
@@ -36,9 +37,10 @@ import xyz.parti.catan.ui.view.CommentView;
  * Created by dalikim on 2017. 5. 15..
  */
 
-abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter, CommentView.Presenter {
+public abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter, CommentView.Presenter {
     private final UpvotesService upvotesService;
     private final FeedbacksService feedbacksService;
+    private final OptionsService optionsService;
     private final VotingsService votingsService;
     private final PostsService postsService;
     private SessionManager session;
@@ -48,6 +50,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
     private Disposable onClickSurveyOptionPublisher;
     private Disposable onClickPollAgreePublisher;
     private Disposable onClickPollDisgreePublisher;
+    private Disposable newOptionPublisher;
 
     BasePostBindablePresenter(SessionManager session) {
         this.session = session;
@@ -55,6 +58,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         feedbacksService = ServiceBuilder.createService(FeedbacksService.class, session);
         votingsService = ServiceBuilder.createService(VotingsService.class, session);
         postsService = ServiceBuilder.createService(PostsService.class, session);
+        optionsService = ServiceBuilder.createService(OptionsService.class, session);
     }
 
     protected abstract void changePost(Post post, Object payload);
@@ -88,6 +92,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickLike(final Post post) {
+        if(getView() == null) return;
         Flowable<Response<JsonNull>> call =  ( post.is_upvoted_by_me ?
                 upvotesService.destroy("Post", post.id) : upvotesService.create("Post", post.id)
         );
@@ -96,6 +101,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.toggleUpvoting();
                             changePost(post, Post.IS_UPVOTED_BY_ME);
@@ -110,6 +116,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
                         getView().reportError(error);
                     }
                 });
@@ -117,6 +124,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickLikeComment(final Post post, final Comment comment) {
+        if(getView() == null) return;
         Flowable<Response<JsonNull>> call =  ( comment.is_upvoted_by_me ?
                 upvotesService.destroy("Comment", comment.id) : upvotesService.create("Comment", comment.id)
         );
@@ -125,6 +133,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.toggleCommentUpvoting(comment);
                             changePost(post, new CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
@@ -139,6 +148,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
                         getView().reportError(error);
                     }
                 });
@@ -146,13 +156,15 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {
+        if(getView() == null) return;
         onClickSurveyOptionPublisher = getRxGuardian().subscribe(onClickSurveyOptionPublisher,
                 feedbacksService.feedback(option.id, isChecked),
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
                         if (response.isSuccessful()) {
-                            reloadPostSurvey(post);
+                            reloadPostSurvey(post, null);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else if (response.code() == 410) {
@@ -164,21 +176,23 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
                         getView().reportError(error);
                     }
                 });
     }
 
-    private void reloadPostSurvey(final Post post) {
+    private void reloadPostSurvey(final Post post, final ReloadCallBack callback) {
         reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
                 postsService.getPost(post.id),
                 new Consumer<Response<Post>>() {
                     @Override
                     public void accept(@NonNull Response<Post> response) throws Exception {
-                        if (getView() == null) return;
+                        if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.survey = response.body().survey;
                             changePost(post, post.survey);
+                            if(callback != null) callback.afterReload();
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else {
@@ -188,6 +202,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
                         getView().reportError(error);
                     }
                 });
@@ -195,13 +210,14 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickPollAgree(final Post post) {
-
+        if(getView() == null) return;
         final String newChoice = (post.poll.isAgreed() ? "unsure" : "agree");
         onClickPollAgreePublisher = getRxGuardian().subscribe(onClickPollAgreePublisher,
                 votingsService.voting(post.poll.id, newChoice),
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
@@ -216,6 +232,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
                         getView().reportError(error);
                     }
                 });
@@ -223,12 +240,14 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickPollDisgree(final Post post) {
+        if(getView() == null) return;
         final String newChoice = (post.poll.isDisagreed()  ? "unsure" : "disagree");
         onClickPollDisgreePublisher = getRxGuardian().subscribe(onClickPollDisgreePublisher,
                 votingsService.voting(post.poll.id, newChoice),
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
@@ -243,6 +262,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
                         getView().reportError(error);
                     }
                 });
@@ -250,18 +270,28 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onClickMoreComments(Post post) {
+        if(getView() == null) return;
         getView().showAllComments(post);
     }
 
     @Override
     public void onClickImageFileSource(Post post) {
+        if(getView() == null) return;
         getView().showImageFileSource(post);
     }
 
     @Override
     public void onClickDocFileSource(final Post post, final FileSource docFileSource) {
+        if(getView() == null) return;
         getView().downloadFile(post, docFileSource);
     }
+
+    @Override
+    public void onClickNewOption(Post post) {
+        if(getView() == null) return;
+        getView().showNewSurveyOptionDialog(post);
+    }
+
     @Override
     public User getCurrentUser() {
         return session.getCurrentUser();
@@ -281,6 +311,7 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
 
     @Override
     public void onPostDownloadDocFileSource() {
+        if(getView() == null) return;
         if(getView() == null) return;
         getView().hideDownloadDocFileSourceProgress();
     }
@@ -310,13 +341,42 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         return session.getPartiAccessToken();
     }
 
+    public void saveOption(final Post post, String text) {
+        if(getView() == null) return;
+        if(post.survey == null) return;
+        newOptionPublisher = getRxGuardian().subscribe(newOptionPublisher,
+                optionsService.create(post.survey.id, text),
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
+                        if (response.isSuccessful()) {
+                            reloadPostSurvey(post, new ReloadCallBack() {
+                                @Override
+                                public void afterReload() {
+                                    getView().hideNewSurveyOptionDialog();
+                                }
+                            });
+                        } else if (response.code() == 403) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else {
+                            getView().reportError("New Option error : " + response.code());
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
+                        getView().reportError(error);
+                    }
+                });
+    }
+
     interface View {
         void showUrl(Uri url);
         void showVideo(Uri parse, Uri parse1);
         void showNewCommentForm(Post post);
         void showNewCommentForm(Post post, Comment comment);
-        void reportError(String message);
-        void reportError(Throwable error);
         void showAllComments(Post post);
         void showImageFileSource(Post post);
         void downloadFile(Post post, FileSource docFileSource);
@@ -325,7 +385,15 @@ abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.Vie
         void hideDownloadDocFileSourceProgress();
         void showDownloadedFile(Uri uri, String mimeType);
         void showPost(Post post);
+        void showNewSurveyOptionDialog(Post post);
+        void hideNewSurveyOptionDialog();
         Context getContext();
+        void reportError(String message);
+        void reportError(Throwable error);
         void reportInfo(String string);
+    }
+
+    private interface ReloadCallBack {
+        void afterReload();
     }
 }

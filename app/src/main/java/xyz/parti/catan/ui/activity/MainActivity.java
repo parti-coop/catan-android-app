@@ -23,15 +23,23 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -70,6 +78,7 @@ import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
+import xyz.parti.catan.helper.KeyboardHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
@@ -79,8 +88,10 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.GroupSectionDrawerItem;
+import xyz.parti.catan.ui.view.NewOptionFormAlertBuilder;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 import xyz.parti.catan.ui.view.PostFeedDrawerItem;
+import xyz.parti.catan.ui.view.ProgressToggler;
 
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
     public static final int REQUEST_UPDATE_POST = 1999;
@@ -127,6 +138,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     private ProgressDialog downloadProgressDialog;
     private PostFeedPresenter presenter;
+    private AlertDialog optionDialog;
 
     private MenuItem messagesMenuItem;
     private ImageView messagesBellImageView;
@@ -186,6 +198,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     protected void onDestroy() {
         if(downloadProgressDialog != null) {
             downloadProgressDialog.dismiss();
+        }
+        if(optionDialog != null) {
+            optionDialog.dismiss();
         }
         if(presenter != null) {
             presenter.detachView();
@@ -812,6 +827,17 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         Intent intent = new Intent(this, PostActivity.class);
         intent.putExtra("post", Parcels.wrap(post));
         startActivityForResult(intent, REQUEST_UPDATE_POST);
+    }
+
+    @Override
+    public void showNewSurveyOptionDialog(final Post post) {
+        optionDialog = NewOptionFormAlertBuilder.build(this, presenter, post);
+        optionDialog.show();
+    }
+
+    @Override
+    public void hideNewSurveyOptionDialog() {
+        optionDialog.dismiss();
     }
 
     @Override

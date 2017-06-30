@@ -211,6 +211,7 @@ public class PostBinder {
         void onClickImageFileSource(Post post);
         void onClickDocFileSource(Post post, FileSource docFileSource);
         void onClickCreatedAt(Post post);
+        void onClickNewOption(Post post);
         User getCurrentUser();
     }
 }

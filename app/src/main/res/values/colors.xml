@@ -33,6 +33,7 @@
     <color name="selected_vote_button">#fff</color>
     <color name="drawer_item_text">@color/brand_gray_dark</color>
     <color name="comment_form_placeholer">@color/brand_gray</color>
+    <color name="option_form_placeholer">@color/brand_gray_dark</color>
 
     <color name="material_drawer_primary_text_unread">@android:color/white</color>
 
