@@ -771,6 +771,12 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     public void readyToShowPostFeed() {
         postListDemoLayout.setVisibility(View.GONE);
         postListRecyclerView.setVisibility(View.VISIBLE);
+        postListRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                postListRecyclerView.scrollToPosition(0);
+            }
+        }, 100);
         noPostSignLayout.setVisibility(View.GONE);
 
         if(newPostsSignAnimator != null) {
