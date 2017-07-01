@@ -1,11 +1,9 @@
 package xyz.parti.catan.ui.binder;
 
-import android.support.v4.widget.TextViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -16,10 +14,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
-import xyz.parti.catan.data.model.Group;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Post;
-import xyz.parti.catan.helper.StyleHelper;
 
 /**
  * Created by dalikim on 2017. 4. 28..

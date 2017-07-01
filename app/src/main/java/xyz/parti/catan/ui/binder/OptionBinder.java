@@ -91,8 +91,8 @@ class OptionBinder {
             }
             feedbacksCountTextView.setVisibility(android.view.View.VISIBLE);
 
-            progressBar.setMax(post.survey.feedback_users_count);
-            progressBar.setProgress(option.feedbacks_count);
+            progressBar.setMax(100);
+            progressBar.setProgress(Math.round(option.percentage));
             progressBar.setVisibility(android.view.View.VISIBLE);
         } else {
             feedbacksCountTextView.setVisibility(android.view.View.GONE);
