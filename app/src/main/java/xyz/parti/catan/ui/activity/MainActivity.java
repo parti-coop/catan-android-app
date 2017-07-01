@@ -27,26 +27,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.mikepenz.materialdrawer.Drawer;
@@ -78,7 +70,6 @@ import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.ImageHelper;
 import xyz.parti.catan.helper.IntentHelper;
-import xyz.parti.catan.helper.KeyboardHelper;
 import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.helper.StyleHelper;
 import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
@@ -91,7 +82,7 @@ import xyz.parti.catan.ui.view.GroupSectionDrawerItem;
 import xyz.parti.catan.ui.view.NewOptionFormAlertBuilder;
 import xyz.parti.catan.ui.view.NewPostSignAnimator;
 import xyz.parti.catan.ui.view.PostFeedDrawerItem;
-import xyz.parti.catan.ui.view.ProgressToggler;
+import xyz.parti.catan.ui.view.ShimmerLayout;
 
 public class MainActivity extends BaseActivity implements PostFeedPresenter.View {
     public static final int REQUEST_UPDATE_POST = 1999;
@@ -112,7 +103,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @BindView(R.id.button_new_posts_sign)
     FancyButton newPostsSignButton;
     @BindView(R.id.layout_post_list_demo)
-    ShimmerFrameLayout postListDemoLayout;
+    ShimmerLayout postListDemoLayout;
     @BindView(R.id.layout_no_posts_sign)
     RelativeLayout noPostSignLayout;
     @BindView(R.id.textview_no_posts_sign)
@@ -145,7 +136,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     private ImageView messagesDotImageView;
 
     private Drawer drawer;
-    private View drawerDemoLayout;
+    private ShimmerLayout drawerDemoLayout;
     private Unbinder unbinder;
 
     @Override
@@ -315,8 +306,9 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     }
                 }).build();
 
-        drawerDemoLayout = LayoutInflater.from(this).inflate(R.layout.drawer_demo, drawer.getSlider(), false);
+        drawerDemoLayout = (ShimmerLayout) LayoutInflater.from(this).inflate(R.layout.drawer_demo, drawer.getSlider(), false);
         drawer.getSlider().addView(drawerDemoLayout);
+        drawerDemoLayout.startLoading();
         setDrawerVerticalBottomPadding(drawer.getSlider(), R.dimen.default_space);
         presenter.loadDrawer();
     }
@@ -452,8 +444,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         presenter.loadFirstPosts();
 
         postListSwipeRefreshLayout.setEnabled(false);
-        postListDemoLayout.startShimmerAnimation();
-
+        postListDemoLayout.startLoading();
         presenter.syncToolbarWithPostFeed();
     }
 
@@ -778,7 +769,6 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void readyToShowPostFeed() {
-        postListDemoLayout.stopShimmerAnimation();
         postListDemoLayout.setVisibility(View.GONE);
         postListRecyclerView.setVisibility(View.VISIBLE);
         noPostSignLayout.setVisibility(View.GONE);
@@ -793,9 +783,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public void showPostListDemo() {
-        noPostSignLayout.setVisibility(View.GONE);
         postListDemoLayout.setVisibility(View.VISIBLE);
-        postListDemoLayout.startShimmerAnimation();
+        noPostSignLayout.setVisibility(View.GONE);
 
         if(newPostsSignAnimator != null) {
             newPostsSignAnimator.setDisable(true);

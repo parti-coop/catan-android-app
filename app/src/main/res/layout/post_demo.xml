@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <View
+            <xyz.parti.catan.ui.view.ShimmerLoaderView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginRight="10dp"
@@ -24,13 +24,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <View
+                <xyz.parti.catan.ui.view.ShimmerLoaderView
                     android:layout_height="6dp"
                     android:layout_width="150dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="10dp"
                     android:background="@color/brand_gray"/>
-                <View
+                <xyz.parti.catan.ui.view.ShimmerLoaderView
                     android:layout_height="6dp"
                     android:layout_width="70dp"
                     android:layout_marginBottom="10dp"
@@ -38,19 +38,19 @@
                     android:background="@color/brand_gray"/>
             </LinearLayout>
         </LinearLayout>
-        <View
+        <xyz.parti.catan.ui.view.ShimmerLoaderView
             android:layout_height="6dp"
             android:layout_width="150dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="20dp"
             android:background="@color/brand_gray"/>
-        <View
+        <xyz.parti.catan.ui.view.ShimmerLoaderView
             android:layout_height="6dp"
             android:layout_width="100dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@color/brand_gray"/>
-        <View
+        <xyz.parti.catan.ui.view.ShimmerLoaderView
             android:layout_width="230dp"
             android:layout_height="6dp"
             android:layout_marginBottom="10dp"

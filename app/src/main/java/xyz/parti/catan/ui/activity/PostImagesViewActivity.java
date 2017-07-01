@@ -4,17 +4,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.drawable.ScalingUtils;
-import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.parceler.Parcels;
 
@@ -22,7 +18,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import xyz.parti.catan.Constants;
+import butterknife.Unbinder;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
@@ -106,12 +102,13 @@ public class PostImagesViewActivity extends BaseActivity {
     public static class SwipeFragment extends Fragment {
         @BindView(R.id.imageview)
         ZoomableDraweeView imageView;
+        private Unbinder unbinder;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup view,
                                  Bundle savedInstanceState) {
             View swipeView = inflater.inflate(R.layout.post_image_item, view, false);
-            ButterKnife.bind(SwipeFragment.this, swipeView);
+            unbinder = ButterKnife.bind(SwipeFragment.this, swipeView);
 
             Bundle bundle = getArguments();
             String url = bundle.getString("url");
@@ -129,6 +126,11 @@ public class PostImagesViewActivity extends BaseActivity {
             bundle.putString("url", url);
             swipeFragment.setArguments(bundle);
             return swipeFragment;
+        }
+
+        @Override public void onDestroyView() {
+            super.onDestroyView();
+            if(unbinder != null) unbinder.unbind();
         }
     }
 }
