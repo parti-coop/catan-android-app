@@ -13,9 +13,6 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Group;
 
-/**
- * Created by dalikim on 2017. 5. 24..
- */
 
 public class PostFormGroupItem extends AbstractItem<PostFormGroupItem, PostFormGroupItem.ViewHolder> {
     Group group;

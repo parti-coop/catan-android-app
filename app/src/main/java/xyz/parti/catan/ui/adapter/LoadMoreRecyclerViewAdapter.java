@@ -10,9 +10,6 @@ import java.util.List;
 import xyz.parti.catan.data.model.RecyclableModel;
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 4. 30..
- */
 
 public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> extends RecyclerView.Adapter<LoadMoreRecyclerViewAdapter.BaseViewHolder> {
     private final List<InfinitableModelHolder<T>> holders;

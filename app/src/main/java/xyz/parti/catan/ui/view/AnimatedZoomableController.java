@@ -13,9 +13,6 @@ import com.facebook.common.internal.Preconditions;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.gestures.TransformGestureDetector;
 
-/**
- * Created by dalikim on 2017. 6. 30..
- */
 
 public class AnimatedZoomableController extends AbstractAnimatedZoomableController {
 

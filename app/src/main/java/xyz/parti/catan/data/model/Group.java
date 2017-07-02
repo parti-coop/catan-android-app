@@ -14,10 +14,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
-
 @Parcel
 public class Group extends RealmObject implements Comparable<Group> {
     public static final String INDIE_SLUG = "indie";

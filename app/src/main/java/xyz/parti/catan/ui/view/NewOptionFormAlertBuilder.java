@@ -18,9 +18,6 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.KeyboardHelper;
 import xyz.parti.catan.ui.presenter.BasePostBindablePresenter;
 
-/**
- * Created by dalikim on 2017. 6. 30..
- */
 
 public class NewOptionFormAlertBuilder {
     public static AlertDialog build(final Context context, final BasePostBindablePresenter presenter, final Post post) {

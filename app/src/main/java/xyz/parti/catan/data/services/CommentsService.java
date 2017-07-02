@@ -11,9 +11,6 @@ import retrofit2.http.Query;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Page;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
 
 public interface CommentsService {
     @GET("/api/v1/posts/{post_id}/comments")

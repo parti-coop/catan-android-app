@@ -12,9 +12,6 @@ import android.view.View;
 
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 7. 1..
- */
 
 public class ShimmerLoaderView extends View {
     private ShimmerLoaderController loaderController;

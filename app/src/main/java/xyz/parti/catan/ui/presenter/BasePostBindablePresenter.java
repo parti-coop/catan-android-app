@@ -33,9 +33,6 @@ import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.DownloadFilesTask;
 import xyz.parti.catan.ui.view.CommentView;
 
-/**
- * Created by dalikim on 2017. 5. 15..
- */
 
 public abstract class BasePostBindablePresenter<T extends BasePostBindablePresenter.View> extends BasePresenter<T> implements DownloadFilesTask.PostDownloadablePresenter, PostBinder.PostBindablePresenter, CommentView.Presenter {
     private final UpvotesService upvotesService;

@@ -16,9 +16,6 @@ import xyz.parti.catan.ui.binder.PollBinder;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.binder.SurveyBinder;
 
-/**
- * Created by dalikim on 2017. 6. 14..
- */
 
 public class ReferenceView extends FrameLayout {
     private LinkSourceBinder linkSourceBinder;

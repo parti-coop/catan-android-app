@@ -22,9 +22,6 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.helper.RxGuardian;
 
-/**
- * Created by dalikim on 2017. 5. 6..
- */
 
 public class ReceivablePushMessageCheckTask {
     private static final String KEY_LAST_CHECKED_AT_MILLS = "app_version_last_checked_at_mills";

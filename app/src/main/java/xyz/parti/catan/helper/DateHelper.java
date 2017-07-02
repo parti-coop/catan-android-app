@@ -4,9 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by dalikim on 2017. 3. 30..
- */
 
 public class DateHelper {
     public static Date toDate(String value) {

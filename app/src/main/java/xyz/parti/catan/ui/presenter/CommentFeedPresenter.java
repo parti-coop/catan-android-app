@@ -24,9 +24,6 @@ import xyz.parti.catan.ui.adapter.CommentFeedRecyclerViewAdapter;
 import xyz.parti.catan.ui.view.CommentView;
 import xyz.parti.catan.ui.view.NewCommentForm;
 
-/**
- * Created by dalikim on 2017. 5. 3..
- */
 
 public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.View> implements CommentView.Presenter, NewCommentForm.Presenter {
     private final Post post;

@@ -2,9 +2,6 @@ package xyz.parti.catan.ui.presenter;
 
 import xyz.parti.catan.helper.RxGuardian;
 
-/**
- * Created by dalikim on 2017. 5. 7..
- */
 
 abstract class BasePresenter<T> {
     private T view;

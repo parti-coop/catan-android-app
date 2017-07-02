@@ -8,10 +8,6 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import xyz.parti.catan.data.model.Parti;
 
-/**
- * Created by dalikim on 2017. 6. 19..
- */
-
 public class PartiDAO {
     private RealmResults<Parti> result;
     private Realm realm;

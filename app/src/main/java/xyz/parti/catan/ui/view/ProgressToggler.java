@@ -5,9 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.widget.ProgressBar;
 
-/**
- * Created by dalikim on 2017. 5. 9..
- */
 
 public class ProgressToggler {
     private View view;

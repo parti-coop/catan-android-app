@@ -12,9 +12,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 
-/**
- * Created by dalikim on 2017. 5. 10..
- */
 
 public class RxGuardian {
     private List<Disposable> subscriptions = new ArrayList<>();

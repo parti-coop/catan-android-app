@@ -6,9 +6,6 @@ import android.widget.ScrollView;
 
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 6. 17..
- */
 
 public class MaxHeightScrollView extends ScrollView {
 

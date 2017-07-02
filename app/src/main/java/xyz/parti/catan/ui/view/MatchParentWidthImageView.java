@@ -3,9 +3,6 @@ package xyz.parti.catan.ui.view;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-/**
- * Created by dalikim on 2017. 5. 11..
- */
 
 public class MatchParentWidthImageView extends android.support.v7.widget.AppCompatImageView {
     public MatchParentWidthImageView(Context context) {

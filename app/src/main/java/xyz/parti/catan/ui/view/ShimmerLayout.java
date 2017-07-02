@@ -9,9 +9,6 @@ import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 
-/**
- * Created by dalikim on 2017. 7. 1..
- */
 
 public class ShimmerLayout extends FrameLayout {
     public ShimmerLayout(Context context) {

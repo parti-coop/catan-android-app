@@ -34,9 +34,6 @@ import xyz.parti.catan.ui.receiver.CancelNotificationReceiver;
 
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
 
-/**
- * Created by dalikim on 2017. 5. 13..
- */
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     private static final int MAX_SIZE = 6;

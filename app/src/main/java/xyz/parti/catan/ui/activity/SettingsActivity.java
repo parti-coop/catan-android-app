@@ -45,9 +45,6 @@ import xyz.parti.catan.helper.AppVersionHelper;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.RxGuardian;
 
-/**
- * Created by dalikim on 2017. 5. 6..
- */
 
 public class SettingsActivity extends BaseActivity {
     private Disposable settingPublisher;

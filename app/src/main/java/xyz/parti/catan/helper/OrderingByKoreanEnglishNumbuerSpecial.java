@@ -8,9 +8,6 @@ import org.w3c.dom.Text;
 
 import java.util.Comparator;
 
-/**
- * Created by dalikim on 2017. 6. 26..
- */
 
 public class OrderingByKoreanEnglishNumbuerSpecial {
     private static final int REVERSE  = -1;

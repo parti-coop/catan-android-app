@@ -54,9 +54,6 @@ import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.task.AppVersionCheckTask;
 import xyz.parti.catan.ui.task.ReceivablePushMessageCheckTask;
 
-/**
- * Created by dalikim on 2017. 5. 3..
- */
 
 public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresenter.View> implements PostBinder.PostBindablePresenter {
     private final DatabaseReference partiesFirebaseRoot;

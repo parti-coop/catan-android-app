@@ -16,9 +16,6 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.LinkSource;
 
-/**
- * Created by dalikim on 2017. 4. 5..
- */
 
 public class LinkSourceBinder {
     @BindView(R.id.layout_references_link_source)

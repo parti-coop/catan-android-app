@@ -15,9 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 5. 26..
- */
 
 public class PostFormImageItem extends AbstractItem<PostFormImageItem, PostFormImageItem.ViewHolder> {
     private Uri url;

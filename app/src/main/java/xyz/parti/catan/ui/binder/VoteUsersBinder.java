@@ -9,9 +9,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.User;
 
-/**
- * Created by dalikim on 2017. 4. 25..
- */
 
 class VoteUsersBinder {
     private ViewGroup view;

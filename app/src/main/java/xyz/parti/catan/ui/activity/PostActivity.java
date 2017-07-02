@@ -47,9 +47,6 @@ import xyz.parti.catan.ui.view.MaxHeightScrollView;
 import xyz.parti.catan.ui.view.NewCommentForm;
 import xyz.parti.catan.ui.view.NewOptionFormAlertBuilder;
 
-/**
- * Created by dalikim on 2017. 5. 15..
- */
 
 public class PostActivity extends BaseActivity implements PostPresenter.View {
     PostPresenter presenter;

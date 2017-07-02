@@ -15,9 +15,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 4. 4..
- */
 
 public class UnsafeOkHttpClient {
     public static OkHttpClient getUnsafeOkHttpClient() {

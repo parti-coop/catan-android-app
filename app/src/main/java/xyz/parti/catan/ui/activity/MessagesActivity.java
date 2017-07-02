@@ -37,9 +37,6 @@ import xyz.parti.catan.ui.adapter.DefaultProgressItem;
 import xyz.parti.catan.ui.adapter.MessageItem;
 import xyz.parti.catan.ui.presenter.MessagesPresenter;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
 
 public class MessagesActivity extends BaseActivity implements MessagesPresenter.View {
     MessagesPresenter presenter;

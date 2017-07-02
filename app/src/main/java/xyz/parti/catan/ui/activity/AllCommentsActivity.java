@@ -24,9 +24,6 @@ import xyz.parti.catan.ui.adapter.LoadMoreRecyclerViewAdapter;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
 import xyz.parti.catan.ui.view.NewCommentForm;
 
-/**
- * Created by dalikim on 2017. 4. 30..
- */
 
 public class AllCommentsActivity extends BaseActivity implements CommentFeedPresenter.View {
     private CommentFeedRecyclerViewAdapter feedAdapter;

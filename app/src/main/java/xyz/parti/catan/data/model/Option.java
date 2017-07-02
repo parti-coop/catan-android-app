@@ -2,10 +2,6 @@ package xyz.parti.catan.data.model;
 
 import org.parceler.Parcel;
 
-/**
- * Created by dalikim on 2017. 4. 27..
- */
-
 @Parcel
 public class Option {
     public long id;

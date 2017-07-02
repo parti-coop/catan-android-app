@@ -2,9 +2,6 @@ package xyz.parti.catan.ui.gestures;
 
 import android.view.MotionEvent;
 
-/**
- * Created by dalikim on 2017. 6. 30..
- */
 
 public class MultiPointerGestureDetector {
 

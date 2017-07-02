@@ -22,9 +22,6 @@ import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
-/**
- * Created by dalikim on 2017. 4. 30..
- */
 
 public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
     private static final int FORM_TYPE = 1000;

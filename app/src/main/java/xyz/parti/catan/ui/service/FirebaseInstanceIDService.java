@@ -16,9 +16,6 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.PrefPushMessage;
 import xyz.parti.catan.helper.RxGuardian;
 
-/**
- * Created by dalikim on 2017. 5. 13..
- */
 
 public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
     RxGuardian rxGuardian = new RxGuardian();

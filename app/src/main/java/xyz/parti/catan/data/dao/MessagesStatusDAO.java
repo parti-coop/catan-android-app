@@ -8,10 +8,6 @@ import xyz.parti.catan.data.model.Message;
 import xyz.parti.catan.data.model.MessagesStatus;
 import xyz.parti.catan.data.model.User;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
-
 public class MessagesStatusDAO {
     private final Realm realm;
     private MessagesStatus result;

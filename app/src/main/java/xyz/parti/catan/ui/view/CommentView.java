@@ -30,9 +30,6 @@ import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 6. 14..
- */
 
 public class CommentView extends LinearLayout {
     private Comment comment;
@@ -186,10 +183,6 @@ public class CommentView extends LinearLayout {
     public Comment getComment() {
         return comment;
     }
-
-    /**
-     * Created by dalikim on 2017. 5. 18..
-     */
 
     public interface Presenter {
         void onClickLikeComment(Post post, Comment comment);

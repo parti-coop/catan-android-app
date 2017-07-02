@@ -4,9 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-/**
- * Created by dalikim on 2017. 5. 9..
- */
 
 public class KeyboardHelper {
     public static void hideKey(Context context, final View view) {

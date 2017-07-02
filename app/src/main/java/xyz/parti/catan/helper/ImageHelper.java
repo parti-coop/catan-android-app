@@ -22,9 +22,6 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
 import javax.annotation.Nullable;
 
-/**
- * Created by dalikim on 2017. 4. 5..
- */
 
 public class ImageHelper {
     public static Bitmap getCircularBitmap(Bitmap bitmap) {

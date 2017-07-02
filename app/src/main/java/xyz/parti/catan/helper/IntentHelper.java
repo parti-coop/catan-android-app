@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-/**
- * Created by dalikim on 2017. 4. 24..
- */
 
 public class IntentHelper {
     private Context context;

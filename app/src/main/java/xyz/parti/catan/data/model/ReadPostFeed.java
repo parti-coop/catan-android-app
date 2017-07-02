@@ -6,9 +6,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import xyz.parti.catan.Constants;
 
-/**
- * Created by dalikim on 2017. 6. 7..
- */
 
 public class ReadPostFeed  extends RealmObject {
     @PrimaryKey

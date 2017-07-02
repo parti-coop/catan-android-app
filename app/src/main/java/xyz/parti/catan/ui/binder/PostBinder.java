@@ -31,9 +31,6 @@ import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 import xyz.parti.catan.ui.view.ReferenceView;
 import xyz.parti.catan.ui.view.SmartTextView;
 
-/**
- * Created by dalikim on 2017. 5. 15..
- */
 
 public class PostBinder {
     private Context context;

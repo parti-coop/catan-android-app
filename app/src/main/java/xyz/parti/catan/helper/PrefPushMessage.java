@@ -5,9 +5,6 @@ import android.support.v7.preference.PreferenceManager;
 
 import xyz.parti.catan.Constants;
 
-/**
- * Created by dalikim on 2017. 5. 16..
- */
 
 public class PrefPushMessage {
     public static boolean isReceivable(Context context) {

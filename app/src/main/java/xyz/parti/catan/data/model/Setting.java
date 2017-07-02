@@ -2,9 +2,6 @@ package xyz.parti.catan.data.model;
 
 import org.parceler.Parcel;
 
-/**
- * Created by dalikim on 2017. 5. 16..
- */
 
 @Parcel
 public class Setting {

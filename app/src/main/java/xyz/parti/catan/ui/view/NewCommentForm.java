@@ -26,9 +26,6 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.helper.KeyboardHelper;
 
-/**
- * Created by dalikim on 2017. 6. 16..
- */
 
 public class NewCommentForm extends FrameLayout {
     private WeakReference<Presenter> presenter = new WeakReference<Presenter>(null);

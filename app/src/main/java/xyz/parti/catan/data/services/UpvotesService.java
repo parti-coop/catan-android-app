@@ -10,9 +10,6 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-/**
- * Created by dalikim on 2017. 5. 4..
- */
 
 public interface UpvotesService {
     @FormUrlEncoded

@@ -6,9 +6,6 @@ import android.graphics.drawable.Drawable;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 
-/**
- * Created by dalikim on 2017. 5. 19..
- */
 
 public class UrlDrawable extends Drawable implements Drawable.Callback {
 

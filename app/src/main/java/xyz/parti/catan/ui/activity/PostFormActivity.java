@@ -67,9 +67,6 @@ import xyz.parti.catan.ui.presenter.SelectedImage;
 import xyz.parti.catan.ui.view.ProgressToggler;
 import xyz.parti.catan.ui.view.SizeFilter;
 
-/**
- * Created by dalikim on 2017. 5. 23..
- */
 
 public class PostFormActivity extends BaseActivity implements PostFormPresenter.View {
     private static final String TAG_PARTI_CHOICE = "xyz.parti.catan.PartiChoiceDialog";

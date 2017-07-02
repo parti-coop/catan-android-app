@@ -17,9 +17,6 @@ import xyz.parti.catan.data.model.Message;
 import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 import xyz.parti.catan.ui.view.SmartTextView;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
 
 public class MessageItem extends AbstractItem<MessageItem, MessageItem.ViewHolder> {
     private Message message;

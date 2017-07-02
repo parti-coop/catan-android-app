@@ -21,9 +21,6 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
 
-/**
- * Created by dalikim on 2017. 4. 4..
- */
 
 public class FileSourcesBinder {
     final List<View> clickListeners = new ArrayList<>();

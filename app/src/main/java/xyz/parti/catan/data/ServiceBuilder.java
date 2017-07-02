@@ -22,10 +22,6 @@ import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.services.AuthTokenService;
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 3. 27..
- */
-
 public class ServiceBuilder {
     private static final Retrofit.Builder retrofitbuilder = createDefaultBuilder();
 

@@ -16,9 +16,6 @@ import xyz.parti.catan.ui.binder.CommentDiff;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.view.NewCommentForm;
 
-/**
- * Created by dalikim on 2017. 5. 15..
- */
 
 public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View> implements PostBinder.PostBindablePresenter, NewCommentForm.Presenter {
     private Post post;

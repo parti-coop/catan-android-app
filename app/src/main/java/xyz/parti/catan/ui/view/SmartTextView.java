@@ -30,9 +30,6 @@ import java.util.regex.Pattern;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.TextHelper;
 
-/**
- * Created by dalikim on 2017. 6. 23..
- */
 
 public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
     private OnImageClickListener onImageClickListener;

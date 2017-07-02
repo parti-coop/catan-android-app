@@ -14,9 +14,6 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 import xyz.parti.catan.helper.OrderingByKoreanEnglishNumbuerSpecial;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
 
 @Parcel
 public class Parti extends RealmObject {

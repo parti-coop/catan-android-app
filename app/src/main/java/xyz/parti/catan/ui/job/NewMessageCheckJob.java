@@ -19,9 +19,6 @@ import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.services.MessagesService;
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
 
 public class NewMessageCheckJob extends Job {
     public static final String TAG = "xyz.parti.catan.job.NewMessageCheckJob";

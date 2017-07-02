@@ -4,9 +4,6 @@ import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
 
 public class DefaultProgressItem extends ProgressItem {
     @Override

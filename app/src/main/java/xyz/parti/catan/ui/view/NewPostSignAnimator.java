@@ -8,9 +8,6 @@ import android.view.animation.AnimationUtils;
 
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 5. 5..
- */
 
 public class NewPostSignAnimator {
     private final Animation slideUp;

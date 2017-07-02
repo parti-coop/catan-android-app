@@ -9,9 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.view.animation.LinearInterpolator;
 
-/**
- * Created by dalikim on 2017. 7. 1..
- */
 
 class ShimmerLoaderController {
     private final static float MIN_WEIGHT = 0.0f;

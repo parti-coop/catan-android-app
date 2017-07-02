@@ -23,9 +23,6 @@ import xyz.parti.catan.data.model.Comment;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.view.CommentView;
 
-/**
- * Created by dalikim on 2017. 4. 29..
- */
 
 class LatestCommentsBinder {
     @BindView(R.id.textview_comments_load_more)

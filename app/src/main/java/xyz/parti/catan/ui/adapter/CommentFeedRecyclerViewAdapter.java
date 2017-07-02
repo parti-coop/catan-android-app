@@ -14,9 +14,6 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.ui.presenter.CommentFeedPresenter;
 import xyz.parti.catan.ui.view.CommentView;
 
-/**
- * Created by dalikim on 2017. 4. 30..
- */
 
 public class CommentFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Comment> {
     private final LayoutInflater inflater;

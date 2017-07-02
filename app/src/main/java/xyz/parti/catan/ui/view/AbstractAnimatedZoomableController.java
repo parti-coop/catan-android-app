@@ -7,9 +7,6 @@ import android.support.annotation.Nullable;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.gestures.TransformGestureDetector;
 
-/**
- * Created by dalikim on 2017. 6. 30..
- */
 
 public abstract class AbstractAnimatedZoomableController extends DefaultZoomableController {
 

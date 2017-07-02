@@ -7,9 +7,6 @@ import android.content.Intent;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.preference.NotificationsPreference;
 
-/**
- * Created by dalikim on 2017. 5. 31..
- */
 
 public class CancelNotificationReceiver extends BroadcastReceiver {
     public static final String EXTRA_KEY_NOTIFICATION_ID = "notificationId";

@@ -26,9 +26,6 @@ import xyz.parti.catan.data.services.UsersService;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.RxGuardian;
 
-/**
- * Created by dalikim on 2017. 5. 9..
- */
 
 public class LoginTask {
     private final AuthTokenService authTokenService;

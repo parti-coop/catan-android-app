@@ -14,9 +14,6 @@ import java.util.Set;
 
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 5. 25..
- */
 
 public class SizeFilter extends Filter {
     private int mMaxSize;

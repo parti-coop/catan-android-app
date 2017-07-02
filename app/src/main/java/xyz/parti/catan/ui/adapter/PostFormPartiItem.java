@@ -14,9 +14,6 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Parti;
 
-/**
- * Created by dalikim on 2017. 5. 24..
- */
 
 public class PostFormPartiItem extends AbstractItem<PostFormPartiItem, PostFormPartiItem.ViewHolder> {
     private Parti parti;

@@ -20,9 +20,6 @@ import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.services.PostsService;
 import xyz.parti.catan.helper.CatanLog;
 
-/**
- * Created by dalikim on 2017. 4. 25..
- */
 
 public class DownloadFilesTask extends AsyncTask<String, String, Long> {
     private final static long RESUT_CANCEL = -1L;

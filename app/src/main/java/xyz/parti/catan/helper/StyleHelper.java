@@ -8,9 +8,6 @@ import android.widget.TextView;
 
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 6. 19..
- */
 
 public class StyleHelper {
     public static void forSnackbar(Context context, Snackbar snackbar) {

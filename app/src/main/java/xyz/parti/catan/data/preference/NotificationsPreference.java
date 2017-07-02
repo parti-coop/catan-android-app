@@ -14,9 +14,6 @@ import java.util.List;
 import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.PushMessage;
 
-/**
- * Created by dalikim on 2017. 5. 31..
- */
 
 public class NotificationsPreference {
     private SharedPreferences preferences;

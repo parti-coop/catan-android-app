@@ -21,9 +21,6 @@ import java.util.WeakHashMap;
 
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 5. 19..
- */
 
 class SmartHtmlImageGetter implements Html.ImageGetter, View.OnAttachStateChangeListener, Drawable.Callback {
 

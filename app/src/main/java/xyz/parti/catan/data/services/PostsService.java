@@ -18,9 +18,6 @@ import retrofit2.http.Streaming;
 import xyz.parti.catan.data.model.Page;
 import xyz.parti.catan.data.model.Post;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
 
 public interface PostsService {
     @GET("/api/v1/posts/dashboard")

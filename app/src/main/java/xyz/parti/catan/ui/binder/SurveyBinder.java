@@ -17,9 +17,6 @@ import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.Post;
 
-/**
- * Created by dalikim on 2017. 4. 28..
- */
 
 public class SurveyBinder {
     @BindView(R.id.layout_references_survey)

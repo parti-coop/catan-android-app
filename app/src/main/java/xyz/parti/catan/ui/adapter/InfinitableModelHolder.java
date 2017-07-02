@@ -6,9 +6,6 @@ import java.util.List;
 
 import xyz.parti.catan.data.model.RecyclableModel;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
 
 public class InfinitableModelHolder<T extends RecyclableModel> {
     static int TYPE_MODEL = 0;

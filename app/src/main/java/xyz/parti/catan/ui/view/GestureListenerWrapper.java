@@ -3,9 +3,6 @@ package xyz.parti.catan.ui.view;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-/**
- * Created by dalikim on 2017. 6. 30..
- */
 
 public class GestureListenerWrapper extends GestureDetector.SimpleOnGestureListener {
 

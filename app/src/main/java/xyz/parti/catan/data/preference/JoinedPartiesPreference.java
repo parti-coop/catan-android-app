@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 
 import xyz.parti.catan.Constants;
 
-/**
- * Created by dalikim on 2017. 6. 9..
- */
 
 public class JoinedPartiesPreference {
     private SharedPreferences preferences;

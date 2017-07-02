@@ -26,9 +26,6 @@ import xyz.parti.catan.helper.TextHelper;
 import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 import xyz.parti.catan.ui.view.ZoomableDraweeView;
 
-/**
- * Created by dalikim on 2017. 4. 13..
- */
 
 public class PostImagesViewActivity extends BaseActivity {
     Post post;

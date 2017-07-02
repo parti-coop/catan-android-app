@@ -22,9 +22,6 @@ import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.NetworkHelper;
 
-/**
- * Created by dalikim on 2017. 4. 7..
- */
 
 public class BaseActivity extends AppCompatActivity {
     boolean isNetworkReceiverRegistered = false;

@@ -21,9 +21,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 
-/**
- * Created by dalikim on 2017. 6. 6..
- */
 
 public class PostFeedDrawerItem extends BaseDrawerItem<PostFeedDrawerItem, PostFeedDrawerItem.PartiViewHolder> {
     private final int layoutRes;

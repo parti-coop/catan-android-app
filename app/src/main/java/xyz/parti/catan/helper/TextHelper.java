@@ -7,9 +7,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.widget.TextView;
 
-/**
- * Created by dalikim on 2017. 3. 31..
- */
 
 public class TextHelper {
     public static CharSequence trimTrailingWhitespace(CharSequence source) {

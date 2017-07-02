@@ -7,9 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
 
 @Parcel
 public class Post implements RecyclableModel {

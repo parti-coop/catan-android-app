@@ -14,9 +14,6 @@ import butterknife.Unbinder;
 import xyz.parti.catan.R;
 import xyz.parti.catan.helper.NetworkHelper;
 
-/**
- * Created by dalikim on 2017. 5. 5..
- */
 
 public class DisconnectActivity extends BaseActivity {
     public static final String ACTION_NETWORK_RECONNECT = "parti.xyz.catan.session.NetworkReconnect";

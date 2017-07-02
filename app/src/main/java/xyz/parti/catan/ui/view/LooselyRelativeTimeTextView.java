@@ -6,9 +6,6 @@ import android.util.AttributeSet;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
-/**
- * Created by dalikim on 2017. 5. 19..
- */
 
 public class LooselyRelativeTimeTextView extends RelativeTimeTextView {
     public LooselyRelativeTimeTextView(Context context, AttributeSet attrs, int defStyle) {

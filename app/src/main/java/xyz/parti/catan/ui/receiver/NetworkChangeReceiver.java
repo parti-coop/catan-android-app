@@ -9,9 +9,6 @@ import xyz.parti.catan.helper.NetworkHelper;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.DisconnectActivity;
 
-/**
- * Created by dalikim on 2017. 5. 5..
- */
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override

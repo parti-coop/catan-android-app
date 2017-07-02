@@ -4,9 +4,6 @@ import org.parceler.Parcel;
 
 import java.util.Date;
 
-/**
- * Created by dalikim on 2017. 4. 27..
- */
 
 @Parcel
 public class Survey {

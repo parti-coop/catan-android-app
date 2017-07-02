@@ -8,9 +8,6 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import xyz.parti.catan.data.model.PartiAccessToken;
 
-/**
- * Created by dalikim on 2017. 3. 27..
- */
 
 public interface AuthTokenService {
     @FormUrlEncoded

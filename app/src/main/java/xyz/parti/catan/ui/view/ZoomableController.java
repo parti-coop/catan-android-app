@@ -4,9 +4,6 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
-/**
- * Created by dalikim on 2017. 6. 30..
- */
 
 public interface ZoomableController {
     /**

@@ -5,9 +5,6 @@ import android.util.Log;
 import xyz.parti.catan.BuildConfig;
 import xyz.parti.catan.Constants;
 
-/**
- * Created by dalikim on 2017. 6. 19..
- */
 
 public class CatanLog {
     public static void d(String message) {

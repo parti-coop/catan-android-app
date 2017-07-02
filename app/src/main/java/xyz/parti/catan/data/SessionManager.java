@@ -17,9 +17,6 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.ui.activity.BaseActivity;
 import xyz.parti.catan.ui.activity.LogInActivity;
 
-/**
- * Created by dalikim on 2017. 3. 26..
- */
 
 public class SessionManager {
     private static final String CURRENT_SESSION_VERSION = "4";

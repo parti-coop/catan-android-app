@@ -24,9 +24,6 @@ import xyz.parti.catan.helper.CatanLog;
 import xyz.parti.catan.helper.RxGuardian;
 import xyz.parti.catan.helper.RxHelper;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
 
 public class MessagesPresenter {
     private final Realm realm;

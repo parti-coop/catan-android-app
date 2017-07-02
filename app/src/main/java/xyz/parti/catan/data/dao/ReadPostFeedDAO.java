@@ -9,10 +9,6 @@ import xyz.parti.catan.Constants;
 import xyz.parti.catan.data.model.Parti;
 import xyz.parti.catan.data.model.ReadPostFeed;
 
-/**
- * Created by dalikim on 2017. 6. 19..
- */
-
 public class ReadPostFeedDAO {
     private Realm realm;
 

@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by dalikim on 2017. 3. 28..
- */
-
 @Parcel
 public class Comment implements RecyclableModel {
     public static final String IS_UPVOTED_BY_ME = "is_upvoted_by_me";

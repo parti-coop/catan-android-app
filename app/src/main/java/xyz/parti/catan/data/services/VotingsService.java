@@ -8,9 +8,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 
-/**
- * Created by dalikim on 2017. 4. 26..
- */
 
 public interface VotingsService {
     @FormUrlEncoded

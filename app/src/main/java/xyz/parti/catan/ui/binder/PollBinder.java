@@ -15,9 +15,6 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.Post;
 
-/**
- * Created by dalikim on 2017. 4. 25..
- */
 
 public class PollBinder {
     private final Context context;

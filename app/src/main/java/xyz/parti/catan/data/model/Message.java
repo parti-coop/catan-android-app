@@ -5,9 +5,6 @@ import android.text.TextUtils;
 
 import java.util.Date;
 
-/**
- * Created by dalikim on 2017. 6. 25..
- */
 
 public class Message {
     public Long id;

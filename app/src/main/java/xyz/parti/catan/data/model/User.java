@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Created by dalikim on 2017. 3. 27..
- */
 
 @Parcel
 public class User {
