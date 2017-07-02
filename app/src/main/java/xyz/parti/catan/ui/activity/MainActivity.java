@@ -217,7 +217,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     protected void onStart() {
         super.onStart();
         if(presenter != null) {
-            presenter.onStart();
+            presenter.refreshFeedIfNeed();
             presenter.watchNewPosts();
         }
     }

@@ -291,7 +291,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         getView().showPost(post);
     }
 
-    public void onStart() {
+    public void refreshFeedIfNeed() {
         if(lastLoadFirstPostsAtMillis <= 0 || feedAdapter == null) {
             return;
         }
@@ -378,6 +378,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             switchDashboardPostFeed(true);
             return;
         }
+
+        messagesStatusDAO.saveLocalReadMessageIdIfNew(pushMessage.user_id, pushMessage.id);
+
         if("post".equals(pushMessage.type) && pushMessage.param != null) {
             long postId = Long.parseLong(pushMessage.param);
             if(postId <= 0) {
