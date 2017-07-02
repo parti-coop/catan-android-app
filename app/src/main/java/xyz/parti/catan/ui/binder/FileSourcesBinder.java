@@ -20,13 +20,14 @@ import butterknife.ButterKnife;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.model.FileSource;
 import xyz.parti.catan.data.model.Post;
-import xyz.parti.catan.helper.ClosableClickableList;
 
 /**
  * Created by dalikim on 2017. 4. 4..
  */
 
 public class FileSourcesBinder {
+    final List<View> clickListeners = new ArrayList<>();
+
     private final static int HALF_IMAGE_SPACE = 5;
     private Context context;
 
@@ -35,8 +36,6 @@ public class FileSourcesBinder {
     @BindView(R.id.layout_files_images)
     LinearLayout imagesLayout;
 
-    private ClosableClickableList closableClickableList = new ClosableClickableList();
-
     public FileSourcesBinder(ViewGroup view) {
         this.context = view.getContext().getApplicationContext();
         LayoutInflater.from(context).inflate(R.layout.references_file_sources, view);
@@ -44,7 +43,7 @@ public class FileSourcesBinder {
     }
 
     public void bind(PostBinder.PostBindablePresenter presenter, Post post) {
-        closableClickableList.clear();
+        clearClickListeners();
 
         imagesLayout.removeAllViews();
         docsLayout.removeAllViews();
@@ -85,7 +84,7 @@ public class FileSourcesBinder {
                         presenter.onClickImageFileSource(post);
                     }
                 });
-                closableClickableList.add(imageView);
+                clickListeners.add(imageView);
                 rowLayout.addView(imageView);
                 col++;
             }
@@ -185,7 +184,7 @@ public class FileSourcesBinder {
                     presenter.onClickDocFileSource(post, docFileSource);
                 }
             });
-            closableClickableList.add(fileSourcesLayout);
+            clickListeners.add(fileSourcesLayout);
         }
     }
 
@@ -195,7 +194,7 @@ public class FileSourcesBinder {
     }
 
     public void unbind() {
-        closableClickableList.clear();
+        clearClickListeners();
     }
 
     static class DocFileSourceHolder {
@@ -212,5 +211,12 @@ public class FileSourcesBinder {
             nameTextView.setText(docFileSource.name);
             sizeTextView.setText(docFileSource.human_file_size);
         }
+    }
+
+    public void clearClickListeners() {
+        for(View view : clickListeners) {
+            if(view != null) view.setOnClickListener(null);
+        }
+        clickListeners.clear();
     }
 }

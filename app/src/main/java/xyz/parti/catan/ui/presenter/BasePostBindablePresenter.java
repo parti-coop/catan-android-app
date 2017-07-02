@@ -51,6 +51,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
     private Disposable onClickPollAgreePublisher;
     private Disposable onClickPollDisgreePublisher;
     private Disposable newOptionPublisher;
+    private Disposable reloadPostSurveyPublisher;
 
     BasePostBindablePresenter(SessionManager session) {
         this.session = session;
@@ -183,7 +184,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
     }
 
     private void reloadPostSurvey(final Post post, final ReloadCallBack callback) {
-        reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
+        reloadPostSurveyPublisher = getRxGuardian().subscribe(reloadPostSurveyPublisher,
                 postsService.getPost(post.id),
                 new Consumer<Response<Post>>() {
                     @Override
@@ -192,6 +193,32 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                         if (response.isSuccessful()) {
                             post.survey = response.body().survey;
                             changePost(post, post.survey);
+                            if(callback != null) callback.afterReload();
+                        } else if (response.code() == 403) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        if(getView() == null) return;
+                        getView().reportError(error);
+                    }
+                });
+    }
+
+    @Override
+    public void reloadPost(final Post post, final ReloadCallBack callback) {
+        reloadPostPublisher = getRxGuardian().subscribe(reloadPostPublisher,
+                postsService.getPost(post.id),
+                new Consumer<Response<Post>>() {
+                    @Override
+                    public void accept(@NonNull Response<Post> response) throws Exception {
+                        if(getView() == null) return;
+                        if (response.isSuccessful()) {
+                            changePost(post);
                             if(callback != null) callback.afterReload();
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
@@ -396,7 +423,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
         void reportInfo(String string);
     }
 
-    private interface ReloadCallBack {
+    public interface ReloadCallBack {
         void afterReload();
     }
 }

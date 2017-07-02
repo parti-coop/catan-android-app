@@ -25,6 +25,7 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.Survey;
 import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.helper.CatanLog;
+import xyz.parti.catan.ui.presenter.BasePostBindablePresenter;
 import xyz.parti.catan.ui.view.CommentView;
 import xyz.parti.catan.ui.view.LooselyRelativeTimeTextView;
 import xyz.parti.catan.ui.view.ReferenceView;
@@ -212,6 +213,7 @@ public class PostBinder {
         void onClickDocFileSource(Post post, FileSource docFileSource);
         void onClickCreatedAt(Post post);
         void onClickNewOption(Post post);
+        void reloadPost(Post post, final BasePostBindablePresenter.ReloadCallBack callback);
         User getCurrentUser();
     }
 }

@@ -37,9 +37,12 @@ public class Post implements RecyclableModel {
     public Share share;
     public FileSource[] file_sources;
     public String latest_stroked_activity;
+    public long expired_after;
 
     private transient List<FileSource> _imageFileSources = null;
     private transient List<FileSource> _docFileSources = null;
+    private transient long localLoadedAt = System.currentTimeMillis();
+    private transient boolean isReloading = false;
 
     public List<FileSource> getImageFileSources() {
         if(_imageFileSources != null) {
@@ -155,7 +158,18 @@ public class Post implements RecyclableModel {
                 return false;
             }
         }
-
         return true;
+    }
+
+    public boolean expired() {
+        return expired_after > 0 && System.currentTimeMillis() - localLoadedAt >= expired_after;
+    }
+
+    public void setReloading() {
+        isReloading = true;
+    }
+
+    public boolean isReloading() {
+        return isReloading;
     }
 }
