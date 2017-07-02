@@ -80,6 +80,6 @@ public class ShimmerLoaderView extends View {
     }
 
     public void setRectColor(Paint rectPaint) {
-       rectPaint.setColor(ContextCompat.getColor(getContext(), R.color.style_color_primary));
+       rectPaint.setColor(ContextCompat.getColor(getContext(), R.color.style_color_primary_light));
     }
 }
