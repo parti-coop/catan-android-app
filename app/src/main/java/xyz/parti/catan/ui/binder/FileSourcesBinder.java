@@ -151,6 +151,7 @@ public class FileSourcesBinder {
             draweeView.getHierarchy().setActualImageFocusPoint(new PointF(0.5f, 0f));
             draweeView.setImageURI(md_url);
         }
+        draweeView.getHierarchy().setFailureImage(R.drawable.ic_image_brand_gray, ScalingUtils.ScaleType.CENTER_INSIDE);
 
         LinearLayout rowBgLayout = new LinearLayout(context);
         rowBgLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dashboard_image_border));

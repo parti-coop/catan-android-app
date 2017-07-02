@@ -11,7 +11,7 @@
         android:layout_width="120dp"
         android:layout_height="match_parent"
         fresco:actualImageScaleType="focusCrop"
-        fresco:failureImage="@drawable/ic_empty_box_brand_gray_dark"
+        fresco:failureImage="@drawable/ic_image_brand_gray"
         fresco:failureImageScaleType="centerInside" />
 
     <ImageView

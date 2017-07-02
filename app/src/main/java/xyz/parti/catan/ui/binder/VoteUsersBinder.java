@@ -35,6 +35,8 @@ class VoteUsersBinder {
         layoutParams.setMargins(margin, 0, margin, 0);
         imageView.setLayoutParams(layoutParams);
 
+
+        imageView.getHierarchy().setFailureImage(R.drawable.ic_account_circle_gray_24dp);
         RoundingParams roundingParams = RoundingParams.fromCornersRadius(5f);
         roundingParams.setRoundAsCircle(true);
         imageView.getHierarchy().setRoundingParams(roundingParams);

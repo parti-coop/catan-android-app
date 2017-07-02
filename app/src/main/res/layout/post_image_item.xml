@@ -8,6 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         fresco:actualImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/ic_empty_box_brand_gray"
+        fresco:failureImage="@drawable/ic_image_white_24dp"
         fresco:failureImageScaleType="centerInside" />
 </FrameLayout>

@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             fresco:actualImageScaleType="centerCrop"
-            fresco:failureImage="@drawable/ic_empty_box_brand_gray"
+            fresco:failureImage="@drawable/ic_image_brand_gray"
             fresco:failureImageScaleType="centerInside" />
         <ImageView
             android:id="@+id/textview_link_video_sign"
