@@ -60,15 +60,20 @@ public class ReferenceView extends FrameLayout {
             fileSourcesBinder = new FileSourcesBinder(this);
         }
 
-        if(post.file_sources != null && !post.expired()) {
-            fileSourcesBinder.bind(presenter, post);
-            fileSourcesBinder.setVisibility(View.VISIBLE);
-        } else {
+        if(post.file_sources == null) {
+            fileSourcesBinder.setVisibility(View.GONE);
+            return;
+        }
+
+        if(post.expired()) {
             if(!post.isReloading()) {
                 post.setReloading();
                 presenter.reloadPost(post, null);
             }
             fileSourcesBinder.setVisibility(View.GONE);
+        } else {
+            fileSourcesBinder.bind(presenter, post);
+            fileSourcesBinder.setVisibility(View.VISIBLE);
         }
     }
 
