@@ -33,6 +33,8 @@ public class Parti extends RealmObject {
     public Boolean is_member;
     public Boolean is_made_by;
     public Boolean is_made_by_target_user;
+    public Boolean is_postable;
+
     @Ignore
     public Share share;
 

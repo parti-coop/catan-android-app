@@ -807,6 +807,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         currentParti = null;
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changeDashboardToolbar();
+        getView().showNewPostButton();
 
         if(force || currentPostFeedId != Constants.POST_FEED_DASHBOARD) {
             refreshPosts();
@@ -824,6 +825,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         currentParti = parti;
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changePartiPostFeedToolbar(parti);
+        if(parti.is_postable) {
+            getView().showNewPostButton();
+        } else {
+            getView().hideNewPostButton();
+        }
         if(force || !parti.id.equals(currentPostFeedId)) {
             if (needToLoadPost) {
                 refreshPosts();
@@ -869,5 +875,8 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
         void setUnreadMessagesStatus();
         void setReadMessagesStatus();
+
+        void showNewPostButton();
+        void hideNewPostButton();
     }
 }

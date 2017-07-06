@@ -978,6 +978,16 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     @Override
+    public void showNewPostButton() {
+        newPostButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNewPostButton() {
+        newPostButton.setVisibility(View.GONE);
+    }
+
+    @Override
     public void setUnreadMessagesStatus() {
         if(messagesBellImageView == null || messagesDotImageView == null) return;
         messagesBellImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_notifications_white_24dp));

@@ -16,6 +16,7 @@ import retrofit2.Response;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
 import xyz.parti.catan.data.model.Parti;
+import xyz.parti.catan.data.model.User;
 import xyz.parti.catan.data.services.PartiesService;
 
 
@@ -48,7 +49,15 @@ public class PostFormPresenter extends BasePresenter<PostFormPresenter.View> {
                         if (!isActive()) return;
                         if (response.isSuccessful()) {
                             joindedParties.clear();
-                            joindedParties.addAll(Arrays.asList(response.body()));
+                            List<Parti> list = new ArrayList<>(Arrays.asList(response.body()));
+                            Iterator<Parti> i = list.iterator();
+                            while(i.hasNext()) {
+                                Parti next = i.next();
+                                if(!next.is_postable) {
+                                    i.remove();
+                                }
+                            }
+                            joindedParties = list;
                             getView().resetPartiChoiceList(joindedParties);
                         }
                         getView().hidePartiChoiceProgressBar();
