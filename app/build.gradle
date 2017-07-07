@@ -30,8 +30,8 @@ android {
         applicationId "xyz.parti.catan"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "0.13.0-alpha"
+        versionCode 2
+        versionName "0.13.0-beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
