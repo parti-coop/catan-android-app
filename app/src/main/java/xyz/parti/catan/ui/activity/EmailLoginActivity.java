@@ -152,7 +152,7 @@ public class EmailLoginActivity extends BaseActivity {
         }
 
         progressToggler.toggle(true);
-        KeyboardHelper.hideKey(EmailLoginActivity.this, focusView);
+        KeyboardHelper.hideKey(EmailLoginActivity.this, formView);
         partiLoginTask.loginCredentials(email, password);
     }
 
