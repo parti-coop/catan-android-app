@@ -45,7 +45,10 @@ public class PartiDAO {
                 for(Parti parti : parties) {
                     ids.add(parti.id);
                 }
-                bgRealm.where(Parti.class).not().in("id", ids.toArray(new Long[parties.size()])).findAll().deleteAllFromRealm();
+                Long[] idArray = ids.toArray(new Long[parties.size()]);
+                if(idArray.length > 0) {
+                    bgRealm.where(Parti.class).not().in("id", idArray).findAll().deleteAllFromRealm();
+                }
             }
         }, onSuccess, null);
     }
