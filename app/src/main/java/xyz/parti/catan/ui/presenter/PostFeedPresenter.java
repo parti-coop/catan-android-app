@@ -665,7 +665,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     public void accept(@io.reactivex.annotations.NonNull final Response<Date> response) throws Exception {
                         if (!isActive()) return;
                         if (response.isSuccessful()) {
-                            new JoinedPartiesPreference(getView().getContext()).saveChangedAt(response.body().getTime());
+                            if(response.body() != null) new JoinedPartiesPreference(getView().getContext()).saveChangedAt(response.body().getTime());
                             if(needToUpgardeDrawer()) {
                                 loadDrawer();
                                 return;
