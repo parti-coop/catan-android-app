@@ -18,6 +18,7 @@ public class FileSource {
     public String file_size;
     public String human_file_size;
     public Integer seq_no;
+    public Float image_ratio = 0.8f;
 
     public boolean isImage() {
         if (file_type == null) { return false; }

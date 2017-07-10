@@ -74,7 +74,7 @@ public class FileSourcesBinder {
 
             int col = 0;
             for(FileSource fileSource: imageFileSourcesRow) {
-                android.view.View imageView = makeImageCell(context, fileSource.attachment_md_url, imageFileSourcesRow.size(), col);
+                android.view.View imageView = makeImageCell(context, fileSource, imageFileSourcesRow.size(), col);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -132,20 +132,20 @@ public class FileSourcesBinder {
         return imageFileSourcesRows;
     }
 
-    private android.view.View makeImageCell(Context context, String md_url, int col_size, int current_col) {
+    private android.view.View makeImageCell(Context context, FileSource fileSource, int col_size, int current_col) {
         SimpleDraweeView draweeView = new SimpleDraweeView(context);
         if(col_size <= 1) {
             draweeView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            draweeView.setAspectRatio(0.8f); // w / h
+            draweeView.setAspectRatio(fileSource.image_ratio); // w / h
             draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP);
-            draweeView.setImageURI(md_url);
+            draweeView.setImageURI(fileSource.attachment_md_url);
         } else {
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, 300);
             layoutParams.weight = 1;
             draweeView.setLayoutParams(layoutParams);
             draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FOCUS_CROP);
             draweeView.getHierarchy().setActualImageFocusPoint(new PointF(0.5f, 0f));
-            draweeView.setImageURI(md_url);
+            draweeView.setImageURI(fileSource.attachment_md_url);
         }
         draweeView.getHierarchy().setFailureImage(R.drawable.ic_image_brand_gray, ScalingUtils.ScaleType.CENTER_INSIDE);
 
