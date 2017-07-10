@@ -48,7 +48,7 @@ android {
         def var_api_base_url = "API_BASE_URL"
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro', 'proguard-butterknife.pro', 'proguard-retrofit2.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro', 'proguard-butterknife.pro', 'proguard-retrofit2.pro', 'proguard-tedpermission.pro'
             buildConfigField "String", var_api_base_url, "\"https://parti.xyz\""
             signingConfig signingConfigs.config
 
