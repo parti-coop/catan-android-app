@@ -57,6 +57,7 @@ public class MessagesStatusDAO {
 
                 MessagesStatus messagesStatus = findMessagesStatus(bgRealm, currentUser.id);
                 messagesStatus.last_local_read_messag_id = maxId;
+                messagesStatus.last_created_message_id = maxId;
                 bgRealm.copyToRealmOrUpdate(messagesStatus);
             }
         });
