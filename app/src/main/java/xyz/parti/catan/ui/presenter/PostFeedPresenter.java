@@ -71,7 +71,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private Disposable receivePushMessageForCommentPublisher;
     private Disposable savePost;
     private Disposable loadDrawer;
-    private Disposable loadParti;
     private Disposable reloadDrawer;
     private AppVersionCheckTask appVersionCheckTask;
     private ReceivablePushMessageCheckTask receivablePushMessageCheckTask;
@@ -136,7 +135,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void setPostFeedRecyclerViewAdapter(PostFeedRecyclerViewAdapter feedAdapter) {
         this.feedAdapter = feedAdapter;
-
         disableNewPost();
         playWithPostFeed(new OnLoadPostFeed() {
             @Override
@@ -511,13 +509,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             callback.onDashbard();
             return;
         }
-
         if(currentParti != null && currentParti.id == currentPostFeedId) {
             callback.onParti(currentParti);
             return;
         }
-
-        loadParti = getRxGuardian().subscribe(loadParti, partiesService.getParti(currentPostFeedId),
+        getRxGuardian().subscribeSimultaneously(partiesService.getParti(currentPostFeedId),
                 new Consumer<Response<Parti>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Response<Parti> response) throws Exception {

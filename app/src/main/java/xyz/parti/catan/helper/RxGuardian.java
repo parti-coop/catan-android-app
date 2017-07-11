@@ -60,4 +60,17 @@ public class RxGuardian {
 
         return newisposable;
     }
+
+    public <T> Disposable subscribeSimultaneously(Flowable<? extends T> newFlowable, Consumer<? super T> onNext, Consumer<Throwable> onError) {
+        return subscribeSimultaneously(newFlowable, onNext, onError, Functions.EMPTY_ACTION);
+    }
+
+    public <T> Disposable subscribeSimultaneously(Flowable<? extends T> newFlowable, Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
+        Disposable newisposable = newFlowable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io()).subscribe(onNext, onError, onComplete);
+        add(newisposable);
+
+        return newisposable;
+    }
 }
