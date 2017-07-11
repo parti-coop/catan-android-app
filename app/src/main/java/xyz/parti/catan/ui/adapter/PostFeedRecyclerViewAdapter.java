@@ -3,7 +3,9 @@ package xyz.parti.catan.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,21 +27,26 @@ import xyz.parti.catan.ui.presenter.PostFeedPresenter;
 
 public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Post> {
     private static final int FORM_TYPE = 1000;
+    private static final int HIDDEN_TYPE = 1001;
     private final LayoutInflater inflater;
     private final User currentUser;
     private PostFeedPresenter presenter;
+    private boolean visiblePostLineForm = false;
 
     public PostFeedRecyclerViewAdapter(Context context, User currentUser) {
         this.inflater = LayoutInflater.from(context);
         this.currentUser = currentUser;
-
         this.prependCustomView(FORM_TYPE);
     }
 
     @Override
     public int getItemViewType(int position) {
         if(position == 0) {
-            return FORM_TYPE;
+            if(visiblePostLineForm) {
+                return FORM_TYPE;
+            } else {
+                return HIDDEN_TYPE;
+            }
         } else {
             return super.getItemViewType(position);
         }
@@ -58,6 +65,8 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
     public LoadMoreRecyclerViewAdapter.BaseViewHolder onCreateCustomViewHolder(ViewGroup parent, int viewType) {
         if(viewType == FORM_TYPE) {
             return new PostLineFormViewHolder(inflater.inflate(R.layout.post_line_form, parent, false), presenter);
+        } else if(viewType == HIDDEN_TYPE) {
+            return new HiddenViewHolder(new FrameLayout(inflater.getContext()));
         } else {
             return super.onCreateCustomViewHolder(parent, viewType);
         }
@@ -123,6 +132,16 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         super.onViewRecycled(holder);
     }
 
+    public void showNewPostLineFormView() {
+        visiblePostLineForm = true;
+        notifyItemChanged(0);
+    }
+
+    public void hideNewPostLineFormView() {
+        visiblePostLineForm = false;
+        notifyItemChanged(0);
+    }
+
     private static class PostViewHolder extends ModelViewHolder {
         private final PostBinder postBinder;
 
@@ -183,4 +202,9 @@ public class PostFeedRecyclerViewAdapter extends LoadMoreRecyclerViewAdapter<Pos
         }
     }
 
+    static class HiddenViewHolder extends ModelViewHolder {
+        HiddenViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
 }

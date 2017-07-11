@@ -105,7 +105,6 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         appVersionCheckTask = new AppVersionCheckTask(AppVersionHelper.getCurrentVerion(getView().getContext()), getView().getContext());
         receivablePushMessageCheckTask = new ReceivablePushMessageCheckTask(getView().getContext(), session);
         lastPostFeedPreference = new LastPostFeedPreference(getView().getContext());
-
         currentPostFeedId = lastPostFeedPreference.fetch();
     }
 
@@ -137,6 +136,23 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
 
     public void setPostFeedRecyclerViewAdapter(PostFeedRecyclerViewAdapter feedAdapter) {
         this.feedAdapter = feedAdapter;
+
+        disableNewPost();
+        playWithPostFeed(new OnLoadPostFeed() {
+            @Override
+            public void onDashbard() {
+                enableNewPost();
+            }
+
+            @Override
+            public void onParti(Parti parti) {
+                if(parti.is_postable) {
+                    enableNewPost();
+                } else {
+                    disableNewPost();
+                }
+            }
+        });
     }
 
     public void loadFirstPosts() {
@@ -809,7 +825,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         currentParti = null;
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changeDashboardToolbar();
-        getView().showNewPostButton();
+        enableNewPost();
 
         if(force || currentPostFeedId != Constants.POST_FEED_DASHBOARD) {
             refreshPosts();
@@ -820,6 +836,28 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         switchPartiPostFeed(parti, true, true);
     }
 
+    private void enableNewPost() {
+        if(!isActive()) return;
+
+        showNewPostLineForm();
+        getView().showNewPostButton();
+    }
+
+    private void showNewPostLineForm() {
+        feedAdapter.showNewPostLineFormView();
+    }
+
+    private void disableNewPost() {
+        if(!isActive()) return;
+
+        hideNewPostLineForm();
+        getView().hideNewPostButton();
+    }
+
+    private void hideNewPostLineForm() {
+        feedAdapter.hideNewPostLineFormView();
+    }
+
     private void switchPartiPostFeed(Parti parti, boolean needToLoadPost, boolean force) {
         if(!isActive()) return;
 
@@ -828,9 +866,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         lastPostFeedPreference.save(currentPostFeedId);
         getView().changePartiPostFeedToolbar(parti);
         if(parti.is_postable) {
-            getView().showNewPostButton();
+            enableNewPost();
         } else {
-            getView().hideNewPostButton();
+            disableNewPost();
         }
         if(force || !parti.id.equals(currentPostFeedId)) {
             if (needToLoadPost) {
