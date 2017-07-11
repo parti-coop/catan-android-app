@@ -134,6 +134,8 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
     }
 
     private void setupForm(User user) {
+        if(user == null) return;
+
         if(getIntent() != null) {
             String body = getIntent().getStringExtra("body");
             if(body != null) {

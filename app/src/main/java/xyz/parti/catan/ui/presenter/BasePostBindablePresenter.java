@@ -242,6 +242,8 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
                         if(getView() == null) return;
+                        if(getCurrentUser() == null) return;
+
                         if (response.isSuccessful()) {
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);
@@ -272,6 +274,8 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
                         if(getView() == null) return;
+                        if(getCurrentUser() == null) return;
+
                         if (response.isSuccessful()) {
                             post.poll.updateChoice(getCurrentUser(), newChoice);
                             changePost(post, post.poll);

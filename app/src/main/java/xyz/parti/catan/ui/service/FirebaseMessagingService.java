@@ -69,7 +69,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         CatanLog.d("Received url : " + data.get("url"));
 
         SessionManager session = new SessionManager(this);
-        if(!session.isLoggedIn() || session.getCurrentUser().id != pushMessage.user_id) {
+        if(!session.isLoggedIn() || session.getCurrentUser() == null || session.getCurrentUser().id != pushMessage.user_id) {
             CatanLog.d("Message : User NOT match");
             return;
         }

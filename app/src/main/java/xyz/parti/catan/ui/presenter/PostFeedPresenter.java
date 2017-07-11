@@ -370,7 +370,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             return;
         }
 
-        if(pushMessage.user_id != session.getCurrentUser().id) {
+        if(session.getCurrentUser() == null || pushMessage.user_id != session.getCurrentUser().id) {
             CatanLog.d("ANOTHER USER");
             switchDashboardPostFeed(true);
             return;
@@ -696,7 +696,9 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 if (!getView().canRefreshDrawer()) return;
                 joindedParties.clear();
                 joindedParties.addAll(list);
-                getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
+                if(session.getCurrentUser() != null) {
+                    getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
+                }
                 getView().ensureToHideDrawerDemo();
                 watchNewPosts();
             }
@@ -730,7 +732,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 ReadPostFeed readPostFeed = readPostFeedDAO.forPartiOrDashboard(postFeedId);
 
                 Long lastStrokedBy = dataSnapshot.child("last_stroked_by").getValue(Long.class);
-                if(getCurrentUser().id.equals(lastStrokedBy)) return;
+                if(getCurrentUser() == null || getCurrentUser().id.equals(lastStrokedBy)) return;
 
                 Long lastStrokedSecondTime = dataSnapshot.child("last_stroked_at").getValue(Long.class);
                 if(lastStrokedSecondTime == null) {

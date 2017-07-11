@@ -403,6 +403,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     }
 
     private void setupFeed(User currentUser) {
+        if(currentUser == null) return;
+        
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.downloadProgressDialog = new ProgressDialog(this, R.style.AppProgressDialog);
         } else {
@@ -948,8 +950,8 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
                     profileItem.setIcon(defaultDrawable);
                 }
             });
+            presenter.watchMessages();
         }
-        presenter.watchMessages();
 
         return super.onPrepareOptionsMenu(menu);
     }

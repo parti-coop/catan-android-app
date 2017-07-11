@@ -17,6 +17,8 @@ public class MessagesStatusDAO {
     }
 
     public void watch(User currentUser, final MessagesStatusDAO.ChangeListener listener) {
+        if(currentUser == null) return;
+
         if(result == null) {
             result = findMessagesStatus(realm, currentUser.id);
             if(result == null) {
@@ -41,6 +43,7 @@ public class MessagesStatusDAO {
     }
 
     public void saveLocalStatus(final User currentUser, final List<Message> messages) {
+        if(currentUser == null) return;
         if(messages.size() <= 0) {
             return;
         }
@@ -60,6 +63,7 @@ public class MessagesStatusDAO {
     }
 
     public void saveServerStatusSync(final User currentUser, final MessagesStatus statusFromServer) {
+        if(currentUser == null) return;
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm bgRealm) {
