@@ -50,7 +50,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro',
                     'proguard-butterknife.pro', 'proguard-retrofit2.pro', 'proguard-tedpermission.pro',
-                    'proguard-crashlytics.pro', 'proguard-aboutlibraries.pro'
+                    'proguard-crashlytics.pro', 'proguard-aboutlibraries.pro', 'proguard-parceler.pro'
             buildConfigField "String", var_api_base_url, "\"https://parti.xyz\""
             signingConfig signingConfigs.config
 
