@@ -673,7 +673,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
 
     @Override
     public boolean canRefreshDrawer() {
-        return drawer != null && (drawer.getDrawerItems().size() <= 0 || !drawer.isDrawerOpen());
+        return drawer != null;
     }
 
     @Override

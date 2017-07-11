@@ -634,7 +634,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
         if(lastPostFeedPreference.isNewbie()) {
             getView().openDrawer();
             lastPostFeedPreference.save(currentPostFeedId);
-        }  else if(!needToUpgardeDrawer()) {
+        }  else if(!needToUpdateDrawer()) {
             getView().ensureToHideDrawerDemo();
             ensuerInitDrawer();
             return;
@@ -652,7 +652,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                         partiDAO.save(list, new Realm.Transaction.OnSuccess() {
                             @Override
                             public void onSuccess() {
-                                new JoinedPartiesPreference(getView().getContext()).sync();
+                                setDrawerIsUpToDate();
                                 ensuerInitDrawer();
                             }
                         });
@@ -681,8 +681,10 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                     public void accept(@io.reactivex.annotations.NonNull final Response<Date> response) throws Exception {
                         if (!isActive()) return;
                         if (response.isSuccessful()) {
-                            if(response.body() != null) new JoinedPartiesPreference(getView().getContext()).saveChangedAt(response.body().getTime());
-                            if(needToUpgardeDrawer()) {
+                            if(response.body() != null) {
+                                setMyJoinedPartiesChangedAt(response.body().getTime());
+                            }
+                            if(needToUpdateDrawer()) {
                                 loadDrawer();
                                 return;
                             }
@@ -698,8 +700,20 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                 });
     }
 
-    private boolean needToUpgardeDrawer() {
+    private boolean needToUpdateDrawer() {
         return new JoinedPartiesPreference(getView().getContext()).needToUpgrade();
+    }
+
+    private void setDrawerIsUpToDate() {
+        new JoinedPartiesPreference(getView().getContext()).sync();
+    }
+
+    private void setMyJoinedPartiesChangedAt(long timestamp) {
+        new JoinedPartiesPreference(getView().getContext()).saveChangedAt(timestamp);
+    }
+
+    private void refreshDrawerPending() {
+        new JoinedPartiesPreference(getView().getContext()).reset();
     }
 
     private void ensuerInitDrawer() {
@@ -709,9 +723,14 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
             @Override
             public void onChange(List<Parti> list) {
                 if (!isActive()) return;
-                if (!getView().canRefreshDrawer()) return;
+
+                if (!getView().canRefreshDrawer()) {
+                    refreshDrawerPending();
+                    return;
+                }
                 joindedParties.clear();
                 joindedParties.addAll(list);
+
                 if(session.getCurrentUser() != null) {
                     getView().setupDrawerItems(session.getCurrentUser(), getGroupList(joindedParties), PostFeedPresenter.this.currentPostFeedId);
                 }
