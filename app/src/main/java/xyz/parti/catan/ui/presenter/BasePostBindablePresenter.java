@@ -388,6 +388,9 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                         } else if (response.code() == 403) {
                             getView().hideNewSurveyOptionDialog();
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().hideNewSurveyOptionDialog();
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_post));
                         } else {
                             getView().hideNewSurveyOptionDialog();
                             getView().reportError("New Option error : " + response.code());
