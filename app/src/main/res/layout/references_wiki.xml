@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_references_wiki"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/default_space"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_wiki_latest_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/default_space"
+        android:orientation="horizontal"
+        android:padding="6dp"
+        android:background="@drawable/textview_bg_post_latest_activity"
+        android:visibility="gone" >
+        <xyz.parti.catan.ui.view.SmartTextView
+            android:id="@+id/smarttextview_wiki_latest_activity_body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_muted" />
+        <xyz.parti.catan.ui.view.LooselyRelativeTimeTextView
+            android:id="@+id/textview_wiki_latest_activity_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6dp"
+            android:textColor="@color/text_muted" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_wiki_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="1dp"
+        android:background="@drawable/card_background">
+        <TextView
+            android:id="@+id/textview_wiki_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_space"
+            android:textColor="@color/brand_gray_dark"
+            android:textSize="18dp" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/draweeview_wiki_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_space"
+            android:paddingRight="@dimen/default_space"
+            fresco:actualImageScaleType="centerCrop"
+            fresco:failureImage="@drawable/ic_empty_box_brand_gray"
+            fresco:failureImageScaleType="centerCrop" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layout_wiki_authors_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wiki_author_label"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/text_muted" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_wiki_authors"
+            android:orientation="horizontal" />
+    </LinearLayout>
+</LinearLayout>

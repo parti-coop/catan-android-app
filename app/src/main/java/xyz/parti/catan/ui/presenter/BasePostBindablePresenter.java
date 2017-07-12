@@ -406,6 +406,14 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                 });
     }
 
+    @Override
+    public void onClickWikiContent(Post post) {
+        if(getView() == null) return;
+        if(post.wiki == null) return;
+
+        getView().showUrl(Uri.parse(post.wiki.url));
+    }
+
     interface View {
         void showUrl(Uri url);
         void showVideo(Uri parse, Uri parse1);

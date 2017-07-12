@@ -32,6 +32,8 @@
 
     <dimen name="poll_vote_user_size">15dp</dimen>
     <dimen name="poll_vote_user_margin">2dp</dimen>
+    <dimen name="wiki_author_user_size">30dp</dimen>
+    <dimen name="wiki_author_user_margin">2dp</dimen>
     <dimen name="smart_text_placeholder_size">35dp</dimen>
     <dimen name="fab_margins">16dp</dimen>
     <dimen name="text_default_size">14sp</dimen>

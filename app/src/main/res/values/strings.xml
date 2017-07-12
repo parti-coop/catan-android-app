@@ -113,4 +113,5 @@
     <string name="option_form_placeholer">새로운 제안하기</string>
     <string name="option_dialog_title">새로운 제안</string>
     <string name="option_dialog_hint">제안을 적으세요</string>
+    <string name="wiki_author_label">작성</string>
 </resources>

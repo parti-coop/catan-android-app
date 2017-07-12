@@ -48,6 +48,8 @@ public class PostBinder {
     SmartTextView postLatestActivityBodySmartTextView;
     @BindView(R.id.textview_post_latest_activity_at)
     LooselyRelativeTimeTextView postLatestActivityAtTextView;
+    @BindView(R.id.layout_post_user)
+    LinearLayout postUserLayout;
     @BindView(R.id.textview_post_user_nickname)
     TextView userNicknameTextView;
     @BindView(R.id.draweeview_post_user_image)
@@ -137,15 +139,20 @@ public class PostBinder {
             postLatestActivityLayout.setVisibility(View.GONE);
         }
 
-        userImageDraweeView.setImageURI(post.user.image_url);
-        userNicknameTextView.setText(post.user.nickname);
-        createdAtTextView.setReferenceTime(post.created_at.getTime());
-        createdAtTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onClickCreatedAt(post);
-            }
-        });
+        if(post.wiki == null) {
+            postUserLayout.setVisibility(View.VISIBLE);
+            userImageDraweeView.setImageURI(post.user.image_url);
+            userNicknameTextView.setText(post.user.nickname);
+            createdAtTextView.setReferenceTime(post.created_at.getTime());
+            createdAtTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickCreatedAt(post);
+                }
+            });
+        } else {
+            postUserLayout.setVisibility(View.GONE);
+        }
 
         if(TextUtils.isEmpty(post.parsed_title)) {
             titleSmartTextView.setVisibility(android.view.View.GONE);
@@ -210,6 +217,7 @@ public class PostBinder {
         void onClickDocFileSource(Post post, FileSource docFileSource);
         void onClickCreatedAt(Post post);
         void onClickNewOption(Post post);
+        void onClickWikiContent(Post post);
         void reloadPost(Post post, final BasePostBindablePresenter.ReloadCallBack callback);
         User getCurrentUser();
     }

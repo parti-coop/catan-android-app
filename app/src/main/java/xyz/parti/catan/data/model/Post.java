@@ -31,6 +31,7 @@ public class Post implements RecyclableModel {
     public LinkSource link_source;
     public Poll poll;
     public Survey survey;
+    public Wiki wiki;
     public Share share;
     public FileSource[] file_sources;
     public String latest_stroked_activity;

@@ -15,6 +15,7 @@ import xyz.parti.catan.ui.binder.LinkSourceBinder;
 import xyz.parti.catan.ui.binder.PollBinder;
 import xyz.parti.catan.ui.binder.PostBinder;
 import xyz.parti.catan.ui.binder.SurveyBinder;
+import xyz.parti.catan.ui.binder.WikiBinder;
 
 
 public class ReferenceView extends FrameLayout {
@@ -22,6 +23,7 @@ public class ReferenceView extends FrameLayout {
     private FileSourcesBinder fileSourcesBinder;
     private PollBinder pollBinder;
     private SurveyBinder surveyBinder;
+    private WikiBinder wikiBinder;
 
     public ReferenceView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -33,6 +35,7 @@ public class ReferenceView extends FrameLayout {
         bindLinkSources(presenter, post);
         bindPoll(presenter, post);
         bindSurvey(presenter, post);
+        bindWiki(presenter, post);
     }
 
     private void bindLinkSources(final PostBinder.PostBindablePresenter presenter, final Post post) {
@@ -91,7 +94,6 @@ public class ReferenceView extends FrameLayout {
     }
 
     private void bindSurvey(PostBinder.PostBindablePresenter presenter, final Post post) {
-
         if(surveyBinder == null) {
             surveyBinder = new SurveyBinder(this);
         }
@@ -100,6 +102,18 @@ public class ReferenceView extends FrameLayout {
             surveyBinder.setVisibility(View.VISIBLE);
         } else {
             surveyBinder.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindWiki(PostBinder.PostBindablePresenter presenter, Post post) {
+        if(wikiBinder == null) {
+            wikiBinder = new WikiBinder(this);
+        }
+        if(post.wiki != null) {
+            wikiBinder.bind(presenter, post);
+            wikiBinder.setVisibility(View.VISIBLE);
+        } else {
+            wikiBinder.setVisibility(View.GONE);
         }
     }
 
@@ -118,6 +132,9 @@ public class ReferenceView extends FrameLayout {
         }
         if(surveyBinder != null) {
             surveyBinder.unbind();
+        }
+        if(wikiBinder != null) {
+            wikiBinder.unbind();
         }
     }
 }
