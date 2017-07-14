@@ -115,18 +115,21 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
     }
 
     public void clearAndAppendCustomView(int viewType) {
-        if(this.holders.size() > 0) {
+        int size = this.holders.size();
+        if(size > 0) {
             this.holders.clear();
         }
+        notifyItemRangeRemoved(0, size);
         holders.add(InfinitableModelHolder.<T>forCustomeView(viewType));
-        notifyDataSetChanged();
+        notifyItemInserted(0);
     }
 
     public void clear() {
-        if(this.holders.size() > 0) {
+        int size = this.holders.size();
+        if(size > 0) {
             this.holders.clear();
         }
-        notifyDataSetChanged();
+        notifyItemRangeRemoved(0, size);
     }
 
     public void removeMoldelHolderAt(int position) {

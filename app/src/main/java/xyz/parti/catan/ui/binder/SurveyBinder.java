@@ -47,6 +47,7 @@ public class SurveyBinder {
         unbind();
 
         optionsLayout.removeAllViews();
+        optionBinders.clear();
         for(int i = 0; i < post.survey.options.length; i++) {
             Option option = post.survey.options[i];
             bindOption(presenter, post, option, i);
@@ -103,5 +104,6 @@ public class SurveyBinder {
         for(OptionBinder binder : optionBinders) {
             binder.unbind();
         }
+        optionBinders.clear();
     }
 }

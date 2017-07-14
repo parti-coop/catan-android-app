@@ -438,7 +438,7 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
         recyclerViewLayout.setInitialPrefetchItemCount(20);
         postListRecyclerView.setLayoutManager(recyclerViewLayout);
         postListRecyclerView.setAdapter(feedAdapter);
-        postListRecyclerView.setItemViewCacheSize(50);
+        postListRecyclerView.setItemViewCacheSize(20);
         postListRecyclerView.setDrawingCacheEnabled(true);
         postListRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 

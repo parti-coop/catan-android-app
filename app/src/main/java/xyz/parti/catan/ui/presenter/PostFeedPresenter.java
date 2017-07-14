@@ -84,6 +84,7 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
     private final ReadPostFeedDAO readPostFeedDAO;
     private final MessagesStatusDAO messagesStatusDAO;
     private PartiDAO.ChangeListener partiDAOListener;
+    private int POST_LIMIT_COUNT = 150;
 
     public PostFeedPresenter(SessionManager session) {
         super(session);
@@ -251,7 +252,11 @@ public class PostFeedPresenter extends BasePostBindablePresenter<PostFeedPresent
                             if (result.size() > 0) {
                                 //add loaded data
                                 feedAdapter.appendModels(page.items);
-                                feedAdapter.setMoreDataAvailable(page.has_more_item);
+                                if(feedAdapter.getItemCount() > POST_LIMIT_COUNT) {
+                                    feedAdapter.setMoreDataAvailable(false);
+                                } else {
+                                    feedAdapter.setMoreDataAvailable(page.has_more_item);
+                                }
                             } else {
                                 //result size 0 means there is no more data available at server
                                 feedAdapter.setMoreDataAvailable(false);
