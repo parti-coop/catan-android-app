@@ -52,7 +52,7 @@
             android:paddingRight="@dimen/default_space"
             fresco:actualImageScaleType="centerCrop"
             fresco:failureImage="@drawable/ic_empty_box_brand_gray"
-            fresco:failureImageScaleType="centerCrop" />
+            fresco:failureImageScaleType="centerInside" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/layout_wiki_authors_wrapper"
