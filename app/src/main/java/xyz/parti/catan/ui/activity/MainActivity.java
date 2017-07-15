@@ -142,6 +142,16 @@ public class MainActivity extends BaseActivity implements PostFeedPresenter.View
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!isTaskRoot()) {
+            final Intent intent = getIntent();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
+                CatanLog.e("Main Activity is not the root.  Finishing Main Activity instead of launching.");
+                finish();
+                return;
+            }
+        }
+
         setContentView(R.layout.activity_main);
 
         if(new NetworkHelper(this).isValidNetwork()) {

@@ -17,6 +17,10 @@ public class CatanLog {
         Log.e(Constants.TAG, message, e);
     }
 
+    public static void e(String message) {
+        Log.e(Constants.TAG, message);
+    }
+
     public static void e(Throwable e) {
         Log.e(Constants.TAG, e.getMessage(), e);
     }
