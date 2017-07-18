@@ -87,7 +87,7 @@ dependencies {
     final SUPPORT_LIBRARY_VERSION = '25.4.0'
     final RETROFIT_VERSION = '2.2.0'
     final GOOLGE_VERSION = '10.2.6'
-    final FRESCO_VERSION = '1.3.0'
+    final FRESCO_VERSION = '1.4.0'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile("com.android.support.test.espresso:espresso-core:2.2.2", {
