@@ -5,13 +5,14 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 
 @Parcel
 public class Post implements RecyclableModel {
-    public static final String IS_UPVOTED_BY_ME = "is_upvoted_by_me";
-    public static final String PLAYLOAD_LATEST_COMMENT = "latest_comment";
+    public static final String PAYLOAD_IS_UPVOTED_BY_ME = "is_upvoted_by_me";
+    public static final String PAYLOAD_LATEST_COMMENT = "latest_comment";
 
     public Long id;
     public Boolean full;
@@ -107,6 +108,25 @@ public class Post implements RecyclableModel {
         List<Comment> temp = new ArrayList<>(Arrays.asList(this.latest_comments));
         temp.add(comment);
         latest_comments = temp.toArray(new Comment[temp.size()]);
+    }
+
+    public void removeComment(Comment comment) {
+        this.comments_count--;
+
+        List<Comment> commentList = new ArrayList<>(Arrays.asList(this.latest_comments));
+        Iterator<Comment> i = commentList.iterator();
+        while(i.hasNext()) {
+            Comment next = i.next();
+            if(next != null && next.id != null && next.id.equals(comment.id)) {
+                i.remove();
+            }
+        }
+
+        latest_comments = commentList.toArray(new Comment[commentList.size()]);
+
+        if(sticky_comment != null && sticky_comment.id.equals(comment.id)) {
+            sticky_comment = null;
+        }
     }
 
     public void toggleUpvoting() {

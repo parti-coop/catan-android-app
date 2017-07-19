@@ -34,6 +34,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
     private Disposable moreCommentsPublisher;
     private Disposable createCommentPublisher;
     private Disposable onClickLikePublisher;
+    private Disposable onClickDestroyPublisher;
 
     public CommentFeedPresenter(Post post, SessionManager session) {
         this.post = post;
@@ -227,7 +228,7 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
     public void onClickLikeComment(final Post post, final Comment comment) {
         if(!isActive()) return;
 
-        feedAdapter.changeModel(comment, Comment.IS_UPVOTED_BY_ME);
+        feedAdapter.changeModel(comment, Comment.PAYLOAD_IS_UPVOTED_BY_ME);
         Flowable<Response<JsonNull>> call =  ( comment.is_upvoted_by_me ?
                 upvotesService.destroy("Comment", comment.id) : upvotesService.create("Comment", comment.id)
         );
@@ -236,9 +237,11 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
                 new Consumer<Response<JsonNull>>() {
                     @Override
                     public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(!isActive()) return;
+
                         if (response.isSuccessful()) {
                             post.toggleCommentUpvoting(comment);
-                            changeComment(comment, Comment.IS_UPVOTED_BY_ME);
+                            changeComment(comment, Comment.PAYLOAD_IS_UPVOTED_BY_ME);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else if (response.code() == 410) {
@@ -265,6 +268,34 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
         getView().showNewCommentForm(comment);
     }
 
+    @Override
+    public void onClickDestroyComment(final Post post, final Comment comment) {
+        onClickDestroyPublisher = getRxGuardian().subscribe(onClickDestroyPublisher,
+                commentsService.destroyComment(comment.id),
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(!isActive()) return;
+
+                        if (response.isSuccessful()) {
+                            post.removeComment(comment);
+                            feedAdapter.removeModel(comment);
+                        } else if (response.code() == 403) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_comment));
+                        } else {
+                            getView().reportError("Like error : " + response.code());
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                    }
+                });
+    }
+
     public interface View {
         void setSendingCommentForm();
         void setCompletedCommentForm();
@@ -277,5 +308,6 @@ public class CommentFeedPresenter extends BasePresenter<CommentFeedPresenter.Vie
 
         void showDemo();
         void hideDemo();
+
     }
 }

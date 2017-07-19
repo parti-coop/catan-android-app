@@ -14,6 +14,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
+import retrofit2.http.POST;
 import xyz.parti.catan.R;
 import xyz.parti.catan.data.ServiceBuilder;
 import xyz.parti.catan.data.SessionManager;
@@ -23,6 +24,7 @@ import xyz.parti.catan.data.model.Option;
 import xyz.parti.catan.data.model.PartiAccessToken;
 import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.data.model.User;
+import xyz.parti.catan.data.services.CommentsService;
 import xyz.parti.catan.data.services.FeedbacksService;
 import xyz.parti.catan.data.services.OptionsService;
 import xyz.parti.catan.data.services.PostsService;
@@ -40,15 +42,18 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
     private final OptionsService optionsService;
     private final VotingsService votingsService;
     private final PostsService postsService;
-    private SessionManager session;
-    private Disposable reloadPostPublisher;
+    private final CommentsService commentsService;
 
+    private SessionManager session;
+
+    private Disposable reloadPostPublisher;
     private Disposable onClickLikePublisher;
     private Disposable onClickSurveyOptionPublisher;
     private Disposable onClickPollAgreePublisher;
     private Disposable onClickPollDisgreePublisher;
     private Disposable newOptionPublisher;
     private Disposable reloadPostSurveyPublisher;
+    private Disposable onClickDestroyPublisher;
 
     BasePostBindablePresenter(SessionManager session) {
         this.session = session;
@@ -57,6 +62,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
         votingsService = ServiceBuilder.createService(VotingsService.class, session);
         postsService = ServiceBuilder.createService(PostsService.class, session);
         optionsService = ServiceBuilder.createService(OptionsService.class, session);
+        commentsService = ServiceBuilder.createService(CommentsService.class, session);
     }
 
     protected abstract void changePost(Post post, Object payload);
@@ -102,7 +108,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                         if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.toggleUpvoting();
-                            changePost(post, Post.IS_UPVOTED_BY_ME);
+                            changePost(post, Post.PAYLOAD_IS_UPVOTED_BY_ME);
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else if (response.code() == 410) {
@@ -134,7 +140,7 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                         if(getView() == null) return;
                         if (response.isSuccessful()) {
                             post.toggleCommentUpvoting(comment);
-                            changePost(post, new CommentDiff(comment, Comment.IS_UPVOTED_BY_ME));
+                            changePost(post, new CommentDiff(comment, Comment.PAYLOAD_IS_UPVOTED_BY_ME));
                         } else if (response.code() == 403) {
                             getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
                         } else if (response.code() == 410) {
@@ -151,6 +157,36 @@ public abstract class BasePostBindablePresenter<T extends BasePostBindablePresen
                     }
                 });
     }
+
+
+    @Override
+    public void onClickDestroyComment(final Post post, final Comment comment) {
+        onClickDestroyPublisher = getRxGuardian().subscribe(onClickDestroyPublisher,
+                commentsService.destroyComment(comment.id),
+                new Consumer<Response<JsonNull>>() {
+                    @Override
+                    public void accept(@NonNull Response<JsonNull> response) throws Exception {
+                        if(getView() == null) return;
+
+                        if (response.isSuccessful()) {
+                            post.removeComment(comment);
+                            changePost(post, Post.PAYLOAD_LATEST_COMMENT);
+                        } else if (response.code() == 403) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.blocked_post));
+                        } else if (response.code() == 410) {
+                            getView().reportInfo(getView().getContext().getResources().getString(R.string.not_found_comment));
+                        } else {
+                            getView().reportError("Like error : " + response.code());
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable error) throws Exception {
+                        getView().reportError(error);
+                    }
+                });
+    }
+
 
     @Override
     public void onClickSurveyOption(final Post post, Option option, boolean isChecked) {

@@ -77,6 +77,19 @@ public abstract class LoadMoreRecyclerViewAdapter<T extends RecyclableModel> ext
         notifyItemInserted(position);
     }
 
+    public void removeModel(T model) {
+        if(model == null) return;
+
+        for (int i = 0; i < holders.size(); i++) {
+            if (model.isSame(getModel(i))) {
+                removeMoldelHolderAt(i);
+                notifyDataSetChanged();
+                return;
+            }
+        }
+        CatanLog.d("Not found model in LoadMoreRecyclerView : " + model.toString());
+    }
+
     public void changeModel(T model, Object payload) {
         if(model == null) return;
 

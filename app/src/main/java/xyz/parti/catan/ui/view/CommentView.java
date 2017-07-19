@@ -10,7 +10,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,7 +34,8 @@ import xyz.parti.catan.data.model.Post;
 import xyz.parti.catan.helper.CatanLog;
 
 
-public class CommentView extends LinearLayout {
+public class CommentView extends LinearLayout implements View.OnCreateContextMenuListener {
+    private Post post;
     private Comment comment;
     private WeakReference<Presenter> presenter = new WeakReference<>(null);
 
@@ -59,6 +63,7 @@ public class CommentView extends LinearLayout {
     CircleImageView blindImageView;
 
     private boolean isHighlighted = false;
+    private MenuItem destroyMenu;
 
     public CommentView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -111,10 +116,17 @@ public class CommentView extends LinearLayout {
         if(comment.is_blinded) {
             blindCommentLayout.setVisibility(VISIBLE);
             commentLineLayout.setVisibility(GONE);
+            commentLineLayout.setOnCreateContextMenuListener(null);
         } else {
             blindCommentLayout.setVisibility(GONE);
             commentLineLayout.setVisibility(VISIBLE);
+            if(comment.is_destroyable) {
+                commentLineLayout.setOnCreateContextMenuListener(this);
+            } else {
+                commentLineLayout.setOnCreateContextMenuListener(null);
+            }
 
+            this.post = post;
             this.comment = comment;
             setTag(R.id.tag_comment, comment);
 
@@ -138,6 +150,20 @@ public class CommentView extends LinearLayout {
             bindLike(post, comment);
         }
         setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        String destroyMenuName = getContext().getResources().getString(R.string.comment_context_menu);
+        destroyMenu = menu.add(Menu.NONE, 1, 1, destroyMenuName);
+        destroyMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (presenter.get() == null) return false;
+                presenter.get().onClickDestroyComment(post, comment);
+                return true;
+            }
+        });
     }
 
     private void bindLike(final Post post, final Comment comment) {
@@ -164,15 +190,15 @@ public class CommentView extends LinearLayout {
     }
 
     public void rebindData(Post post, Comment comment, Object payload) {
-        if(payload.equals(Comment.IS_UPVOTED_BY_ME)) {
+        if(payload.equals(Comment.PAYLOAD_IS_UPVOTED_BY_ME)) {
             bindLike(post, comment);
         } else {
             CatanLog.d("CommentView : invalid payload");
         }
     }
 
-    public void hideData() {
-        this.comment = null;
+    public void clearData() {
+        unbind();
         setVisibility(View.GONE);
     }
 
@@ -187,12 +213,16 @@ public class CommentView extends LinearLayout {
     public interface Presenter {
         void onClickLikeComment(Post post, Comment comment);
         void onClickNewComment(Post post, Comment comment);
+        void onClickDestroyComment(final Post post, final Comment comment);
     }
 
     public void unbind() {
         setTag(R.id.tag_comment, null);
         if(comment != null) {
             comment = null;
+        }
+        if(post != null) {
+            post = null;
         }
         clearListeners();
     }
@@ -203,6 +233,12 @@ public class CommentView extends LinearLayout {
         }
         if(likeButton != null) {
             likeButton.setOnClickListener(null);
+        }
+        if(commentLineLayout != null) {
+            commentLineLayout.setOnLongClickListener(null);
+        }
+        if(destroyMenu != null) {
+            destroyMenu.setOnMenuItemClickListener(null);
         }
     }
 }

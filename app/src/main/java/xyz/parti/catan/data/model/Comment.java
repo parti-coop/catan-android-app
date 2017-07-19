@@ -8,8 +8,7 @@ import java.util.List;
 
 @Parcel
 public class Comment implements RecyclableModel {
-    public static final String IS_UPVOTED_BY_ME = "is_upvoted_by_me";
-
+    public static final String PAYLOAD_IS_UPVOTED_BY_ME = "is_upvoted_by_me";
     public Long id;
     public String body;
     public String truncated_body;
@@ -20,6 +19,7 @@ public class Comment implements RecyclableModel {
     public Boolean is_upvoted_by_me;
     public Boolean is_blinded;
     public String choice;
+    public boolean is_destroyable = false;
 
     @Override
     public boolean isSame(Object other) {

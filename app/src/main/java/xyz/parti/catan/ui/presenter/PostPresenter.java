@@ -1,7 +1,5 @@
 package xyz.parti.catan.ui.presenter;
 
-import android.content.Context;
-
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -49,9 +47,11 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
         this.post = post;
         if(this.post.sticky_comment != null && payload != null && payload instanceof CommentDiff) {
             CommentDiff commentDiff = (CommentDiff) payload;
-           if(this.post.sticky_comment.id.equals(commentDiff.getComment().id)) {
-               getView().changeStickyComment(post, commentDiff.getComment(), commentDiff.getPayload());
-           }
+            if (this.post.sticky_comment.id.equals(commentDiff.getComment().id)) {
+                getView().changeStickyComment(post, commentDiff.getComment(), commentDiff.getPayload());
+            }
+        } else if(Post.PAYLOAD_LATEST_COMMENT.equals(payload)) {
+            getView().clearStickyComment();
         }
 
         getView().changePost(post, payload);
@@ -107,5 +107,6 @@ public class PostPresenter extends BasePostBindablePresenter<PostPresenter.View>
         void setCompletedCommentForm();
         void showNewComment(Post post);
         void changeStickyComment(Post post, Comment comment, Object payload);
+        void clearStickyComment();
     }
 }

@@ -73,7 +73,7 @@ class LatestCommentsBinder {
 
         List<Comment> lastComments = post.lastComments(lastCommentsCountLimit);
         for (CommentView commentView : commentViews) {
-            commentView.hideData();
+            commentView.clearData();
         }
 
         for (int i = 0; i < lastComments.size(); i++) {

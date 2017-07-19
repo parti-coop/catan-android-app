@@ -14,11 +14,9 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -339,7 +337,7 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
 
     @Override
     public void showNewComment(Post post) {
-        postBinder.rebindData(presenter, post, Post.PLAYLOAD_LATEST_COMMENT);
+        postBinder.rebindData(presenter, post, Post.PAYLOAD_LATEST_COMMENT);
         postLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -355,7 +353,15 @@ public class PostActivity extends BaseActivity implements PostPresenter.View {
         stickeyCommentView.rebindData(post, comment, payload);
     }
 
+    @Override
+    public void clearStickyComment() {
+        stickyCommentLayout.setVisibility(View.GONE);
+        if(stickeyCommentView != null) stickeyCommentView.clearData();
+    }
+
     public void setupStickyComment(Post post) {
+        stickyCommentLayout.removeAllViews();
+
         if(post.sticky_comment == null) return;
 
         stickeyCommentView = new CommentView(this);

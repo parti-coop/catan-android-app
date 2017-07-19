@@ -177,9 +177,9 @@ public class PostBinder {
     }
 
     public void rebindData(PostBindablePresenter presenter, Post post, Object payload) {
-        if (Post.PLAYLOAD_LATEST_COMMENT.equals(payload)) {
+        if (Post.PAYLOAD_LATEST_COMMENT.equals(payload)) {
             this.bindComments(presenter, post);
-        } else if (Post.IS_UPVOTED_BY_ME.equals(payload)) {
+        } else if (Post.PAYLOAD_IS_UPVOTED_BY_ME.equals(payload)) {
             this.bindLike(presenter, post);
         } else if(payload instanceof Survey) {
             referenceview.bindData(presenter, post);
