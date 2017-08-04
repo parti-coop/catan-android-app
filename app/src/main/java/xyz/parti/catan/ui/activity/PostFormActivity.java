@@ -414,7 +414,9 @@ public class PostFormActivity extends BaseActivity implements PostFormPresenter.
             fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<AbstractItem>() {
                 @Override
                 public boolean onClick(View v, IAdapter<AbstractItem> adapter, AbstractItem item, int position) {
-                    presenter.selectParti(((PostFormPartiItem)item).getParti());
+                    if(item instanceof PostFormPartiItem) {
+                        presenter.selectParti(((PostFormPartiItem) item).getParti());
+                    }
                     return true;
                 }
             });
