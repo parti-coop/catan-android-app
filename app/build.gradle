@@ -153,6 +153,7 @@ dependencies {
         transitive = true
     }
     compile 'com.evernote:android-job:1.1.11'
+    compile 'com.pixplicity.htmlcompat:library:1.1.1'
 
     compile project(':matisse')
 

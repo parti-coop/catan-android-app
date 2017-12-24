@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
+    <string name="define_int_htmlcompat"></string>
+    <!-- Author section -->
+    <string name="library_htmlcompat_author">Pixplicity</string>
+    <string name="library_htmlcompat_authorWebsite">https://pixplicity.com/</string>
+    <!-- Library section -->
+    <string name="library_htmlcompat_libraryName">HtmlCompat</string>
+    <string name="library_htmlcompat_libraryDescription">Compatibility library for Android\'s Html class.</string>
+    <string name="library_htmlcompat_libraryWebsite">https://github.com/Pixplicity/HtmlCompat</string>
+    <string name="library_htmlcompat_libraryVersion">1.1.1</string>
+    <!-- OpenSource section -->
+    <string name="library_htmlcompat_isOpenSource">true</string>
+    <string name="library_htmlcompat_repositoryLink"></string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_htmlcompat_classPath">com.pixplicity.htmlcompat.HtmlCompat</string>
+    <!-- License section -->
+    <string name="library_htmlcompat_licenseId">apache_2_0</string>
+    <!-- Custom variables section -->
+</resources>

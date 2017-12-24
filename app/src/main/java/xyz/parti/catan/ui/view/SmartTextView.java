@@ -22,6 +22,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.pixplicity.htmlcompat.HtmlCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -80,11 +82,11 @@ public class SmartTextView extends android.support.v7.widget.AppCompatTextView {
     }
 
     private CharSequence processHtml(String html, boolean parseImage) {
-        Html.ImageGetter asyncImageGetter = null;
+        HtmlCompat.ImageGetter asyncImageGetter = null;
         if (parseImage) {
             asyncImageGetter = new SmartHtmlImageGetter(getContext(), this);
         }
-        Spanned spanned = TextHelper.converToHtml(html, asyncImageGetter);
+        Spanned spanned = TextHelper.converToHtml(getContext(), html, asyncImageGetter);
         SpannableStringBuilder spannableStringBuilder;
         if (spanned instanceof SpannableStringBuilder) {
             spannableStringBuilder = (SpannableStringBuilder) spanned;

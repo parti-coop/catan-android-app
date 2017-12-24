@@ -15,6 +15,9 @@
     <color name="style_color_accent">#6b37c1</color>
     <color name="style_color_default_border">@color/brand_gray_light</color>
 
+    <color name="blockquote_stripe">#ccc</color>
+    <color name="blockquote_background">#00000000</color>
+
     <color name="dashboard_image_border">#FFF</color>
     <color name="text_muted">@color/brand_gray_less_dark</color>
     <color name="default_text_view_link">#303F9F</color>

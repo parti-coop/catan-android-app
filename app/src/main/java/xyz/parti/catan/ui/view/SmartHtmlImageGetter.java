@@ -14,6 +14,9 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.ViewTarget;
+import com.pixplicity.htmlcompat.HtmlCompat;
+
+import org.xml.sax.Attributes;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,7 +25,7 @@ import java.util.WeakHashMap;
 import xyz.parti.catan.R;
 
 
-class SmartHtmlImageGetter implements Html.ImageGetter, View.OnAttachStateChangeListener, Drawable.Callback {
+class SmartHtmlImageGetter implements HtmlCompat.ImageGetter, View.OnAttachStateChangeListener, Drawable.Callback {
 
     private final Context mContext;
 
@@ -46,18 +49,14 @@ class SmartHtmlImageGetter implements Html.ImageGetter, View.OnAttachStateChange
         mTextView.addOnAttachStateChangeListener(this);
     }
 
-    /**
-     * We display image depends on settings and Wi-Fi status,
-     * but display emoticons at any time.
-     */
     @Override
-    public Drawable getDrawable(String url) {
+    public Drawable getDrawable(String source, Attributes attributes) {
         UrlDrawable urlDrawable = new UrlDrawable();
 
         ImageGetterViewTarget imageGetterViewTarget = new ImageGetterViewTarget(mTextView,
                 urlDrawable);
         Glide.with(mContext)
-                .load(url)
+                .load(source)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(imageGetterViewTarget);
 

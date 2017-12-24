@@ -59,7 +59,7 @@ public class PostImagesViewActivity extends BaseActivity {
         viewPager.setAdapter(imageFragmentPagerAdapter);
         viewPager.setCurrentItem(0);
 
-        this.postDescTextView.setText(TextHelper.converToHtml("<strong>" + this.post.specific_desc_striped_tags + "</strong>"));
+        this.postDescTextView.setText(TextHelper.converToHtml(this, "<strong>" + this.post.specific_desc_striped_tags + "</strong>"));
         this.postCreatedAtTextView.setReferenceTime(this.post.created_at.getTime());
         this.userNicknameTextView.setText(this.post.user.nickname);
     }

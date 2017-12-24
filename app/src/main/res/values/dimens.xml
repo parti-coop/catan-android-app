@@ -37,4 +37,7 @@
     <dimen name="smart_text_placeholder_size">35dp</dimen>
     <dimen name="fab_margins">16dp</dimen>
     <dimen name="text_default_size">14sp</dimen>
+
+    <dimen name="blockquote_width">5dp</dimen>
+    <dimen name="blockquote_gap">8dp</dimen>
 </resources>
